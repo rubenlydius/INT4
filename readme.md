@@ -1,6 +1,4 @@
- list team members and roles
- list agreements
- list links to Figma etc.
+# INT4 - Project
 
  Team members:
  - Ulrika GARISONE
