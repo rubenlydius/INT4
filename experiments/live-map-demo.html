@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Map Demo</title>
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #090909;
+    --surface: #131313;
+    --border: #1e1e1e;
+    --gold: #c8b89a;
+    --text: #f0ede6;
+    --muted: #555;
+    --dim: #333;
+    --radius: 14px;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    font-family: 'DM Sans', system-ui, sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* ── map fills the screen ── */
+  #map {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  /* dark filter on the map tiles */
+  .leaflet-tile {
+    filter: brightness(0.35) saturate(0.4) hue-rotate(190deg);
+  }
+
+  /* remove leaflet attribution default bg */
+  .leaflet-control-attribution {
+    background: #0009 !important;
+    color: #444 !important;
+    font-size: 9px !important;
+  }
+  .leaflet-control-attribution a { color: #666 !important; }
+
+  /* ── top status bar ── */
+  #status-bar {
+    position: absolute;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: #111a;
+    border: 0.5px solid var(--border);
+    border-radius: 50px;
+    padding: 8px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+
+  #status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--dim);
+    transition: background 0.4s;
+    flex-shrink: 0;
+  }
+  #status-dot.searching { background: #e8a84a; animation: pulse 1.4s infinite; }
+  #status-dot.live      { background: #7ec98a; animation: none; }
+  #status-dot.error     { background: #c87a7a; animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.3; }
+  }
+
+  #status-text {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+
+  /* ── info panel (bottom) ── */
+  #info-panel {
+    position: absolute;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: min(340px, calc(100vw - 32px));
+    background: #111c;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .panel-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .coords-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .coord-box {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .coord-key {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .coord-val {
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .accuracy-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .acc-label {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  .acc-bar-wrap {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 0 12px;
+    overflow: hidden;
+  }
+
+  .acc-bar {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--gold);
+    transition: width 0.6s ease;
+  }
+
+  .acc-val {
+    font-size: 10px;
+    color: var(--muted);
+    min-width: 40px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── locate button ── */
+  #locate-btn {
+    position: absolute;
+    bottom: 170px; right: 20px;
+    z-index: 10;
+    width: 46px; height: 46px;
+    background: #111c;
+    border: 0.5px solid var(--border);
+    border-radius: 50%;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s;
+  }
+  #locate-btn:hover { border-color: var(--gold); }
+  #locate-btn svg { width: 18px; height: 18px; fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linecap: round; }
+
+  /* ── custom marker ── */
+  .live-marker-wrap {
+    position: relative;
+    width: 20px; height: 20px;
+  }
+
+  .live-marker-ring {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid #c8b89a55;
+    animation: ring-pulse 2s ease-out infinite;
+  }
+
+  @keyframes ring-pulse {
+    0%   { transform: scale(0.6); opacity: 0.8; }
+    100% { transform: scale(2);   opacity: 0; }
+  }
+
+  .live-marker-dot {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2px solid #0a0a0a;
+    box-shadow: 0 0 10px #c8b89a66;
+  }
+
+  /* ── explainer card (shows on first load) ── */
+  #explainer {
+    position: absolute;
+    top: 76px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    width: min(300px, calc(100vw - 32px));
+    background: #111c;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .explainer-title {
+    font-size: 12px;
+    color: var(--text);
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
+
+  .explainer-body {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .explainer-body code {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 10px;
+    color: var(--gold);
+    font-family: monospace;
+  }
+
+  #explainer-close {
+    margin-top: 12px;
+    font-size: 10px;
+    color: var(--gold);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    opacity: 0.8;
+  }
+  #explainer-close:hover { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- The map -->
+<div id="map"></div>
+
+<!-- Status pill -->
+<div id="status-bar">
+  <div id="status-dot" class="searching"></div>
+  <span id="status-text">Requesting location…</span>
+</div>
+
+<!-- Explainer -->
+<div id="explainer">
+  <div class="explainer-title">How this works</div>
+  <div class="explainer-body">
+    The browser calls <code>watchPosition()</code> which fires every time your GPS updates.
+    Each update moves the marker and re-centers the map.
+    Accuracy depends on your device — phone GPS is ~5m, laptop wifi is ~50–200m.
+  </div>
+  <div id="explainer-close" onclick="document.getElementById('explainer').style.display='none'">got it →</div>
+</div>
+
+<!-- Locate button (re-center) -->
+<button id="locate-btn" title="Re-center on my location">
+  <svg viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="4"/>
+    <line x1="12" y1="2"  x2="12" y2="6"/>
+    <line x1="12" y1="18" x2="12" y2="22"/>
+    <line x1="2"  y1="12" x2="6"  y2="12"/>
+    <line x1="18" y1="12" x2="22" y2="12"/>
+  </svg>
+</button>
+
+<!-- Info panel -->
+<div id="info-panel">
+  <div class="panel-label">Live location</div>
+  <div class="coords-row">
+    <div class="coord-box">
+      <div class="coord-key">Latitude</div>
+      <div class="coord-val" id="val-lat">—</div>
+    </div>
+    <div class="coord-box">
+      <div class="coord-key">Longitude</div>
+      <div class="coord-val" id="val-lng">—</div>
+    </div>
+  </div>
+  <div class="accuracy-row">
+    <span class="acc-label">Accuracy</span>
+    <div class="acc-bar-wrap"><div class="acc-bar" id="acc-bar" style="width:0%"></div></div>
+    <span class="acc-val" id="val-acc">—</span>
+  </div>
+</div>
+
+<script>
+// ── Init map ──────────────────────────────────────────────────────────────────
+const map = L.map('map', {
+  zoomControl: false,        // we keep UI minimal
+  attributionControl: true
+}).setView([51.2194, 4.4025], 14);  // default: Antwerp
+
+// OpenStreetMap tiles — completely free, no key needed
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom: 19
+}).addTo(map);
+
+// ── Custom marker HTML ────────────────────────────────────────────────────────
+const markerIcon = L.divIcon({
+  className: '',   // no default leaflet styles
+  html: `<div class="live-marker-wrap">
+           <div class="live-marker-ring"></div>
+           <div class="live-marker-dot"></div>
+         </div>`,
+  iconSize:   [20, 20],
+  iconAnchor: [10, 10]   // center of the dot
+});
+
+let marker       = null;
+let accuracyCircle = null;
+let hasFirstFix  = false;
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+const statusDot  = document.getElementById('status-dot');
+const statusText = document.getElementById('status-text');
+const valLat     = document.getElementById('val-lat');
+const valLng     = document.getElementById('val-lng');
+const valAcc     = document.getElementById('val-acc');
+const accBar     = document.getElementById('acc-bar');
+
+function setStatus(state, text) {
+  statusDot.className = state;     // 'searching' | 'live' | 'error'
+  statusText.textContent = text;
+}
+
+function updatePanel(lat, lng, acc) {
+  valLat.textContent = lat.toFixed(6);
+  valLng.textContent = lng.toFixed(6);
+  valAcc.textContent = acc < 1000 ? Math.round(acc) + ' m' : '>1 km';
+
+  // Bar: 0% = terrible (500m+), 100% = excellent (5m)
+  const pct = Math.max(0, Math.min(100, (1 - (acc - 5) / 495) * 100));
+  accBar.style.width = pct + '%';
+  accBar.style.background = acc < 20 ? '#7ec98a' : acc < 100 ? '#c8b89a' : '#c87a7a';
+}
+
+// ── watchPosition callback ────────────────────────────────────────────────────
+function onPosition(pos) {
+  const { latitude: lat, longitude: lng, accuracy: acc } = pos.coords;
+
+  // First fix — fly to location
+  if (!hasFirstFix) {
+    hasFirstFix = true;
+    map.flyTo([lat, lng], 17, { duration: 1.8, easeLinearity: 0.3 });
+    setStatus('live', 'Live · updating');
+  } else {
+    // Subsequent updates — pan smoothly
+    map.panTo([lat, lng], { animate: true, duration: 0.6 });
+  }
+
+  // Place or move the marker
+  if (!marker) {
+    marker = L.marker([lat, lng], { icon: markerIcon }).addTo(map);
+  } else {
+    marker.setLatLng([lat, lng]);
+  }
+
+  // Accuracy circle (shows how precise the fix is)
+  if (!accuracyCircle) {
+    accuracyCircle = L.circle([lat, lng], {
+      radius: acc,
+      color: '#c8b89a',
+      fillColor: '#c8b89a',
+      fillOpacity: 0.04,
+      weight: 0.5,
+      opacity: 0.3
+    }).addTo(map);
+  } else {
+    accuracyCircle.setLatLng([lat, lng]);
+    accuracyCircle.setRadius(acc);
+  }
+
+  updatePanel(lat, lng, acc);
+}
+
+function onError(err) {
+  const messages = {
+    1: 'Location permission denied',
+    2: 'Position unavailable',
+    3: 'Location request timed out'
+  };
+  setStatus('error', messages[err.code] || 'Location error');
+}
+
+// ── Start watching ────────────────────────────────────────────────────────────
+if ('geolocation' in navigator) {
+  navigator.geolocation.watchPosition(onPosition, onError, {
+    enableHighAccuracy: true,   // use GPS on phones
+    maximumAge: 0,              // never use a cached position
+    timeout: 10000
+  });
+} else {
+  setStatus('error', 'Geolocation not supported');
+}
+
+// ── Re-center button ──────────────────────────────────────────────────────────
+document.getElementById('locate-btn').addEventListener('click', () => {
+  if (marker) {
+    map.flyTo(marker.getLatLng(), 17, { duration: 1.2 });
+  }
+});
+</script>
+</body>
+</html>
