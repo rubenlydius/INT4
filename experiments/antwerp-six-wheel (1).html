@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seen by Six</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #090909;
+    --surface: #131313;
+    --border: #222;
+    --gold: #c8b89a;
+    --gold-dim: #c8b89a44;
+    --text-primary: #f0ede6;
+    --text-muted: #555;
+    --text-dim: #333;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .name-display {
+    height: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    margin-bottom: 28px;
+    position: relative;
+  }
+
+  .name-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .name-text {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 28px;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .pointer {
+    position: absolute;
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 24px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  .pointer::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  .wheel-wrap {
+    position: relative;
+    width: 320px;
+    height: 320px;
+  }
+
+  .wheel-outer-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 0.5px solid var(--border);
+    pointer-events: none;
+  }
+
+  .wheel-outer-ring-accent {
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 0.5px solid var(--gold-dim);
+    pointer-events: none;
+  }
+
+  /* The rotating disc — pips are children of this */
+  #wheel {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    cursor: grab;
+  }
+
+  #wheel:active { cursor: grabbing; }
+
+  .center-dot {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .pip {
+    position: absolute;
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    cursor: pointer;
+    /* counter-rotate to keep text upright */
+    will-change: transform;
+  }
+
+  .pip:hover .pip-initials { color: var(--gold-dim); }
+
+  .pip.active {
+    background: #1a1610;
+    border: 1.5px solid var(--gold);
+    box-shadow: 0 0 20px #c8b89a18, inset 0 0 12px #c8b89a08;
+  }
+
+  .pip-initials {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--text-muted);
+    line-height: 1;
+    margin-bottom: 2px;
+    transition: color 0.3s;
+  }
+
+  .pip.active .pip-initials { color: var(--gold); }
+
+  .pip-field {
+    font-size: 7px;
+    letter-spacing: 0.06em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  .pip.active .pip-field { color: #c8b89a66; }
+
+  .keywords {
+    margin-top: 32px;
+    display: flex;
+    gap: 8px;
+    height: 24px;
+    align-items: center;
+  }
+
+  .keyword {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: lowercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+  }
+
+  .cta {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 0.06em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .cta:hover { opacity: 1; }
+
+  .cta-arrow { transition: transform 0.2s; }
+  .cta:hover .cta-arrow { transform: translateX(3px); }
+
+  .drag-hint {
+    position: absolute;
+    bottom: -48px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+<div class="scene">
+  <div class="name-display">
+    <div class="name-label">viewing through</div>
+    <div class="name-text" id="nameText">Dries Van Noten</div>
+    <div class="pointer"></div>
+  </div>
+
+  <div class="wheel-wrap">
+    <div class="wheel-outer-ring-accent"></div>
+    <div class="wheel-outer-ring"></div>
+    <div id="wheel"></div>
+    <div class="center-dot"></div>
+    <div class="drag-hint">drag to rotate</div>
+  </div>
+
+  <div class="keywords" id="keywords"></div>
+
+  <div class="cta">
+    <span id="ctaText">See through Dries' eyes</span>
+    <span class="cta-arrow">→</span>
+  </div>
+</div>
+
+<script>
+const designers = [
+  { name: "Dries Van Noten",        short: "Dries",   initials: "DV", keywords: ["worldly","layered","sensory"] },
+  { name: "Ann Demeulemeester",     short: "Ann",     initials: "AD", keywords: ["dark","poetic","raw"] },
+  { name: "Walter Van Beirendonck", short: "Walter",  initials: "WV", keywords: ["loud","free","playful"] },
+  { name: "Dirk Bikkembergs",       short: "Dirk B.", initials: "DB", keywords: ["athletic","raw","urban"] },
+  { name: "Dirk Van Saene",         short: "Dirk V.", initials: "DS", keywords: ["artistic","painted","local"] },
+  { name: "Marina Yee",             short: "Marina",  initials: "MY", keywords: ["elusive","rare","quiet"] }
+];
+
+const COUNT       = designers.length;
+const DEG_STEP    = 360 / COUNT;          // 60 deg between pips
+const WHEEL_R     = 120;                  // px from wheel center to pip center
+const PIP_SIZE    = 64;
+const WHEEL_CX    = 160;                  // wheel el is 320×320
+const WHEEL_CY    = 160;
+
+const wheelEl    = document.getElementById('wheel');
+const nameEl     = document.getElementById('nameText');
+const keywordsEl = document.getElementById('keywords');
+const ctaTextEl  = document.getElementById('ctaText');
+
+// wheelAngle: current CSS rotation of #wheel (degrees).
+// Pip i sits at (i * DEG_STEP - 90) deg on the wheel.
+// When wheelAngle = 0, pip 0 is at -90 deg = 12 o'clock. ✓
+// To bring pip i to 12 o'clock we need the wheel rotated by -(i * DEG_STEP) deg.
+let wheelAngle = 0;   // actual current rotation
+let activeIndex = 0;
+const pips = [];
+
+// ── build pips ──────────────────────────────────────────────────────────────
+designers.forEach((d, i) => {
+  const pip = document.createElement('div');
+  pip.className = 'pip' + (i === 0 ? ' active' : '');
+  pip.innerHTML = `<div class="pip-initials">${d.initials}</div><div class="pip-field">antwerp six</div>`;
+
+  // Position on the wheel at angle = i*DEG_STEP - 90  (so index 0 = top)
+  const rad = (i * DEG_STEP - 90) * Math.PI / 180;
+  pip.style.left = (WHEEL_CX + WHEEL_R * Math.cos(rad) - PIP_SIZE / 2) + 'px';
+  pip.style.top  = (WHEEL_CY + WHEEL_R * Math.sin(rad) - PIP_SIZE / 2) + 'px';
+
+  pip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!isDragging) snapTo(i);
+  });
+
+  wheelEl.appendChild(pip);
+  pips.push(pip);
+});
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+// Apply wheel rotation + counter-rotate every pip so text stays upright
+function applyRotation(angle) {
+  gsap.set(wheelEl, { rotation: angle });
+  pips.forEach(p => gsap.set(p, { rotation: -angle }));
+}
+
+// Which pip is closest to 12 o'clock given a wheel angle?
+// Pip i is at wheelAngle + i*DEG_STEP - 90 degrees (world coords).
+// At 12 o'clock = -90 deg (= 270 deg). So pip i is at top when:
+//   wheelAngle + i*DEG_STEP ≡ 0  (mod 360)
+//   → i ≡ -wheelAngle / DEG_STEP  (mod COUNT)
+function indexAtTop(angle) {
+  const raw = -angle / DEG_STEP;
+  return ((Math.round(raw) % COUNT) + COUNT) % COUNT;
+}
+
+// Target wheel angle to put pip i at 12 o'clock:
+//   wheelAngle = -i * DEG_STEP
+// but we want the shortest path from current wheelAngle.
+function targetAngleForIndex(i) {
+  const base = -i * DEG_STEP;
+  // Shift by multiples of 360 to stay closest to current wheelAngle
+  const diff = ((base - wheelAngle) % 360 + 540) % 360 - 180;
+  return wheelAngle + diff;
+}
+
+function setActive(i) {
+  if (i === activeIndex && pips[i].classList.contains('active')) return;
+  activeIndex = i;
+  pips.forEach((p, j) => p.classList.toggle('active', j === i));
+  animateName(designers[i].name);
+  ctaTextEl.textContent = `See through ${designers[i].short}'s eyes`;
+  renderKeywords(i);
+}
+
+function animateName(next) {
+  if (nameEl.textContent === next) return;
+  gsap.killTweensOf(nameEl);
+  gsap.to(nameEl, { opacity: 0, y: -5, duration: 0.15, ease: 'power2.in',
+    onComplete: () => {
+      nameEl.textContent = next;
+      gsap.fromTo(nameEl, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+    }
+  });
+}
+
+function renderKeywords(i) {
+  keywordsEl.innerHTML = '';
+  designers[i].keywords.forEach((kw, j) => {
+    const s = document.createElement('span');
+    s.className = 'keyword';
+    s.textContent = kw;
+    keywordsEl.appendChild(s);
+    gsap.fromTo(s, { opacity: 0, y: 5 }, { opacity: 1, y: 0, duration: 0.28, delay: j * 0.07, ease: 'power2.out' });
+  });
+}
+
+// Animate wheel to the exact angle that puts pip i at top
+function snapTo(i) {
+  const target = targetAngleForIndex(i);
+  gsap.killTweensOf({ v: wheelAngle });
+  gsap.to({ v: wheelAngle }, {
+    v: target,
+    duration: 0.65,
+    ease: 'power3.out',
+    onUpdate: function () {
+      wheelAngle = this.targets()[0].v;
+      applyRotation(wheelAngle);
+    },
+    onComplete: () => {
+      wheelAngle = target;
+      setActive(i);
+    }
+  });
+  setActive(i);
+}
+
+// ── drag ─────────────────────────────────────────────────────────────────────
+let isDragging   = false;
+let dragStartMouseAngle = 0;
+let dragStartWheelAngle = 0;
+let lastMouseAngle = 0;
+let lastT = 0;
+let angularVelocity = 0;
+
+function mouseAngleFromCenter(e) {
+  const rect = wheelEl.getBoundingClientRect();
+  const cx = rect.left + rect.width  / 2;
+  const cy = rect.top  + rect.height / 2;
+  const pt = e.touches ? e.touches[0] : e;
+  return Math.atan2(pt.clientY - cy, pt.clientX - cx) * 180 / Math.PI;
+}
+
+wheelEl.addEventListener('mousedown', onDragStart);
+wheelEl.addEventListener('touchstart', onDragStart, { passive: true });
+
+function onDragStart(e) {
+  isDragging = true;
+  dragStartMouseAngle = mouseAngleFromCenter(e);
+  dragStartWheelAngle = wheelAngle;
+  lastMouseAngle = dragStartMouseAngle;
+  lastT = Date.now();
+  angularVelocity = 0;
+  gsap.killTweensOf({ v: wheelAngle });
+}
+
+window.addEventListener('mousemove', onDragMove);
+window.addEventListener('touchmove', onDragMove, { passive: false });
+
+function onDragMove(e) {
+  if (!isDragging) return;
+  if (e.cancelable) e.preventDefault();
+
+  const ma = mouseAngleFromCenter(e);
+  const now = Date.now();
+  const dt  = now - lastT;
+  if (dt > 0) angularVelocity = (ma - lastMouseAngle) / dt;
+  lastMouseAngle = ma;
+  lastT = now;
+
+  wheelAngle = dragStartWheelAngle + (ma - dragStartMouseAngle);
+  applyRotation(wheelAngle);
+
+  // Live highlight while dragging
+  setActive(indexAtTop(wheelAngle));
+}
+
+window.addEventListener('mouseup',  onDragEnd);
+window.addEventListener('touchend', onDragEnd);
+
+function onDragEnd() {
+  if (!isDragging) return;
+  isDragging = false;
+
+  // Momentum → project forward, then snap to nearest
+  const momentum  = angularVelocity * 100;
+  const projected = wheelAngle + momentum;
+
+  // Find nearest pip to projected position
+  const raw = -projected / DEG_STEP;
+  const nearest = ((Math.round(raw) % COUNT) + COUNT) % COUNT;
+
+  snapTo(nearest);
+}
+
+// ── init ─────────────────────────────────────────────────────────────────────
+renderKeywords(0);
+applyRotation(0);
+
+gsap.from('.name-display', { opacity: 0, y: -16, duration: 0.8, ease: 'power3.out', delay: 0.1 });
+gsap.from('.wheel-wrap',   { opacity: 0, scale: 0.93, duration: 0.9, ease: 'power3.out', delay: 0.2 });
+gsap.from('.cta',          { opacity: 0, y: 8, duration: 0.6, ease: 'power2.out', delay: 0.6 });
+</script>
+</body>
+</html>
