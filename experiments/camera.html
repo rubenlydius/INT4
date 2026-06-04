@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POC — Camera + Storage Test</title>
+    <style>
+        :root {
+            --bg: #0f0f0f;
+            --surface: #1a1a1a;
+            --border: #2a2a2a;
+            --accent: #e63946;
+            --text: #f0ede8;
+            --muted: #666;
+            --success: #2a9d8f;
+            --warn: #e9c46a;
+            --font: 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            min-height: 100vh;
+            padding: 24px 16px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+
+        header .label {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        header h1 {
+            font-size: 18px;
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        .risk-badge {
+            display: inline-block;
+            font-size: 9px;
+            letter-spacing: 2px;
+            padding: 3px 8px;
+            border: 1px solid;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+
+        .risk-high {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .risk-medium {
+            border-color: var(--warn);
+            color: var(--warn);
+        }
+
+        section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        section h2 {
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        #camera-wrap {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: #000;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        #video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        #video.mirrored {
+            transform: scaleX(-1);
+        }
+
+        #countdown-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.4);
+            font-size: 96px;
+            font-weight: bold;
+            color: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            letter-spacing: -4px;
+        }
+
+        #countdown-overlay.active {
+            opacity: 1;
+        }
+
+        #btn-flip-camera {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-family: var(--font);
+            font-size: 10px;
+            letter-spacing: 1px;
+            padding: 6px 10px;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: none;
+        }
+
+        #btn-flip-camera:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #flash {
+            position: absolute;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.1s;
+        }
+
+        #flash.pop {
+            opacity: 0.8;
+        }
+
+        #camera-status {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            min-height: 16px;
+        }
+
+        canvas {
+            display: none;
+        }
+
+        .btn {
+            display: inline-block;
+            font-family: var(--font);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 10px 20px;
+            border: 1px solid;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .btn-primary {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            border-color: var(--border);
+            color: var(--muted);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        #storage-info {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 12px;
+            line-height: 1.8;
+        }
+
+        #storage-info span {
+            color: var(--text);
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin: 12px 0;
+        }
+
+        .photo-thumb {
+            aspect-ratio: 1;
+            object-fit: cover;
+            width: 100%;
+            border: 1px solid var(--border);
+            display: block;
+        }
+
+        .photo-thumb-empty {
+            aspect-ratio: 1;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: var(--muted);
+        }
+
+        #log {
+            font-size: 10px;
+            color: var(--muted);
+            line-height: 2;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        #log .log-ok {
+            color: var(--success);
+        }
+
+        #log .log-warn {
+            color: var(--warn);
+        }
+
+        #log .log-err {
+            color: var(--accent);
+        }
+
+        .divider {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 12px 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="label">Experiment / POC</div>
+        <h1>Camera + Session Storage</h1>
+        <span class="risk-badge risk-high">High Risk</span>
+        <span class="risk-badge risk-medium">Medium Complexity</span>
+    </header>
+
+    <section>
+        <h2>01 — Camera + 10s Countdown + Capture</h2>
+        <div id="camera-wrap">
+            <video id="video" autoplay playsinline muted></video>
+            <div id="countdown-overlay">10</div>
+            <button id="btn-flip-camera">⟳ Flip</button>
+            <div id="flash"></div>
+        </div>
+        <canvas id="canvas"></canvas>
+        <div id="camera-status">Camera not started.</div>
+        <div class="btn-row">
+            <button class="btn btn-primary" id="btn-start-camera">Start camera</button>
+            <button class="btn btn-primary" id="btn-start-countdown" disabled>Start countdown</button>
+            <button class="btn btn-secondary" id="btn-stop-camera" disabled>Stop</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>02 — Session Storage Test</h2>
+        <div id="storage-info">
+            Photos stored: <span id="count">0</span> / 7 &nbsp;|&nbsp;
+            Est. size: <span id="size">0 KB</span> &nbsp;|&nbsp;
+            Storage: <span id="storage-type">localStorage</span>
+        </div>
+        <div class="photo-grid" id="photo-grid"></div>
+        <hr class="divider">
+        <div class="btn-row">
+            <button class="btn btn-secondary" id="btn-simulate">Simulate 7 photos</button>
+            <button class="btn btn-secondary" id="btn-reload-test">Reload & check</button>
+            <button class="btn btn-secondary" id="btn-clear">Clear storage</button>
+        </div>
+    </section>
+
+    <section>
+        <h2>Log</h2>
+        <div id="log"></div>
+    </section>
+
+    <script>
+        // Shorthand selectors
+        const $ = s => document.querySelector(s);
+        const $$ = s => document.querySelectorAll(s);
+
+        // DOM refs 
+        const video = $('#video');
+        const canvas = $('#canvas');
+        const countdownOverlay = $('#countdown-overlay');
+        const flash = $('#flash');
+        const cameraStatus = $('#camera-status');
+        const btnStartCamera = $('#btn-start-camera');
+        const btnCountdown = $('#btn-start-countdown');
+        const btnStopCamera = $('#btn-stop-camera');
+        const btnFlip = $('#btn-flip-camera');
+
+        // State
+        const STORAGE_KEY_PREFIX = 'gem_photo_';
+        const MAX_PHOTOS = 7;
+
+        let stream = null;
+        let countdownInterval = null;
+        // 'environment' = rear cam, 'user' = front/selfie
+        let currentFacingMode = 'environment';
+
+        // Logging helper
+        function log(msg, type = '') {
+            const line = document.createElement('div');
+            if (type) line.classList.add(`log-${type}`);
+            line.textContent = `> ${msg}`;
+            $('#log').prepend(line);
+        }
+
+        // base64 size estimator: JS strings are UTF-16 (2 bytes per char)
+        function formatKB(str) {
+            return Math.round((str.length * 2) / 1024) + ' KB';
+        }
+
+        //  EXPERIMENT 1 — Camera
+
+        // Requests camera access with the given facingMode.
+        // Always stops the current stream first — browsers throw
+        // "NotReadableError" if you try to open the same device twice.
+        async function startCamera(facingMode) {
+            if (stream) {
+                stream.getTracks().forEach(t => t.stop());
+                stream = null;
+            }
+
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode },
+                    audio: false
+                });
+
+                video.srcObject = stream;
+
+                // Mirror the live preview for front cam so it feels natural,
+                // but we correct this on the canvas so saved photos aren't flipped.
+                video.classList.toggle('mirrored', facingMode === 'user');
+
+                cameraStatus.textContent = `Camera active (${facingMode === 'user' ? 'front' : 'rear'}).`;
+                btnStartCamera.disabled = true;
+                btnCountdown.disabled = false;
+                btnStopCamera.disabled = false;
+                btnFlip.style.display = 'block';
+
+                log(`Camera started — facingMode: ${facingMode}`, 'ok');
+            } catch (err) {
+                cameraStatus.textContent = 'Camera access denied or unavailable.';
+                log(`Camera error: ${err.message}`, 'err');
+            }
+        }
+
+        function stopCamera() {
+            if (!stream) return;
+            stream.getTracks().forEach(t => t.stop());
+            stream = null;
+            video.srcObject = null;
+            video.classList.remove('mirrored');
+            cameraStatus.textContent = 'Camera stopped.';
+            btnStartCamera.disabled = false;
+            btnCountdown.disabled = true;
+            btnStopCamera.disabled = true;
+            btnFlip.style.display = 'none';
+            log('Camera stopped.', 'warn');
+        }
+
+        function startCountdown() {
+            // Guard: prevent double-start if button somehow fires twice
+            if (countdownInterval) return;
+
+            btnCountdown.disabled = true;
+            let count = 10;
+            countdownOverlay.textContent = count;
+            countdownOverlay.classList.add('active');
+            log('Countdown started.', 'ok');
+
+            countdownInterval = setInterval(() => {
+                count--;
+                countdownOverlay.textContent = count;
+                if (count <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    countdownOverlay.classList.remove('active');
+                    captureFrame();
+                    setTimeout(() => { btnCountdown.disabled = false; }, 800);
+                }
+            }, 1000);
+        }
+
+        function captureFrame() {
+            const w = video.videoWidth || 640;
+            const h = video.videoHeight || 480;
+
+            canvas.width = w;
+            canvas.height = h;
+
+            const ctx = canvas.getContext('2d');
+
+            // Front cam fix: the video preview is CSS-mirrored but drawImage()
+            // ignores CSS transforms — so we mirror the canvas context manually
+            // to produce a correctly-oriented saved image.
+            if (currentFacingMode === 'user') {
+                ctx.translate(w, 0);
+                ctx.scale(-1, 1);
+            }
+
+            ctx.drawImage(video, 0, 0, w, h);
+            ctx.setTransform(1, 0, 0, 1, 0, 0); // reset transform
+
+            // quality 0.4 keeps files around 100KB
+            const base64 = canvas.toDataURL('image/jpeg', 0.4);
+
+            flash.classList.add('pop');
+            setTimeout(() => flash.classList.remove('pop'), 150);
+
+            cameraStatus.textContent = `Captured! Size: ${formatKB(base64)}`;
+            log(`Frame captured. Size: ${formatKB(base64)}`, 'ok');
+
+            savePhoto(base64);
+        }
+
+        //  EXPERIMENT 2 — Storage
+        function savePhoto(base64) {
+            const existing = getPhotoKeys();
+            const nextIndex = existing.length + 1;
+            const key = `${STORAGE_KEY_PREFIX}${nextIndex}`;
+
+            try {
+                localStorage.setItem(key, base64);
+                log(`Saved to localStorage: ${key} (${formatKB(base64)})`, 'ok');
+            } catch (e) {
+                // localStorage cap is ~5MB — fall back to sessionStorage
+                log('localStorage full! Falling back to sessionStorage.', 'warn');
+                try {
+                    sessionStorage.setItem(key, base64);
+                    $('#storage-type').textContent = 'sessionStorage (fallback)';
+                    log(`Saved to sessionStorage: ${key}`, 'ok');
+                } catch (e2) {
+                    // Both full — next step would be IndexedDB (idb-keyval library)
+                    log('Storage completely full. Consider IndexedDB.', 'err');
+                }
+            }
+
+            updateStorageUI();
+        }
+
+        function getPhotoKeys() {
+            return Object.keys(localStorage).filter(k => k.startsWith(STORAGE_KEY_PREFIX));
+        }
+
+        function updateStorageUI() {
+            const keys = getPhotoKeys();
+            $('#count').textContent = keys.length;
+
+            let totalSize = 0;
+            keys.forEach(k => { totalSize += (localStorage.getItem(k) || '').length * 2; });
+            $('#size').textContent = Math.round(totalSize / 1024) + ' KB';
+
+            renderGrid(keys);
+        }
+
+        function renderGrid(keys) {
+            const grid = $('#photo-grid');
+            grid.innerHTML = '';
+            for (let i = 0; i < MAX_PHOTOS; i++) {
+                if (keys[i]) {
+                    const img = document.createElement('img');
+                    img.classList.add('photo-thumb');
+                    img.src = localStorage.getItem(keys[i]);
+                    grid.appendChild(img);
+                } else {
+                    const empty = document.createElement('div');
+                    empty.classList.add('photo-thumb-empty');
+                    empty.textContent = '+';
+                    grid.appendChild(empty);
+                }
+            }
+        }
+
+        function simulatePhotos() {
+            log('Simulating 7 photos...', 'warn');
+            for (let i = 0; i < 7; i++) {
+                const c = document.createElement('canvas');
+                c.width = 400; c.height = 533;
+                const ctx = c.getContext('2d');
+                ctx.fillStyle = `hsl(${i * 40}, 50%, 30%)`;
+                ctx.fillRect(0, 0, 400, 533);
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 48px monospace';
+                ctx.fillText(`GEM ${i + 1}`, 130, 270);
+                savePhoto(c.toDataURL('image/jpeg', 0.4));
+            }
+            log('7 simulated photos saved.', 'ok');
+        }
+
+        function reloadTest() {
+            log('Checking storage after "navigation"...', 'warn');
+            const keys = getPhotoKeys();
+            log(`Found ${keys.length} photos still in storage.`, keys.length > 0 ? 'ok' : 'err');
+            updateStorageUI();
+        }
+
+        function clearStorage() {
+            getPhotoKeys().forEach(k => localStorage.removeItem(k));
+            updateStorageUI();
+            log('Storage cleared.', 'warn');
+        }
+
+        //  Event bindings
+        function bindEvents() {
+            btnStartCamera.addEventListener('click', () => startCamera(currentFacingMode));
+            btnStopCamera.addEventListener('click', stopCamera);
+            btnCountdown.addEventListener('click', startCountdown);
+
+            // Toggle between rear and front camera
+            btnFlip.addEventListener('click', async () => {
+                currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+                log(`Switching to ${currentFacingMode} camera...`, 'warn');
+                await startCamera(currentFacingMode);
+            });
+
+            $('#btn-simulate').addEventListener('click', simulatePhotos);
+            $('#btn-reload-test').addEventListener('click', reloadTest);
+            $('#btn-clear').addEventListener('click', clearStorage);
+        }
+
+        //  init 
+        function init() {
+            bindEvents();
+            updateStorageUI();
+            log('POC loaded. Ready to test.', 'ok');
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
