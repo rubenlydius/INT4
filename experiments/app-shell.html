@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Seen by Six</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0eeea;
+    --nav-bg: #ffffff;
+    --active-color: #8b1a1a;
+    --inactive: #aaa;
+    --text: #111;
+    --bubble: 68px;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--bg);
+    font-family: system-ui, -apple-system, sans-serif;
+    overflow: hidden;
+  }
+
+  /* ── Pages ── */
+  .page {
+    position: absolute;
+    inset: 0;
+    bottom: 100px;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 64px;
+  }
+  .page.active { display: flex; }
+
+  .page-title {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  /* ── Nav pill ── */
+  #nav {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 32px);
+    max-width: 420px;
+    height: 64px;
+    background: var(--nav-bg);
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    box-shadow: 0 4px 28px rgba(0,0,0,0.10);
+    z-index: 100;
+  }
+
+  /* ── Bubble ── */
+  #bubble {
+    position: absolute;
+    width: var(--bubble);
+    height: var(--bubble);
+    border-radius: 50%;
+    background: rgba(139, 26, 26, 0.10);
+    backdrop-filter: blur(8px) saturate(1.4);
+    -webkit-backdrop-filter: blur(8px) saturate(1.4);
+    border: 1px solid rgba(139, 26, 26, 0.20);
+    box-shadow:
+      0 2px 12px rgba(139,26,26,0.10),
+      inset 0 1.5px 0 rgba(255,255,255,0.60),
+      inset 0 -1px 0 rgba(139,26,26,0.06);
+    top: 50%;
+    /* left is set entirely by JS — no CSS left here */
+    pointer-events: none;
+    z-index: 1;
+    /* translateY(-50%) only, no translateX — JS handles horizontal */
+    transform: translateY(-50%);
+  }
+
+  /* ── Tabs ── */
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 8px 0;
+    position: relative;
+    z-index: 2;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tab svg {
+    width: 22px;
+    height: 22px;
+    stroke: var(--inactive);
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.25s;
+  }
+  .tab.active svg { stroke: var(--active-color); }
+
+  .tab-label {
+    font-size: 11px;
+    color: var(--inactive);
+    letter-spacing: 0.02em;
+    transition: color 0.25s;
+  }
+  .tab.active .tab-label { color: var(--active-color); }
+</style>
+</head>
+<body>
+
+<!-- Pages -->
+<div class="page active" id="page-discover"><span class="page-title">Discover</span></div>
+<div class="page"        id="page-map">     <span class="page-title">Map</span>     </div>
+<div class="page"        id="page-camera">  <span class="page-title">Camera</span>   </div>
+<div class="page"        id="page-profile"> <span class="page-title">Profile</span>  </div>
+
+<!-- Nav -->
+<nav id="nav">
+  <div id="bubble"></div>
+
+  <div class="tab active" data-page="discover">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24,7.76 14.12,14.12 7.76,16.24 9.88,9.88"/></svg>
+    <span class="tab-label">Discover</span>
+  </div>
+
+  <div class="tab" data-page="map">
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    <span class="tab-label">Map</span>
+  </div>
+
+  <div class="tab" data-page="camera">
+    <svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+    <span class="tab-label">Camera</span>
+  </div>
+
+  <div class="tab" data-page="profile">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    <span class="tab-label">Profile</span>
+  </div>
+</nav>
+
+<script>
+  const tabs      = document.querySelectorAll('.tab');
+  const pages     = document.querySelectorAll('.page');
+  const bubble    = document.getElementById('bubble');
+  const nav       = document.getElementById('nav');
+  const BUBBLE_W  = 68;
+
+  function getBubbleLeft(tabEl) {
+    // Both nav and tabEl are in the document — use getBoundingClientRect
+    // to find tab center relative to nav's left edge
+    const navRect = nav.getBoundingClientRect();
+    const tabRect = tabEl.getBoundingClientRect();
+    const tabCenterX = tabRect.left + tabRect.width / 2;
+    const navLeft    = navRect.left;
+    return tabCenterX - navLeft - BUBBLE_W / 2;
+  }
+
+  function placeBubble(tabEl, animate) {
+    const left = getBubbleLeft(tabEl);
+    if (animate) {
+      gsap.to(bubble, { left, duration: 0.38, ease: 'power3.out' });
+    } else {
+      gsap.set(bubble, { left });
+    }
+  }
+
+  // Wait one frame so layout is complete before measuring
+  requestAnimationFrame(() => {
+    placeBubble(document.querySelector('.tab.active'), false);
+  });
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      if (tab.classList.contains('active')) return;
+
+      tabs.forEach(t  => t.classList.remove('active'));
+      pages.forEach(p => p.classList.remove('active'));
+
+      tab.classList.add('active');
+      document.getElementById('page-' + tab.dataset.page).classList.add('active');
+      placeBubble(tab, true);
+    });
+  });
+
+  window.addEventListener('resize', () => {
+    placeBubble(document.querySelector('.tab.active'), false);
+  });
+</script>
+</body>
+</html>
