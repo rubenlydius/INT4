@@ -2,8 +2,9 @@ export default function Camera() {
 
 
     return(
-
-        <h2 style={{fontSize: "2rem"}}>Camera</h2>
+        <>
+            <h1 style={{fontSize: "5rem", fontWeight: "bold", color: "#D2FF4B",}}>Camera</h1>
+        </>
     );
 
 }; 
