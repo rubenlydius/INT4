@@ -1,6 +1,7 @@
 import {
   isRouteErrorResponse,
   Links,
+  NavLink,
   Meta,
   Outlet,
   Scripts,
@@ -42,7 +43,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
-  return <Outlet />;
+  return (
+    <>
+  <Outlet />
+  <nav className="bottom-nav">
+            <NavLink to="/" className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }>
+                <p>Home</p>
+              </NavLink>
+              <NavLink to="/map" className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }>
+                <p>Map</p>
+              </NavLink>
+              <NavLink to="/camera" className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }>
+                <p>Camera</p>
+              </NavLink>
+              <NavLink to="/profile" className={({ isActive }) =>
+                isActive ? "nav-item active" : "nav-item"
+              }>
+                <p>Profile</p>
+              </NavLink>
+          </nav>
+  </>
+  )
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

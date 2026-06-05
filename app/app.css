@@ -13,3 +13,24 @@ body {
     color-scheme: dark;
   }
 }
+
+.bottom-nav{
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+
+.nav-item{
+  color: #D2FF4B;
+  border: 1px solid #D2FF4B;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.nav-item.active{
+  background-color: #D2FF4B;
+  color: #0b0b0b;
+}
+
