@@ -1,5 +1,4 @@
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 
@@ -17,7 +16,7 @@ export default function Home() {
     async function fetchData() {
       // 1. Make sure this matches your exact TABLE name
       const { data, error } = await supabase.from("Gems").select("*");
-      console.log("RAW SUPABASE RESPONSE:", { data, error }); // Add this line!
+      console.log("RAW SUPABASE RESPONSE:", { data, error }); 
 
       
       if (data) {
@@ -32,8 +31,7 @@ export default function Home() {
 
   return (
     <div>
-      <Welcome />
-      
+      <h1 style={{fontSize: "5rem", fontWeight: "bold", color: "#D2FF4B",}}>Six Lenses</h1>
       <h2>Locations</h2>
       <ul>
         {dataList.length === 0 ? (
