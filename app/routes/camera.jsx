@@ -1,0 +1,10 @@
+export default function Camera() {
+
+
+    return(
+        <>
+            <h1 style={{fontSize: "5rem", fontWeight: "bold", color: "#D2FF4B",}}>Camera</h1>
+        </>
+    );
+
+}; 

@@ -13,3 +13,29 @@ body {
     color-scheme: dark;
   }
 }
+
+.bottom-nav{
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1rem;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 1rem;
+  z-index: 50;
+}
+
+
+.nav-item{
+  color: #D2FF4B;
+  border: 1px solid #D2FF4B;
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.nav-item.active{
+  background-color: #D2FF4B;
+  color: #0b0b0b;
+}
+
