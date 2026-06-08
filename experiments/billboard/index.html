@@ -4,51 +4,156 @@
 <head>
     <meta charset="UTF-8">
     <title>View-Master</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            font-family: sans-serif;
+        }
+
+        #image-wrap {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #billboard {
+            width: 80vw;
+            max-width: 600px;
+            display: block;
+            transform-origin: center center;
+            transform: rotate(0deg);
+        }
+
+        #name-display {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            letter-spacing: 0.05em;
+            text-align: center;
+            min-height: 1.5em;
+            transition: opacity 0.2s;
+        }
+
+        /* ── Eye button ── */
+        #eye-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0.35;
+            transition: opacity 0.2s;
+            padding: 4px;
+        }
+
+        #eye-btn:hover {
+            opacity: 0.8;
+        }
+
+        /* ── Panel ── */
+        #panel {
+            display: none;
+            position: fixed;
+            bottom: 64px;
+            right: 24px;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 16px;
+            min-width: 220px;
+            font-size: 13px;
+            line-height: 2;
+        }
+
+        #panel.open {
+            display: block;
+        }
+
+        #panel label {
+            display: block;
+        }
+
+        #panel input[type="range"] {
+            width: 100%;
+        }
+
+        #panel button {
+            margin-top: 8px;
+            width: 100%;
+            padding: 6px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
 
-    <button id="connect-btn">Connect ESP32</button>
-    <p>Raw: <span id="raw">0</span></p>
-    <p>State: <span id="state">IDLE</span></p>
+    <div id="image-wrap">
+        <img id="billboard" src="billboard.png" alt="billboard">
+    </div>
 
-    <br>
+    <div id="name-display">Ann Demeulemeester</div>
 
-    <svg width="200" height="200" viewBox="-100 -100 200 200">
-        <g id="hex-group" transform="rotate(0)">
-            <!-- pointy-top hexagon centered at 0,0 with radius 90 -->
-            <polygon points="0,-90 77.9,-45 77.9,45 0,90 -77.9,45 -77.9,-45" fill="black" />
-        </g>
-    </svg>
+    <!-- Eye icon -->
+    <button id="eye-btn" title="Settings" aria-label="Open settings">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+        </svg>
+    </button>
 
-    <br>
-
-    <label>Rotate start: <input type="range" id="cal-rotate" min="0" max="4095" value="800"> <span
-            id="cal-rotate-val">800</span></label><br>
-    <label>Trigger at: &nbsp;&nbsp;<input type="range" id="cal-trigger" min="0" max="4095" value="3200"> <span
-            id="cal-trigger-val">3200</span></label>
+    <!-- Panel -->
+    <div id="panel">
+        <strong>Debug</strong><br>
+        Raw: <span id="raw">0</span><br>
+        State: <span id="state">IDLE</span><br>
+        <br>
+        <label>Trigger at: <span id="cal-trigger-val">2000</span>
+            <input type="range" id="cal-trigger" min="0" max="4095" value="2000">
+        </label>
+        <button id="connect-btn">Connect ESP32</button>
+    </div>
 
     <script>
         const connectBtn = document.getElementById('connect-btn');
         const rawEl = document.getElementById('raw');
         const stateEl = document.getElementById('state');
-        const hexGroup = document.getElementById('hex-group');
-
-        const calRotate = document.getElementById('cal-rotate');
+        const billboard = document.getElementById('billboard');
+        const nameDisplay = document.getElementById('name-display');
         const calTrigger = document.getElementById('cal-trigger');
-        const calRotateVal = document.getElementById('cal-rotate-val');
         const calTriggerVal = document.getElementById('cal-trigger-val');
+        const eyeBtn = document.getElementById('eye-btn');
+        const panel = document.getElementById('panel');
 
-        let ROTATE_START = 800;
-        let TRIGGER = 3200;
-        let side = 0;
+        const NAMES = [
+            'Ann Demeulemeester',
+            'Dirk Bikkembergs',
+            'Marina Yee',
+            'Dirk Van Saene',
+            'Dries Van Noten',
+            'Walter Van Beirendonck',
+        ];
+
+        let TRIGGER = 2000;
+        let totalDeg = 0;
+        let currentSide = 0;
         let isAnimating = false;
-        let wasTriggered = false;
+        let lastAdvance = 0;
+        const COOLDOWN = 1000;
+        let aboveThreshold = false;
 
-        calRotate.addEventListener('input', () => {
-            ROTATE_START = +calRotate.value;
-            calRotateVal.textContent = ROTATE_START;
-        });
+        // Eye toggle
+        eyeBtn.addEventListener('click', () => panel.classList.toggle('open'));
+
         calTrigger.addEventListener('input', () => {
             TRIGGER = +calTrigger.value;
             calTriggerVal.textContent = TRIGGER;
@@ -78,48 +183,44 @@
             }
         });
 
-        function setRotation(deg) {
-            hexGroup.setAttribute('transform', `rotate(${deg})`);
-        }
-
         function process(raw) {
             rawEl.textContent = raw;
             if (isAnimating) return;
 
-            const base = side * 60;
-
             if (raw >= TRIGGER) {
-                if (!wasTriggered) {
-                    wasTriggered = true;
-                    advance();
+                if (!aboveThreshold) {
+                    aboveThreshold = true;
+                    const now = Date.now();
+                    if (now - lastAdvance >= COOLDOWN) {
+                        lastAdvance = now;
+                        advance();
+                    }
                 }
                 stateEl.textContent = 'TRIGGER';
-
-            } else if (raw > ROTATE_START) {
-                wasTriggered = false;
-                const pct = (raw - ROTATE_START) / (TRIGGER - ROTATE_START);
-                const lean = pct * 10;
-                setRotation(base + lean);
-                stateEl.textContent = 'ROTATING';
-
             } else {
-                wasTriggered = false;
-                setRotation(base);
+                aboveThreshold = false;
                 stateEl.textContent = 'IDLE';
             }
         }
 
         function advance() {
             isAnimating = true;
-            side = (side + 1) % 6;
+            totalDeg += 60;
+            currentSide = (currentSide + 1) % 6;
 
-            hexGroup.style.transition = 'transform 0.15s ease-out';
-            setRotation(side * 60);
+            billboard.style.transition = 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+            billboard.style.transform = `rotate(${totalDeg}deg)`;
+
+            // fade name out, swap, fade back in
+            nameDisplay.style.opacity = '0';
+            setTimeout(() => {
+                nameDisplay.textContent = NAMES[currentSide];
+                nameDisplay.style.opacity = '1';
+            }, 200);
 
             setTimeout(() => {
-                hexGroup.style.transition = '';
                 isAnimating = false;
-            }, 150);
+            }, 400);
         }
     </script>
 </body>
