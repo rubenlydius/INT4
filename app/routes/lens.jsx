@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useParams, Link } from 'react-router'
 import styles from './lens.module.css'
 import { designers } from '../lib/designers'
@@ -13,6 +14,12 @@ export function meta() {
 export default function Lens() {
   const { id } = useParams()
   const designer = designers[id] || designers.ann
+
+  useEffect(() => {
+    if (id) {
+      localStorage.setItem('selectedLens', id);
+    }
+  }, [id]);
 
   return (
     <div>
