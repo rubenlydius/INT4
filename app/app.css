@@ -8,8 +8,8 @@
 
 @font-face {
   font-family: 'SunAntwerpen';
-  src: url('/fonts/SunAntwerpen_300.woff') format('woff');
-  font-weight: 300;
+  src: url('/fonts/SunAntwerpen_500.woff') format('woff');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -17,7 +17,7 @@
 :root {
 
   /* Background */
-  --color-bg: #FBFBFB;
+  --color-white: #FBFBFB;
 
   /* Black */
   --color-black: #0F100F;
@@ -44,7 +44,7 @@
   --font-body:    'SunAntwerpen', sans-serif;
 
   --font-weight-display: 400;
-  --font-weight-body:    300;
+  --font-weight-body:    500;
 
   --font-size-body: 1.125rem;
 
@@ -127,3 +127,8 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: var(--font-weight-display);
   line-height: 1.1;
 }
+
+h1, h2, h3 {
+  text-transform: uppercase;
+}
+
