@@ -132,3 +132,6 @@ h1, h2, h3 {
   text-transform: uppercase;
 }
 
+.bottom-nav{
+  margin: 3rem 0 5rem 0;
+}

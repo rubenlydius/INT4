@@ -47,10 +47,11 @@ export default function App() {
     <>
   <Outlet />
   <nav className="bottom-nav">
-            <NavLink to="/" className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }>
-                <p>Home</p>
+              <NavLink 
+              to={`/lens/${localStorage.getItem('selectedLens') || 'ann_d'}`} 
+              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+              >
+                <p>Lens</p>
               </NavLink>
               <NavLink to="/map" className={({ isActive }) =>
                 isActive ? "nav-item active" : "nav-item"
