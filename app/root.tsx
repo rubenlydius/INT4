@@ -46,29 +46,30 @@ export default function App() {
   return (
     <>
   <Outlet />
-  <nav className="bottom-nav">
-              <NavLink 
-              to={`/lens/${localStorage.getItem('selectedLens') || 'ann_d'}`} 
-              className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
-              >
-                <p>Lens</p>
-              </NavLink>
-              <NavLink to="/map" className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }>
-                <p>Map</p>
-              </NavLink>
-              <NavLink to="/camera" className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }>
-                <p>Camera</p>
-              </NavLink>
-              <NavLink to="/profile" className={({ isActive }) =>
-                isActive ? "nav-item active" : "nav-item"
-              }>
-                <p>Profile</p>
-              </NavLink>
-          </nav>
+    <nav className="bottom-nav">
+      <NavLink 
+        to={
+          typeof window !== "undefined" 
+            ? `/lens/${localStorage.getItem('selectedLens') || 'ann_d'}`
+            : "/lens/ann_d"
+        } 
+        className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}
+      >
+        <p>Lens</p>
+      </NavLink>
+
+      <NavLink to="/map" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+        <p>Map</p>
+      </NavLink>
+
+      <NavLink to="/camera" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+        <p>Camera</p>
+      </NavLink>
+
+      <NavLink to="/profile" className={({ isActive }) => isActive ? "nav-item active" : "nav-item"}>
+        <p>Profile</p>
+      </NavLink>
+    </nav>
   </>
   )
 }
