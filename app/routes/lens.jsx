@@ -1,3 +1,4 @@
+import styles from './lens.module.css'
 
 
 export function meta() {
@@ -7,12 +8,12 @@ export function meta() {
   ];
 }
 
-export default function Home() {
+export default function Lens() {
 
 
   return (
     <div>
-      <h1 style={{fontSize: "5rem", fontWeight: "bold", color: "#D2FF4B",}}>Six Lenses</h1>
+      <h1>Six Lenses</h1>
 
       
     </div>
