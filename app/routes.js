@@ -1,13 +1,9 @@
-// import { type RouteConfig, index } from "@react-router/dev/routes";
-
-// export default [index("routes/home.tsx")] satisfies RouteConfig;
-
-
-
-import { index, route } from "@react-router/dev/routes";
+import { route } from "@react-router/dev/routes";
 
 export default [
-  index("routes/home.jsx"),
+  // This handles /lens/ann_d, /lens/dries, etc.
+  route("lens/:id", "routes/lens.jsx"), 
+
   route("/map", "routes/map.jsx"),
   route("/camera", "routes/camera.jsx"),
   route("/profile", "routes/profile.jsx"),
