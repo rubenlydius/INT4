@@ -7,6 +7,7 @@ import sixGem from '../assets/a6_gem.svg';
 import communityGem from '../assets/community_gem.svg';
 import currentLocationIcon from '../assets/current_location.svg';
 import xIcon from '../assets/x_icon.svg';
+import closeIcon from '../assets/close_button.svg';
 
 export function meta() {
   return [{ title: "Map" }];
@@ -82,12 +83,10 @@ export default function Map() {
       const uniqueTypes = [...new Set(data.map(g => g.type).filter(Boolean))];
       setTypes(uniqueTypes);
 
-      const map = L.map(mapRef.current).setView([51.2194, 4.4025], 14);
+      const map = L.map(mapRef.current, { attributionControl: false }).setView([51.2194, 4.4025], 14);
       mapInstanceRef.current = map;
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
-      }).addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
 
       data.forEach((gem) => {
         const marker = L.circle(getOffset(gem), {
@@ -119,7 +118,7 @@ export default function Map() {
   }, [activeTypes]);
 
   return (
-    <>
+    <div className={styles.mapPageContainer}>
       <div className={styles.header}>
         <p>Discovering Antwerp through the eyes of</p>
         <h1 className={styles.h1}>{designer.name}</h1>
@@ -159,37 +158,22 @@ export default function Map() {
           </div>
         </div>
       </div>
-      <div style={{ position: "relative", height: "70vh", width: "100%" }}>
-        <div ref={mapRef} style={{ height: "100%", width: "100%" }} />
+      <div className={styles.mapContainerWrapper}>
+        <div ref={mapRef} className={styles.mapContainer} />
 
         {selected && (
-          <div style={{
-            position: "absolute",
-            bottom: 24,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 1000,
-            background: "#111",
-            border: "1px solid #333",
-            borderRadius: 12,
-            padding: "16px 24px",
-            minWidth: 240,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 16,
-          }}>
-            <span style={{ color: "#fff", fontSize: "1rem" }}>{selected.gem_name}</span>
+          <div className={styles.popup}>
+            <span className={styles.popupText}>{selected.gem_name}</span>
             <button
               onClick={() => setSelected(null)}
-              style={{ background: "none", border: "none", color: "#888", cursor: "pointer", fontSize: "1.2rem" }}
+              className={styles.closeButton}
             >
-              ✕
+              <img src={closeIcon} alt="Close" />
             </button>
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }
 

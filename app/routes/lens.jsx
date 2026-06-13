@@ -22,7 +22,7 @@ export default function Lens() {
   }, [id]);
 
   return (
-    <div>
+    <div className={styles.lensContainer}>
       <header>
         <h1 style={{ fontSize: designer.h1}}>{designer.first_name}</h1>
         <img src={designer.header} alt={designer.name} />
