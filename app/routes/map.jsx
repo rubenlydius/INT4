@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
+import { storageUrl } from '../lib/storage';
 import styles from './map.module.css';
 import mapHeader from '../assets/map_header.svg';
 import sixGem from '../assets/a6_gem.svg';
@@ -8,6 +9,8 @@ import communityGem from '../assets/community_gem.svg';
 import currentLocationIcon from '../assets/current_location.svg';
 import xIcon from '../assets/x_icon.svg';
 import closeIcon from '../assets/close_button.svg';
+import calendarIcon from '../assets/calendar_icon.svg';
+import whiteArrow from '../assets/white_arrow.svg';
 
 export function meta() {
   return [{ title: "Map" }];
@@ -86,13 +89,13 @@ export default function Map() {
       const map = L.map(mapRef.current, { attributionControl: false }).setView([51.2194, 4.4025], 14);
       mapInstanceRef.current = map;
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png').addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
 
       data.forEach((gem) => {
         const marker = L.circle(getOffset(gem), {
           radius: getRadius(gem, 250),      // meters — adjust this to the size you want
-          color: "#99EFCB",
-          fillColor: "#99EFCB",
+          color: "#00D77D",
+          fillColor: "#00D77D",
           fillOpacity: 0.5,
           weight: 2,
         }).addTo(map);
@@ -163,7 +166,30 @@ export default function Map() {
 
         {selected && (
           <div className={styles.popup}>
-            <span className={styles.popupText}>{selected.gem_name}</span>
+            <h3 className={styles.popupText}>{selected.gem_name}</h3>
+            <div className={styles.popupInfo}>
+            <div className={styles.InfoRow}>
+              <p className="info_node">{selected.type}</p>
+              <p className={styles.popupSeperator}>•</p>
+              <div className={styles.daysLeft}>
+              <img src={calendarIcon} alt="Calendar" className={styles.calendarIcon} />
+              <p>10 days left</p>
+              </div>
+            </div>
+            <div className={styles.InfoRow}>
+
+            <p><span className={styles.orangeText}>Closes soon</span></p>
+            <p className={styles.popupSeperator}>•</p>
+            <p>20:00</p>
+            <p className={styles.popupSeperator}>•</p>
+            <p>Opens 9:00 Monday</p>
+            </div>
+            </div>
+            <p>Walk down a path where two worlds merge into one. On this narrow street, the cobblestones don't end—they continue up into a giant canvas. Look for the lively crowd trapped in bold ink outlines, frozen mid-step as they walk home from a shopping trip.</p>
+            <button className={styles.exploreButton}>
+              Start exploring
+              <img src={whiteArrow} alt="" className={styles.exploreArrow} />
+            </button>
             <button
               onClick={() => setSelected(null)}
               className={styles.closeButton}

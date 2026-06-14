@@ -27,6 +27,7 @@
   --color-orange-50:  #FAF3EF;
   --color-orange-100: #FDD8C6;
   --color-orange-200: #FFE3D6;
+  --color-orange-600: #FF7D3C;
   --color-orange-900: #230808;
 
   /* Green */
@@ -134,4 +135,13 @@ h1, h2, h3 {
 
 .bottom-nav{
   margin: 3rem 0 5rem 0;
+}
+
+.info_node{
+
+  display: block; 
+  padding: 0.25rem 1rem;
+  background-color: var(--color-green-100);
+  color: var(--color-green-900);
+  border-radius: var(--radius-full);
 }
