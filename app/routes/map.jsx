@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { Link } from "react-router";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage';
@@ -26,14 +27,14 @@ const lensToDbMapping = {
 };
 
 
-function getRadius(gem, baseRadius = 250) {
-  const seed = gem.id % 100;
-  const variation = ((seed * 3) % 140) - 70;
-  return baseRadius + variation;
-}
+// function getRadius(gem, baseRadius = 250) {
+//   const seed = gem.id % 100;
+//   const variation = ((seed * 3) % 140) - 70;
+//   return baseRadius + variation;
+// }
 
 function getOffset(gem) {
-  const radius = getRadius(gem);
+  const radius = gem.radius ?? 250;
   
   // convert radius meters to degrees (1m ≈ 0.000009 degrees)
   // use 60% of radius max so location is always well inside
@@ -93,7 +94,7 @@ export default function Map() {
 
       data.forEach((gem) => {
         const marker = L.circle(getOffset(gem), {
-          radius: getRadius(gem, 250),      // meters — adjust this to the size you want
+          radius: gem.radius ?? 250,      // meters — now controlled via the database
           color: "#00D77D",
           fillColor: "#00D77D",
           fillOpacity: 0.5,
@@ -186,10 +187,10 @@ export default function Map() {
             </div>
             </div>
             <p>Walk down a path where two worlds merge into one. On this narrow street, the cobblestones don't end—they continue up into a giant canvas. Look for the lively crowd trapped in bold ink outlines, frozen mid-step as they walk home from a shopping trip.</p>
-            <button className={styles.exploreButton}>
+            <Link to={`/gem/${selected.id}`} className={styles.exploreButton}>
               Start exploring
               <img src={whiteArrow} alt="" className={styles.exploreArrow} />
-            </button>
+            </Link>
             <button
               onClick={() => setSelected(null)}
               className={styles.closeButton}
