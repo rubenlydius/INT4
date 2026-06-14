@@ -9,6 +9,9 @@ import orangeArrow from '../assets/orange_arrow.svg';
 import block1 from '../assets/gem_hunt_block1.svg';
 import mapTop from '../assets/gemHuntMap_top.svg';
 import mapBottom from '../assets/gemHuntMap_bottom.svg';
+import textHint from '../assets/text_hint.svg'
+import visualHint from '../assets/visual_hint.svg'
+import hotcoldHint from '../assets/hotcold_hint.svg'
 
 import Dropdown from '../components/dropdown'
 
@@ -114,9 +117,9 @@ export default function GemDetail() {
         <img src={mapBottom} alt="" className={`${styles.mapEdge} ${styles.mapEdgeBottom}`}></img>
       </div>
 
-      <Dropdown title="Text hint" content={gem.abstract} />
-      <Dropdown title="First hint" content={gem.hint_1} />
-      <Dropdown title="Second hint" content={gem.hint_2} />
+      <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />
+      <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} />
+      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} />
     </div>
   );
 }

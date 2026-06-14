@@ -100,7 +100,7 @@
     background-color: var(--color-orange);
     padding: 0 1rem;
     width: 100%;
-    margin: -0.1rem 0;
+    margin: -0.1rem 0 -0.5rem 0;
 }
   
 .huntMap {
@@ -111,5 +111,5 @@
 
 .mapEdgeBottom{
     background-color: var(--color-orange-50);
-    margin-bottom: -2.5rem;
+    margin: -0.1rem 0 -2.5rem 0;
 }
