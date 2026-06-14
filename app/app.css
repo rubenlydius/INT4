@@ -140,8 +140,10 @@ h1, h2, h3 {
 .info_node{
 
   display: block; 
-  padding: 0.25rem 1rem;
+  padding: 0rem 0.75rem;
   background-color: var(--color-green-100);
   color: var(--color-green-900);
   border-radius: var(--radius-full);
+  width: fit-content;
 }
+

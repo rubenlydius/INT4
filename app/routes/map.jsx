@@ -186,7 +186,7 @@ export default function Map() {
             <p>Opens 9:00 Monday</p>
             </div>
             </div>
-            <p>Walk down a path where two worlds merge into one. On this narrow street, the cobblestones don't end—they continue up into a giant canvas. Look for the lively crowd trapped in bold ink outlines, frozen mid-step as they walk home from a shopping trip.</p>
+            <p>{selected.abstract}</p>
             <Link to={`/gem/${selected.id}`} className={styles.exploreButton}>
               Start exploring
               <img src={whiteArrow} alt="" className={styles.exploreArrow} />

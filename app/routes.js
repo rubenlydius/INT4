@@ -5,7 +5,7 @@ export default [
   route("lens/:id", "routes/lens.jsx"), 
 
   route("/map", "routes/map.jsx"),
-  route("/gem/:gemId", "routes/gem.detail.jsx"),
+  route("/gem/:gemId", "routes/gem.hunt.jsx"),
   route("/camera", "routes/camera.jsx"),
   route("/profile", "routes/profile.jsx"),
 ];

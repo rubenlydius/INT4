@@ -8,7 +8,7 @@ import workPattern from '../assets/work_pattern.svg'
 import antwerpPattern from '../assets/antwerp_pattern.svg'
 
 export function meta() {
-  return [{ title: "INT4" }];
+  return [{ title: "Lens" }];
 }
 
 export default function Lens() {
