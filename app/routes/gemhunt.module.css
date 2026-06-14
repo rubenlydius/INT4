@@ -111,5 +111,5 @@
 
 .mapEdgeBottom{
     background-color: var(--color-orange-50);
-
+    margin-bottom: -2.5rem;
 }

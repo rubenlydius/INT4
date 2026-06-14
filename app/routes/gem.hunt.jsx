@@ -1,4 +1,4 @@
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
@@ -9,10 +9,6 @@ import orangeArrow from '../assets/orange_arrow.svg';
 import block1 from '../assets/gem_hunt_block1.svg';
 import mapTop from '../assets/gemHuntMap_top.svg';
 import mapBottom from '../assets/gemHuntMap_bottom.svg';
-import dropdownTop from '../assets/hintDropdownTop.svg'
-import dropdownBottom from '../assets/hintDropdownBottom.svg'
-import dropdownSeperator from '../assets/dropdownSeperator.svg'
-import dropdownArrow from '../assets/dropdownArrow.svg'
 
 import Dropdown from '../components/dropdown'
 
@@ -32,6 +28,7 @@ export default function GemDetail() {
   const designer = designers[currentLens] || designers.ann;
 
   const [isOpen, setIsOpen] = useState(false);
+
 
   useEffect(() => {
     async function fetchGem() {
@@ -89,7 +86,9 @@ export default function GemDetail() {
   return (
     <div className={styles.gemHunt}>
       <div className={styles.top}>
-        <img src={orangeArrow} alt="return" />
+        <Link to="/map">
+          <img src={orangeArrow} alt="return" /> 
+        </Link>
         <h1>Gem Hunt</h1>
       </div>
       <div className={styles.block1}>
@@ -101,7 +100,7 @@ export default function GemDetail() {
             <p className="info_node">{gem.type}</p>
           </div>
           <div className={styles.creator}>
-            <img src={storageUrl('gems/creators/lisa.avif')} alt="Lisa" />
+            <img src={gem.image_url} alt={gem.creator} />
             <p>Made by {gem.creator}</p>
           </div>
         </div>
