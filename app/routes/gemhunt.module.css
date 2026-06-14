@@ -85,13 +85,15 @@
 
 .mapSection {
     width: 100%;
-    padding: 2rem 0;
+    background-color: #FFFCFA;
+    padding: 2rem 0 0 0;
 }
   
 .mapEdge {
     display: block;
     width: 100%;
     height: auto;
+    background-color: #FFFCFA;
 }
   
 .huntMapWrapper {

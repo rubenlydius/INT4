@@ -9,10 +9,18 @@ import orangeArrow from '../assets/orange_arrow.svg';
 import block1 from '../assets/gem_hunt_block1.svg';
 import mapTop from '../assets/gemHuntMap_top.svg';
 import mapBottom from '../assets/gemHuntMap_bottom.svg';
+import dropdownTop from '../assets/hintDropdownTop.svg'
+import dropdownBottom from '../assets/hintDropdownBottom.svg'
+import dropdownSeperator from '../assets/dropdownSeperator.svg'
+import dropdownArrow from '../assets/dropdownArrow.svg'
+
+import Dropdown from '../components/dropdown'
 
 export function meta() {
   return [{ title: "Gem Hunt" }];
 }
+
+
 
 export default function GemDetail() {
   const { gemId } = useParams();
@@ -22,6 +30,8 @@ export default function GemDetail() {
 
   const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
   const designer = designers[currentLens] || designers.ann;
+
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     async function fetchGem() {
@@ -104,6 +114,10 @@ export default function GemDetail() {
         </div>
         <img src={mapBottom} alt="" className={`${styles.mapEdge} ${styles.mapEdgeBottom}`}></img>
       </div>
+
+      <Dropdown title="Text hint" content={gem.abstract} />
+      <Dropdown title="First hint" content={gem.hint_1} />
+      <Dropdown title="Second hint" content={gem.hint_2} />
     </div>
   );
 }
