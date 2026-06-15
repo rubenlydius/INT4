@@ -129,15 +129,10 @@
     margin: 0;
 }
 
-/* .popupText {
-  color: #fff;
-  font-size: 1rem;
-} */
-
 .closeButton {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 1rem;
+  right: 1rem;
   background: none;
   border: none;
   cursor: pointer;

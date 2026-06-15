@@ -101,6 +101,8 @@
     padding: 0 1rem;
     width: 100%;
     margin: -0.1rem 0 -0.5rem 0;
+    position: relative;
+    z-index: 1;
 }
   
 .huntMap {
@@ -125,13 +127,14 @@
 
 .revealHunt{
     display: block;
-    width: fill;
     height: fit-content;
-    padding: 1rem 1.5rem;
+    width: fit-content;
+    padding: 0.75rem 1rem;
     text-align: center;
     color: var(--color-orange);
     background-color: var(--color-orange-100);
     border-radius: 999px;
+    font-weight: 700;
 }
 
 .foundHunt{
@@ -140,12 +143,14 @@
     gap: 0.75rem;
     width: fit-content;
     height: fit-content;
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     text-align: center;
     color: var(--color-white);
     background-color: var(--color-orange);
     border-radius: 999px;
     align-items: center;
+    font-weight: 700;
+
 }
 
 .pulseWrapper {
@@ -169,3 +174,81 @@
       transform: scale(1.25);
     }
   }
+
+  
+  .popup {
+    width: 90vw;
+    position: fixed;
+    bottom: 6rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background-color: var(--color-white);
+    color: var(--color-black);
+    border-radius: 12px;
+    padding: 2rem 1.25rem;
+    min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+  }
+  
+  .popupOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10;
+  }
+  
+  .popupClose {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .popupClose img {
+    width: 3.125rem;
+    height: 3.125rem;
+  }
+  
+  .popupTitle {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-orange);
+    padding-right: 2rem;
+    text-transform: none;
+    
+  }
+  
+  .popupText {
+    font-size: 1.125rem;
+    /* color: var(--color-grey); */
+    line-height: 1.5;
+  }
+  
+  .popupButtons {
+    display: flex;
+    width: 100%;
+    justify-content: space-evenly;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+  }
+
+.gemFoundFlex {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    height: 5rem;
+}
+
+.gemFoundFlex img {
+    width: 7rem;
+    height: 7rem;
+}

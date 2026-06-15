@@ -3,7 +3,8 @@ import { Link } from "react-router";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage';
-import styles from './map.module.css';
+import styles from '../styles/map.module.css';
+
 import mapHeader from '../assets/map_header.svg';
 import sixGem from '../assets/a6_gem.svg';
 import communityGem from '../assets/community_gem.svg';

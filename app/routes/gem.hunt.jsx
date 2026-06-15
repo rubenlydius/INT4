@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage';
+import styles from '../styles/gemhunt.module.css';
 
-import styles from './gemhunt.module.css';
 import orangeArrow from '../assets/orange_arrow.svg';
 import block1 from '../assets/gem_hunt_block1.svg';
 import mapTop from '../assets/gemHuntMap_top.svg';
@@ -15,6 +15,8 @@ import hotcoldHint from '../assets/hotcold_hint.svg'
 import lockIcon from '../assets/lock_icon.svg'
 import whiteArrow from '../assets/white_arrow.svg'
 import currentLocationIcon from '../assets/current_location.svg';
+import closeIcon from '../assets/close_button.svg';
+import gemFoundIcon from '../assets/gemfound_icon.svg'
 
 
 
@@ -37,6 +39,15 @@ export default function GemDetail() {
   const designer = designers[currentLens] || designers.ann;
 
   const [isOpen, setIsOpen] = useState(false);
+
+  const [showRevealPopup, setShowRevealPopup] = useState(false);
+  const [foundAttempts, setFoundAttempts] = useState(0);
+  const [showFoundPopup, setShowFoundPopup] = useState(false);
+
+  const handleFoundIt = () => {
+    setFoundAttempts(prev => prev + 1);
+    setShowFoundPopup(true);
+  };
 
 
 
@@ -153,12 +164,64 @@ export default function GemDetail() {
       <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold />    
 
       <div className={styles.huntButtons}>
-        <button className={styles.revealHunt}>Reveal location</button>
-        <button className={styles.foundHunt}>I found it
+        <button className={styles.revealHunt} onClick={() => setShowRevealPopup(true)}>Reveal location</button>
+        <button className={styles.foundHunt} onClick={handleFoundIt}>
+          I found it
           <img src={whiteArrow} alt="arrow" />
         </button>
-
       </div>
+
+
+      {showRevealPopup && (
+          <div className={styles.popupOverlay} onClick={() => setShowRevealPopup(false)}>
+            <div className={styles.popup} onClick={e => e.stopPropagation()}>
+            <button className={styles.popupClose} onClick={() => setShowRevealPopup(false)}>
+              <img src={closeIcon} alt="close" />
+            </button>
+            <h2 className={styles.popupTitle}>Are you sure you want to reveal the exact location?</h2>
+            <p className={styles.popupText}>Revealing the location will end this hunt and you won't unlock the collectible sticker for this gem.</p>
+            <div className={styles.popupButtons}>
+              <button className={styles.revealHunt} onClick={() => setShowRevealPopup(false)}>Keep exploring</button>
+              <button className={styles.foundHunt}>
+                Reveal location
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showFoundPopup && (
+        <div className={styles.popupOverlay} onClick={() => setShowFoundPopup(false)}>
+          <div className={styles.popup} onClick={e => e.stopPropagation()}>
+            <button className={styles.popupClose} onClick={() => setShowFoundPopup(false)}>
+              <img src={closeIcon} alt="close" />
+            </button>
+            {foundAttempts < 2 ? (
+              <>
+                <h2 className={styles.popupTitle}>Not quite there yet...</h2>
+                <p className={styles.popupText}>You haven't reached the exact spot. Look around and try again.</p>
+                <div className={styles.popupButtons}>
+                  <button className={styles.revealHunt} onClick={() => setShowFoundPopup(false)}>Back to Clues</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.gemFoundFlex}>
+                  <h2 className={styles.popupTitle}>Gem found!</h2>
+                  <img src={gemFoundIcon} alt="gem" />
+                </div>
+                <p className={styles.popupText}>Spot on! You've successfully tracked down the hidden gem.</p>
+                <div className={styles.popupButtons}>
+                  <button className={styles.revealHunt}>Open Camera</button>
+                  <Link to={`/gem/detail/${gem.id}`}>
+                    <button className={styles.foundHunt}>View Gem Details</button>
+                  </Link>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
 
   );

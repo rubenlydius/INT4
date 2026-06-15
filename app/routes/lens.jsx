@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, Link } from 'react-router'
-import styles from './lens.module.css'
+import styles from '../styles/lens.module.css'
 import { designers } from '../lib/designers'
 import arrowUrl from '../assets/arrow_green.svg'
 import modelPattern from '../assets/model_pattern.svg'
