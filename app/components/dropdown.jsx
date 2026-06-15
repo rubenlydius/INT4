@@ -10,7 +10,7 @@ import visualHint from '../assets/visual_hint.svg'
 import hotcoldHint from '../assets/hotcold_hint.svg'
 
 
-export default function Dropdown({ title, content, icon }) {
+export default function Dropdown({ title, content, icon, images }) {
     const [isOpen, setIsOpen] = useState(false)
   
     return (
@@ -32,7 +32,15 @@ export default function Dropdown({ title, content, icon }) {
             {isOpen && (
               <>
                 <img src={dropdownSeperator} alt="" className={styles.dropdownSep} />
-                <p className={styles.dropdownText}>{content}</p>
+                {images && images.length > 0 ? (
+                  <div className={styles.dropdownImages}>
+                    {images.map((src, i) => (
+                      <img key={i} src={src} alt={`hint ${i + 1}`} className={styles.dropdownImage} />
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.dropdownText}>{content}</p>
+                )}
               </>
             )}
           </div>

@@ -33,6 +33,8 @@ export default function GemDetail() {
   const [isOpen, setIsOpen] = useState(false);
 
 
+
+
   useEffect(() => {
     async function fetchGem() {
       const { data, error } = await supabase
@@ -86,6 +88,10 @@ export default function GemDetail() {
 
   if (!gem) return <div>Loading...</div>;
 
+  const hintImages = [1, 2, 3].map(
+    (n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`)
+  )
+
   return (
     <div className={styles.gemHunt}>
       <div className={styles.top}>
@@ -118,7 +124,7 @@ export default function GemDetail() {
       </div>
 
       <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />
-      <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} />
+      <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} />
       <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} />
     </div>
   );

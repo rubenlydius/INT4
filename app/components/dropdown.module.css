@@ -61,3 +61,35 @@
     width: 1.5rem;
     height: 1.5rem;
   }
+
+  .dropdownImages {
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 0.75rem;
+    padding: 0.75rem 0 0.5rem 0;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .dropdownImage {
+    height: 15rem;
+    width: auto;
+    flex-shrink: 0;
+    border-radius: 0.5rem;
+    object-fit: cover;
+    scroll-snap-align: start;
+  }
+
+  .dropdownImages::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .dropdownImages::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .dropdownImages::-webkit-scrollbar-thumb {
+    background-color: var(--color-orange-100);
+    border-radius: 999px;
+  }
