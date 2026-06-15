@@ -107,7 +107,7 @@
 .popup {
     width: 90vw;
     position: fixed;
-    bottom: 5rem;
+    bottom: 6rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;

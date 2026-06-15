@@ -17,6 +17,7 @@ import whiteArrow from '../assets/white_arrow.svg'
 import currentLocationIcon from '../assets/current_location.svg';
 
 
+
 import Dropdown from '../components/dropdown'
 
 export function meta() {
