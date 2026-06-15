@@ -12,6 +12,7 @@ import mapBottom from '../assets/gemHuntMap_bottom.svg';
 import textHint from '../assets/text_hint.svg'
 import visualHint from '../assets/visual_hint.svg'
 import hotcoldHint from '../assets/hotcold_hint.svg'
+import lockIcon from '../assets/lock_icon.svg'
 
 import Dropdown from '../components/dropdown'
 
