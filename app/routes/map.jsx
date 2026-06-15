@@ -57,6 +57,7 @@ export default function Map() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
+  const userMarkerRef = useRef(null); 
 
   const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
   const designer = designers[currentLens] || designers.ann;
@@ -91,6 +92,29 @@ export default function Map() {
       mapInstanceRef.current = map;
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            const latlng = [latitude, longitude];
+      
+            if (!userMarkerRef.current) {
+              const icon = L.divIcon({
+                html: `<img src="${currentLocationIcon}" class="${styles.pulseIcon}" />`,
+                className: styles.pulseWrapper,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12],
+              });
+              userMarkerRef.current = L.marker(latlng, { icon, zIndexOffset: 1000 }).addTo(map);
+            } else {
+              userMarkerRef.current.setLatLng(latlng);
+            }
+          },
+          (err) => console.error(err.message),
+          { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+        );
+      }
 
       data.forEach((gem) => {
         const marker = L.circle(getOffset(gem), {

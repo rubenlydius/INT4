@@ -13,6 +13,7 @@ import textHint from '../assets/text_hint.svg'
 import visualHint from '../assets/visual_hint.svg'
 import hotcoldHint from '../assets/hotcold_hint.svg'
 import lockIcon from '../assets/lock_icon.svg'
+import whiteArrow from '../assets/white_arrow.svg'
 
 import Dropdown from '../components/dropdown'
 
@@ -126,6 +127,16 @@ export default function GemDetail() {
 
       <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />
       <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} />
-      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold />    </div>
+      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold />    
+
+      <div className={styles.huntButtons}>
+        <button className={styles.revealHunt}>Reveal location</button>
+        <button className={styles.foundHunt}>I found it
+          <img src={whiteArrow} alt="arrow" />
+        </button>
+
+      </div>
+    </div>
+
   );
 }
