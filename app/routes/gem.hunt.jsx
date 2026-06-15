@@ -14,6 +14,8 @@ import visualHint from '../assets/visual_hint.svg'
 import hotcoldHint from '../assets/hotcold_hint.svg'
 import lockIcon from '../assets/lock_icon.svg'
 import whiteArrow from '../assets/white_arrow.svg'
+import currentLocationIcon from '../assets/current_location.svg';
+
 
 import Dropdown from '../components/dropdown'
 
@@ -28,6 +30,7 @@ export default function GemDetail() {
   const [gem, setGem] = useState(null);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const userMarkerRef = useRef(null);
 
   const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
   const designer = designers[currentLens] || designers.ann;
@@ -66,10 +69,6 @@ export default function GemDetail() {
       const map = L.map(mapRef.current, {
         attributionControl: false,
         zoomControl: false,
-        dragging: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        touchZoom: false,
       }).setView(center, 15);
 
       mapInstanceRef.current = map;
@@ -83,6 +82,29 @@ export default function GemDetail() {
         fillOpacity: 0.35,
         weight: 2,
       }).addTo(map);
+
+      if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(
+          (pos) => {
+            const { latitude, longitude } = pos.coords;
+            const latlng = [latitude, longitude];
+      
+            if (!userMarkerRef.current) {
+              const icon = L.divIcon({
+                html: `<img src="${currentLocationIcon}" class="${styles.pulseIcon}" />`,
+                className: styles.pulseWrapper,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12],
+              });
+              userMarkerRef.current = L.marker(latlng, { icon, zIndexOffset: 1000 }).addTo(map);
+            } else {
+              userMarkerRef.current.setLatLng(latlng);
+            }
+          },
+          (err) => console.error(err.message),
+          { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
+        );
+      }
     }
 
     initMap();

@@ -149,3 +149,24 @@
     align-items: center;
 }
 
+.pulseWrapper {
+    background: transparent;
+    border: none;
+  }
+  
+  .pulseIcon {
+    display: block;
+    width: 24px;
+    height: 24px;
+    animation: pulse 2s ease-in-out infinite;
+    transform-origin: center;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.25);
+    }
+  }
