@@ -45,7 +45,7 @@
   border-radius: 999px;
   border: 2px solid var(--color-green);
   background: transparent;
-  color: var(--color-dark);
+  color: var(--color-black);
   font-size: 1rem;
   cursor: pointer;
   flex-shrink: 0;

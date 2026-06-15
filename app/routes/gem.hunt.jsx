@@ -126,7 +126,6 @@ export default function GemDetail() {
 
       <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />
       <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} />
-      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} />
-    </div>
+      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold />    </div>
   );
 }
