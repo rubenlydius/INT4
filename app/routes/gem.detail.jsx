@@ -7,6 +7,7 @@ import styles from '../styles/gemdetail.module.css'
 
 import orangeArrow from '../assets/orange_arrow.svg';
 import detailTop from '../assets/gemdetail_top.svg'
+import detailConnection from '../assets/gemdetail_connection.svg'
 
 
 export function meta() {
@@ -42,7 +43,7 @@ export default function GemDetail() {
 
 
   return (
-    <div>
+    <div className={styles.gemDetailPage}>
       <div className={styles.top}>
         <Link to={`/gem/${gem.id}`}>
           <img src={orangeArrow} alt="return" /> 
@@ -53,19 +54,58 @@ export default function GemDetail() {
       <div className={styles.orange}>
         <img src={detailImage} alt={gem.gem_name} className={styles.detailPageImage}/>
       </div>
-      
-
-
-      <img src={detailTop} alt="transition"/>
-      <div className={styles.detailNames}>
-
+      <img src={detailTop} alt="transition" className={styles.detaiTransition}/>
+      <div className={styles.detailTitle}>
       <h2>{gem.gem_name}</h2>
       <div className={styles.creator}>
         <img src={gem.image_url} alt={gem.creator} />
         <p>Made by {gem.creator}</p>
       </div>
       </div>
-      <p>{designer.name} lens</p>
+
+      <div className={styles.gemDetails}>
+      <h3>Gem details</h3>
+      <p>Name: {gem.location_name}</p>
+      <p>Location: {gem.address}</p>
+      </div>
+
+      <div className={styles.gemWhy}>
+      <h3>Why it's a gem</h3>
+      <p>{gem.description}</p>
+      </div>
+
+      <div className={styles.connection}>
+        <div className={styles.connectionTitle}>
+          <img src={storageUrl(`/gems/connection/connection_${currentLens}.avif`)} alt={designer.name} />
+          <h3>Connection to <br />{designer.name}</h3>
+        </div>
+        <p>{gem.connection_to}</p>
+        <img src={detailConnection} alt="transition" />
+      </div>
+
+      <h3>About Gem creator</h3>
+      <p>{gem.creator_field}</p>
+      <p>{gem.about_creator}</p>
+
+      <h3>Comments</h3>
+      <div>
+        <img src="" alt="" />
+        <p></p>
+      </div>
+      <div>
+        <img src="" alt="" />
+        <p></p>
+      </div>
+      <div>
+        <img src="" alt="" />
+        <p></p>
+      </div>
+
+
+
+
+
+      
     </div>
   );
 }

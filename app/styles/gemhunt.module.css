@@ -248,6 +248,10 @@
     height: 5rem;
 }
 
+.gemFoundFlex>h2{
+    color: var(--color-green);
+}
+
 .gemFoundFlex img {
     width: 7rem;
     height: 7rem;
