@@ -182,9 +182,11 @@ export default function GemDetail() {
             <p className={styles.popupText}>Revealing the location will end this hunt and you won't unlock the collectible sticker for this gem.</p>
             <div className={styles.popupButtons}>
               <button className={styles.revealHunt} onClick={() => setShowRevealPopup(false)}>Keep exploring</button>
-              <button className={styles.foundHunt}>
-                Reveal location
-              </button>
+              <Link to={`/gem/detail/${gem.id}`}>
+                <button className={styles.foundHunt}>
+                  Reveal location
+                </button>
+              </Link>
             </div>
           </div>
         </div>
@@ -212,7 +214,9 @@ export default function GemDetail() {
                 </div>
                 <p className={styles.popupText}>Spot on! You've successfully tracked down the hidden gem.</p>
                 <div className={styles.popupButtons}>
-                  <button className={styles.revealHunt}>Open Camera</button>
+                  <Link to={`/camera`}>
+                    <button className={styles.revealHunt}>Open Camera</button>
+                  </Link>
                   <Link to={`/gem/detail/${gem.id}`}>
                     <button className={styles.foundHunt}>View Gem Details</button>
                   </Link>

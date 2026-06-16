@@ -133,12 +133,15 @@ h1, h2, h3 {
   text-transform: uppercase;
 }
 
+p{
+  line-height: 1.5;
+}
+
 .bottom-nav{
   margin: 3rem 0 5rem 0;
 }
 
 .info_node{
-
   display: block; 
   padding: 0rem 0.75rem;
   background-color: var(--color-green-100);
@@ -163,3 +166,8 @@ h1, h2, h3 {
   text-align: center;
   font-size: 1rem;
 }
+
+.comments_title{
+  padding: 1rem
+}
+

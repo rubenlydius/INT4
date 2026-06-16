@@ -8,7 +8,10 @@ import styles from '../styles/gemdetail.module.css'
 import orangeArrow from '../assets/orange_arrow.svg';
 import detailTop from '../assets/gemdetail_top.svg'
 import detailConnection from '../assets/gemdetail_connection.svg'
-
+import instagramIcon from '../assets/instagram_icon.svg'
+import pinterestIcon from '../assets/pinterest_icon.svg'
+import behanceIcon from '../assets/behance_icon.svg'
+import publishArrow from '../assets/publish_arrow.svg'
 
 export function meta() {
   return [{ title: "Gem Detail" }];
@@ -52,6 +55,7 @@ export default function GemDetail() {
 
       </div>
       <div className={styles.orange}>
+      <img src={storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker}/>
         <img src={detailImage} alt={gem.gem_name} className={styles.detailPageImage}/>
       </div>
       <img src={detailTop} alt="transition" className={styles.detaiTransition}/>
@@ -83,28 +87,61 @@ export default function GemDetail() {
         <img src={detailConnection} alt="transition" />
       </div>
 
-      <h3>About Gem creator</h3>
-      <p>{gem.creator_field}</p>
-      <p>{gem.about_creator}</p>
+      <h3 className={styles.about_creator_title}>About Gem creator</h3>
+      <div className={styles.about_creator_container}>
+        <div className={styles.creator_header}>
+          <img src={gem.image_url} alt={gem.creator} className={styles.about_creator_image}/>
+          <div className={styles.creator_details}>
+            <p>{gem.creator}</p>
+            <p className="info_node">{gem.creator_field}</p>
+          </div>
+        </div>
+        <p>{gem.about_creator}</p>
 
-      <h3>Comments</h3>
-      <div>
-        <img src="" alt="" />
-        <p></p>
+        <div className={styles.socials}>
+          {/* Instagram shows for Lisa, Ona, and Jens */}
+          {["lisa", "ona", "jens"].some(name => gem.creator?.toLowerCase().includes(name)) && (
+            <img src={instagramIcon} alt="Instagram icon" />
+          )}
+
+          {/* Pinterest only shows for Lisa and Ona */}
+          {["lisa", "ona"].some(name => gem.creator?.toLowerCase().includes(name)) && (
+            <img src={pinterestIcon} alt="Pinterest icon" />
+          )}
+
+          {/* Behance only shows for Lisa */}
+          {gem.creator?.toLowerCase().includes("lisa") && (
+            <img src={behanceIcon} alt="Behance icon" />
+          )}
+        </div>
       </div>
-      <div>
-        <img src="" alt="" />
-        <p></p>
+
+      <h3 className={styles.comments_title}>Comments</h3>
+      <div className={styles.comments_container}>
+        <div>
+          <img src={storageUrl(`gems/comments/commenter_1.webp`)} alt="user profile picture" />
+          <p>really good flat white</p>
+        </div>
+        <div>
+          <img src={storageUrl(`gems/comments/commenter_2.webp`)} alt="user profile picture" />
+          <p>such a cozy space to escape from the noise</p>
+        </div>
+        <div>
+          <img src={storageUrl(`gems/comments/commenter_3.webp`)} alt="user profile picture" />
+          <p>their soap smells so good</p>
+        </div>
+
+        <div className={styles.commentInputContainer}>
+          <input 
+            type="text" 
+            placeholder="type something..." 
+            className={styles.commentInput} 
+          />
+          <button type="button" className={styles.publishButton}>
+            <img src={publishArrow} alt="Publish comment" />
+          </button>
+        </div>
       </div>
-      <div>
-        <img src="" alt="" />
-        <p></p>
-      </div>
-
-
-
-
-
       
     </div>
   );
