@@ -17,6 +17,7 @@ import whiteArrow from '../assets/white_arrow.svg'
 import currentLocationIcon from '../assets/current_location.svg';
 import closeIcon from '../assets/close_button.svg';
 import gemFoundIcon from '../assets/gemfound_icon.svg'
+import sixGem from '../assets/a6_gem.svg';
 
 
 
@@ -87,13 +88,28 @@ export default function GemDetail() {
 
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
 
-      L.circle(center, {
-        radius,
-        color: "#00D77D",
-        fillColor: "#00D77D",
-        fillOpacity: 0.35,
-        weight: 2,
-      }).addTo(map);
+      if (gem.a6_fav) {
+        // Apply your exact size multiplier from the main map
+        const sizeMultiplier = 2; 
+        const radiusInDegrees = (radius * 0.000009) * sizeMultiplier;
+  
+        // Construct bounds around the exact center of the Gem
+        const latLngBounds = [
+          [center[0] - radiusInDegrees, center[1] - radiusInDegrees],
+          [center[0] + radiusInDegrees, center[1] + radiusInDegrees]
+        ];
+  
+        L.imageOverlay(sixGem, latLngBounds).addTo(map);
+      } else {
+        // Standard circle fallback
+        L.circle(center, {
+          radius,
+          color: "#00D77D",
+          fillColor: "#00D77D",
+          fillOpacity: 0.35,
+          weight: 2,
+        }).addTo(map);
+      }
 
       if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
@@ -155,8 +171,17 @@ export default function GemDetail() {
         <img src={mapTop} alt="" className={styles.mapEdge} />
         <div className={styles.huntMapWrapper}>
           <div ref={mapRef} className={styles.huntMap} />
+
+          <div className={styles.mapLabelBadge}>
+          {gem.a6_fav ? (
+            <img src={sixGem} alt="A6 Gem Icon" className={styles.badgeIcon} />
+          ) : (
+            <span className={styles.badgeCircleGreen} />
+          )}
+          <span className={styles.badgeText}>Gem location radius</span>
+          </div>
         </div>
-        <img src={mapBottom} alt="" className={`${styles.mapEdge} ${styles.mapEdgeBottom}`}></img>
+        <img src={mapBottom} alt="" className={`${styles.mapEdge} ${styles.mapEdgeBottom}`} />
       </div>
 
       <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />

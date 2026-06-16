@@ -150,3 +150,9 @@
   gap: 1rem;
   padding: 2rem 1rem 0 1rem;
 }
+
+
+h3{
+  font-size: 1.5625rem;
+  text-transform: uppercase;
+}

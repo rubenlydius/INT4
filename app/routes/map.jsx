@@ -28,17 +28,9 @@ const lensToDbMapping = {
 };
 
 
-// function getRadius(gem, baseRadius = 250) {
-//   const seed = gem.id % 100;
-//   const variation = ((seed * 3) % 140) - 70;
-//   return baseRadius + variation;
-// }
-
 function getOffset(gem) {
   const radius = gem.radius ?? 250;
   
-  // convert radius meters to degrees (1m ≈ 0.000009 degrees)
-  // use 60% of radius max so location is always well inside
   const maxOffset = (radius * 0.6) * 0.000009;
   
   const seed = gem.id % 100;
@@ -118,16 +110,39 @@ export default function Map() {
       }
 
       data.forEach((gem) => {
-        const marker = L.circle(getOffset(gem), {
-          radius: gem.radius ?? 250,      // meters — now controlled via the database
-          color: "#00D77D",
-          fillColor: "#00D77D",
-          fillOpacity: 0.5,
-          weight: 2,
-        }).addTo(map);
+        let marker;
+      
+        const centerLatLng = getOffset(gem);
+      
+        if (gem.a6_fav) {
+          const radiusMeters = gem.radius ?? 250;
+          
+          const sizeMultiplier = 2; 
+          
+          const radiusInDegrees = (radiusMeters * 0.000009) * sizeMultiplier;
+        
+          const latLngBounds = [
+            [centerLatLng[0] - radiusInDegrees, centerLatLng[1] - radiusInDegrees],
+            [centerLatLng[0] + radiusInDegrees, centerLatLng[1] + radiusInDegrees]
+          ];
+        
+          marker = L.imageOverlay(sixGem, latLngBounds, {
+            interactive: true 
+          });
+        
+        } else {
+          marker = L.circle(centerLatLng, {
+            radius: gem.radius ?? 250,
+            color: "#00D77D",
+            fillColor: "#00D77D",
+            fillOpacity: 0.5,
+            weight: 2,
+          });
+        }
       
         marker.on("click", () => setSelected(gem));
         markersRef.current.push({ marker, gem });
+        marker.addTo(map);
       });
     }
 
