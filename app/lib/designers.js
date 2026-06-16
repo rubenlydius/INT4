@@ -26,7 +26,7 @@ export const designers = {
     h1: "2.25rem",
     his_her: "his",
     header: storageUrl('gems/designers/walter/walter_header.avif'),
-    keywords: ["loud", "free", "playful", "political", "unapologetic"],
+    keywords: ["loud", "playful", "political", "unapologetic"],
     bio: [
       "Walter Van Beirendonck never learned to be quiet. Since graduating from the Royal Academy he has used fashion as a direct line to everything that makes people uncomfortable — sexuality, identity, politics, the absurd. His shows have featured inflatable costumes, cartoon proportions and slogans that made the industry nervous.",
       "His work is maximalist in the most intentional way. Every collection has a concept, a manifesto almost. He has spent decades teaching at the Academy in Antwerp, shaping generations of designers who learned from him that fashion is allowed to mean something.",

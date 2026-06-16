@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useParams, Link } from 'react-router'
-import styles from './lens.module.css'
+import styles from '../styles/lens.module.css'
 import { designers } from '../lib/designers'
 import arrowUrl from '../assets/arrow_green.svg'
 import modelPattern from '../assets/model_pattern.svg'
@@ -8,7 +8,7 @@ import workPattern from '../assets/work_pattern.svg'
 import antwerpPattern from '../assets/antwerp_pattern.svg'
 
 export function meta() {
-  return [{ title: "INT4" }];
+  return [{ title: "Lens" }];
 }
 
 export default function Lens() {
@@ -22,7 +22,7 @@ export default function Lens() {
   }, [id]);
 
   return (
-    <div>
+    <div className={styles.lensContainer}>
       <header>
         <h1 style={{ fontSize: designer.h1}}>{designer.first_name}</h1>
         <img src={designer.header} alt={designer.name} />

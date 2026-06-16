@@ -27,6 +27,7 @@
   --color-orange-50:  #FAF3EF;
   --color-orange-100: #FDD8C6;
   --color-orange-200: #FFE3D6;
+  --color-orange-600: #FF7D3C;
   --color-orange-900: #230808;
 
   /* Green */
@@ -76,7 +77,7 @@
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 0;
 }
 
 html {
@@ -89,7 +90,7 @@ body {
   font-family: var(--font-body);
   font-weight: var(--font-weight-body);
   font-size: var(--font-size-body);
-  background-color: var(--color-bg);
+  background-color: var(--color-white);
   color: var(--color-black);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -132,6 +133,41 @@ h1, h2, h3 {
   text-transform: uppercase;
 }
 
+p{
+  line-height: 1.5;
+}
+
 .bottom-nav{
   margin: 3rem 0 5rem 0;
 }
+
+.info_node{
+  display: block; 
+  padding: 0rem 0.75rem;
+  background-color: var(--color-green-100);
+  color: var(--color-green-900);
+  border-radius: var(--radius-full);
+  width: fit-content;
+}
+
+.top {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: 100%;
+  padding: 1rem;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+}
+
+.top h1 {
+  grid-column: 2;
+  text-align: center;
+  font-size: 1rem;
+}
+
+.comments_title{
+  padding: 1rem
+}
+
