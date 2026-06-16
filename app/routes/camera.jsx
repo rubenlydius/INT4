@@ -1,3 +1,15 @@
+import styles from '../styles/camera.module.css';
+
+import cameraTop from '../assets/'
+
+
+
+
+
+
+
+
+
 export default function Camera() {
 
 

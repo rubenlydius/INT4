@@ -185,8 +185,8 @@ export default function GemDetail() {
       </div>
 
       <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />
-      <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} />
-      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold />    
+      <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} infoNodeText="3 hints available"/>
+      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold infoNodeText="0/3 used"/>    
 
       <div className={styles.huntButtons}>
         <button className={styles.revealHunt} onClick={() => setShowRevealPopup(true)}>Reveal location</button>

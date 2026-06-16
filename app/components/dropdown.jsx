@@ -12,29 +12,44 @@ import lockIcon from '../assets/lock_icon.svg'
 
 
 
-export default function Dropdown({ title, content, icon, images, hotCold }) {
-    const [isOpen, setIsOpen] = useState(false)
+export default function Dropdown({ title, content, icon, images, hotCold, infoNodeText }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [unlockedHints, setUnlockedHints] = useState([])
 
-    const [unlockedHints, setUnlockedHints] = useState([])
+  const openCount = 1 + unlockedHints.length;
+  const finalInfoText = images && images.length > 0 
+      ? `${openCount}/3 open` 
+      : infoNodeText;
 
-  
-    return (
-      <div className={styles.dropdownWrapper}>
-        <div className={styles.dropdown}>
-          <img src={dropdownTop} alt="" className={styles.dropdownEdge} />
-          <div className={styles.dropdownInner}>
-            <div className={styles.dropdownHeader} onClick={() => setIsOpen(!isOpen)}>
+  return (
+    <div className={styles.dropdownWrapper}>
+      <div className={styles.dropdown}>
+        <img src={dropdownTop} alt="" className={styles.dropdownEdge} />
+        <div className={styles.dropdownInner}>
+          <div className={styles.dropdownHeader} onClick={() => setIsOpen(!isOpen)}>
+            
+            <div className={styles.headerLeftGroup}>
               <div className={styles.dropdownTitle}>
                 {icon && <img src={icon} alt="" className={styles.dropdownIcon} />}
                 <h3>{title}</h3>
               </div>
-              <img
-                src={dropdownArrow}
-                alt=""
-                className={`${styles.dropdownArrow} ${isOpen ? styles.dropdownArrowOpen : ''}`}
-              />
             </div>
-            {isOpen && (
+
+            <div className={styles.headerRightGroup}>
+                {finalInfoText && (
+                  <span className={`info_node ${styles.dropdownInfoNode}`}>
+                    {finalInfoText}
+                  </span>
+                )}
+                <img
+                  src={dropdownArrow}
+                  alt=""
+                  className={`${styles.dropdownArrow} ${isOpen ? styles.dropdownArrowOpen : ''}`}
+                />
+              </div>
+
+          </div>
+          {isOpen && (
                 <>
                 <img src={dropdownSeperator} alt="" className={styles.dropdownSep} />
                 {images && images.length > 0 ? (

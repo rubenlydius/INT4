@@ -38,6 +38,21 @@
   .dropdownArrowOpen {
     transform: rotate(180deg);
   }
+
+  .headerRightGroup {
+    display: flex;
+    align-items: center;
+    gap: 1rem; 
+  }
+  
+  .headerLeftGroup {
+    display: flex;
+    align-items: center;
+  }
+
+  .dropdownInfoNode {
+    font-size: 0.875rem;
+  }
   
   .dropdownSep {
     display: block;
