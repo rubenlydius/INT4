@@ -108,8 +108,8 @@
 .mapLabelBadge {
   position: absolute;
   top: 1rem;
-  right: 2rem; /* Adjusted slightly inward from the container boundary */
-  z-index: 400; /* Must be higher than Leaflet's layers (typically 400+) */
+  right: 2rem; 
+  z-index: 400; 
   
   display: flex;
   align-items: center;
@@ -119,17 +119,15 @@
   padding: 0.5rem 1rem;
   border-radius: 999px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
-  pointer-events: none; /* Allows click-drags on the map underneath to pass through */
+  pointer-events: none; 
 }
 
-/* Size limiting the database SVG icon to fit perfectly inside the capsule */
 .badgeIcon {
   width: 1.25rem;
   height: 1.25rem;
   object-fit: contain;
 }
 
-/* Fallback pure CSS green indicator matching Leaflet circles */
 .badgeCircleGreen {
   width: 1rem;
   height: 1rem;
