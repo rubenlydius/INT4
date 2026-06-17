@@ -18,6 +18,11 @@ import cameraClickButton from '../assets/camera_click_button.svg'
 import gallerySquare from '../assets/galery_square.svg'
 import stickersCamera from '../assets/stickers_camera_onbording.png'
 import stickerOnboarding from '../assets/sticker_onbording.svg'
+import viewmasterDisc from '../assets/viewmaster_disc_onbording.png'
+import viewmasterDiscBg from '../assets/viewmaster_disc_background.svg'
+import cameraIconOnboarding from '../assets/camera_icon_onbording.svg'
+import penIconOnboarding from '../assets/pen_icon_onbording.svg'
+import shareIconOnboarding from '../assets/share_icon_onbording.svg'
 
 export function meta() {
   return [{ title: "Welcome" }];
@@ -170,7 +175,56 @@ export default function Onboarding() {
         </div>
       )}
 
-      <div className={step === 0 ? styles.footer : styles.footerLight}>
+      {step === 3 && (
+        <div className={styles.slide}>
+          <div className={styles.content}>
+            <h1 className={styles.heading}>
+              Your Digital<br />
+              <span className={styles.orange}>ViewMaster</span>
+            </h1>
+            <p className={styles.body}>
+              A ViewMaster is a vintage reel viewer that originally was used to flip through photos and stories.
+            </p>
+          </div>
+
+          <div className={styles.discSection}>
+            <img src={viewmasterDiscBg} alt="" className={styles.discBackground} />
+            <img src={viewmasterDisc} alt="ViewMaster disc" className={styles.discImage} />
+          </div>
+
+          <div className={styles.featureList}>
+            <div className={styles.featureItem}>
+              <div className={styles.iconCircle}>
+                <img src={cameraIconOnboarding} alt="" />
+              </div>
+              <div className={styles.featureText}>
+                <p className={styles.featureTitle}>Collect</p>
+                <p className={styles.featureBody}>Discover hidden gems and take pictures of them.</p>
+              </div>
+            </div>
+            <div className={styles.featureItem}>
+              <div className={styles.iconCircle}>
+                <img src={penIconOnboarding} alt="" />
+              </div>
+              <div className={styles.featureText}>
+                <p className={styles.featureTitle}>Create & Customize</p>
+                <p className={styles.featureBody}>Build your collection of Antwerp memories with pictures and stickers.</p>
+              </div>
+            </div>
+            <div className={styles.featureItem}>
+              <div className={styles.iconCircle}>
+                <img src={shareIconOnboarding} alt="" />
+              </div>
+              <div className={styles.featureText}>
+                <p className={styles.featureTitle}>Download & Share</p>
+                <p className={styles.featureBody}>Download your ViewMaster and share it with others.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={step === 0 ? styles.footer : step === 3 ? styles.footerCompact : styles.footerLight}>
         <div className={styles.dots}>
           {Array.from({ length: TOTAL_STEPS }).map((_, i) =>
             i === step

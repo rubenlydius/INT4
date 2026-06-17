@@ -278,6 +278,75 @@
   color: var(--color-black);
 }
 
+/* Slide 4 — Your Digital ViewMaster */
+.discSection {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 0 0 var(--space-1);
+  z-index: 1;
+}
+
+.discBackground {
+  position: absolute;
+  right: -60px;
+  top: -10px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.discImage {
+  position: relative;
+  width: 185px;
+  z-index: 1;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--space-6) 0;
+  position: relative;
+  z-index: 2;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.iconCircle {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  background-color: var(--color-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featureText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.featureTitle {
+  font-family: var(--font-body);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+.featureBody {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-grey);
+}
+
 /* Sticker animation */
 @keyframes cameraBtnPress {
   0%   { transform: scale(1); }
@@ -350,6 +419,20 @@
   align-items: center;
   gap: 1.5rem;
   padding: var(--space-6) var(--space-6) var(--space-8);
+  z-index: 5;
+}
+
+/* Compact footer for slide 4 */
+.footerCompact {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-6) var(--space-6);
   z-index: 5;
 }
 
