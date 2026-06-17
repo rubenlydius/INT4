@@ -1,0 +1,179 @@
+
+.page {
+  --photo-bottom: 150px;        /* move photo up or down */
+  --crossstitch-bottom: 145px;  /* move cross-stitch up or down */
+  --black-rise: 41px;           /* size of the diagonal cut */
+
+  position: relative;
+  height: 100dvh;
+  background-color: var(--color-white);
+  overflow: hidden;
+}
+
+/* Top pattern */
+.topPattern {
+  width: 100%;
+  display: block;
+}
+
+/* Skip bar */
+.topBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-4);
+  position: relative;
+  z-index: 10;
+}
+
+/* Skip button */
+.skip {
+  width: 74px;
+  height: 40px;
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-green);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-black);
+  cursor: pointer;
+}
+
+/* Slide */
+.slide {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  padding: var(--space-1) var(--space-6) 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 2;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: var(--color-green);
+  letter-spacing: 0.05em;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  line-height: 40px;
+  text-transform: uppercase;
+  color: var(--color-black);
+}
+
+.orange {
+  color: var(--color-orange);
+}
+
+.greenBold {
+  color: var(--color-green);
+  font-weight: 700;
+}
+
+.body {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: var(--color-black);
+}
+
+/* City background */
+.imageSection {
+  position: absolute;
+  bottom: 130px;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.cityBg {
+  width: 100%;
+  display: block;
+}
+
+/* Group photo */
+.groupPhoto {
+  position: absolute;
+  bottom: var(--photo-bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Cross-stitch */
+.bottomPattern {
+  position: absolute;
+  bottom: var(--crossstitch-bottom);
+  left: 0;
+  width: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 4.5rem var(--space-6) var(--space-8);
+  background-color: var(--color-black);
+  z-index: 2;
+  clip-path: polygon(0 var(--black-rise), 100% 0, 100% 100%, 0 100%);
+}
+
+/* Dots */
+.dots {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-green-100);
+  display: inline-block;
+}
+
+.dotActive {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+}
+
+/* Continue button */
+.continueBtn {
+  width: 100%;
+  padding: var(--space-4);
+  background-color: var(--color-green);
+  color: var(--color-white);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color var(--transition-fast);
+}
+
+.continueBtn:active {
+  background-color: var(--color-green-600);
+}

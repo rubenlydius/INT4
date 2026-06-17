@@ -9,4 +9,6 @@ export default [
   route("/gem/detail/:gemId", "routes/gem.detail.jsx"),
   route("/camera", "routes/camera.jsx"),
   route("/profile", "routes/profile.jsx"),
+  route("/onboarding", "routes/onboarding.jsx"),
+
 ];
