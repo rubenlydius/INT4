@@ -1,13 +1,18 @@
 
 .page {
   --photo-bottom: 150px;        /* move photo up or down */
-  --crossstitch-bottom: 145px;  /* move cross-stitch up or down */
+  --crossstitch-bottom: 135px;  /* move cross-stitch up or down */
   --black-rise: 41px;           /* size of the diagonal cut */
 
   position: relative;
   height: 100dvh;
   background-color: var(--color-white);
   overflow: hidden;
+}
+
+/* Hide the global navbar on onboarding */
+.page ~ nav {
+  display: none;
 }
 
 /* Top pattern */
@@ -19,10 +24,27 @@
 /* Skip bar */
 .topBar {
   display: flex;
-  justify-content: flex-end;
-  padding: var(--space-2) var(--space-4);
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-4) var(--space-2);
   position: relative;
   z-index: 10;
+}
+
+/* Back button */
+.backBtn {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-green-50);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* Skip button */
@@ -46,10 +68,10 @@
 }
 
 .content {
-  padding: var(--space-1) var(--space-6) 0;
+  padding: var(--space-2) var(--space-6) 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-1);
   position: relative;
   z-index: 2;
 }
@@ -121,6 +143,36 @@
   pointer-events: none;
 }
 
+/* Map image — slide 2 */
+.mapImageSection {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-6) var(--space-6) 0;
+}
+
+.mapImage {
+  width: 212px;
+  height: 412px;
+  object-fit: contain;
+}
+
+/* Diamonds — slide 2 */
+.orangeDiamond {
+  position: absolute;
+  right: 35px;
+  bottom: 345px;
+  width: 83.04px;
+  height: 72.82px;
+  pointer-events: none;
+}
+
+.greenDiamond {
+  position: absolute;
+  left: 20px;
+  bottom: 262px;
+  pointer-events: none;
+}
+
 /* Footer */
 .footer {
   position: absolute;
@@ -135,6 +187,20 @@
   background-color: var(--color-black);
   z-index: 2;
   clip-path: polygon(0 var(--black-rise), 100% 0, 100% 100%, 0 100%);
+}
+
+/* Footer without black background (slides 2+) */
+.footerLight {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  padding: var(--space-6) var(--space-6) var(--space-8);
+  z-index: 5;
 }
 
 /* Dots */
@@ -161,13 +227,13 @@
 /* Continue button */
 .continueBtn {
   width: 100%;
-  padding: var(--space-4);
+  padding: var(--space-3);
   background-color: var(--color-green);
   color: var(--color-white);
   border-radius: var(--radius-full);
   font-family: var(--font-body);
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: 800;
   text-align: center;
   cursor: pointer;
   border: none;
