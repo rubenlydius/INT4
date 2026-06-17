@@ -8,6 +8,16 @@ import crossStitch from '../assets/cross_stich.svg'
 import xIcon from '../assets/x_icon.svg'
 import orangeDiamond from '../assets/orange_dimond.svg'
 import greenDiamond from '../assets/green_dimond.svg'
+import takePicPattern from '../assets/take_pic_pattern.svg'
+import starPattern from '../assets/star_pattern.svg'
+import titlePattern from '../assets/title_pattern.svg'
+import circleBackground from '../assets/circle_background_onbording.svg'
+import flashIcon from '../assets/flash.svg'
+import flipCamera from '../assets/flip_camera_onbording.svg'
+import cameraClickButton from '../assets/camera_click_button.svg'
+import gallerySquare from '../assets/galery_square.svg'
+import stickersCamera from '../assets/stickers_camera_onbording.png'
+import stickerOnboarding from '../assets/sticker_onbording.svg'
 
 export function meta() {
   return [{ title: "Welcome" }];
@@ -18,6 +28,7 @@ const TOTAL_STEPS = 4;
 export default function Onboarding() {
   const navigate = useNavigate()
   const [step, setStep] = useState(0)
+  const [animating, setAnimating] = useState(false)
 
   useEffect(() => {
     const nav = document.querySelector('nav')
@@ -26,6 +37,14 @@ export default function Onboarding() {
       if (nav) nav.style.display = ''
     }
   }, [])
+
+  useEffect(() => {
+    if (step === 2) {
+      setAnimating(true)
+      const timer = setTimeout(() => setAnimating(false), 2200)
+      return () => clearTimeout(timer)
+    }
+  }, [step])
 
   function handleSkip() {
     navigate('/lens/ann')
@@ -97,6 +116,57 @@ export default function Onboarding() {
           </div>
           <img src={orangeDiamond} alt="" className={styles.orangeDiamond} />
           <img src={greenDiamond} alt="" className={styles.greenDiamond} />
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className={styles.slide}>
+          <div className={styles.content}>
+            <div className={styles.headingWithPattern}>
+              <h1 className={styles.heading}>
+                Find the<br />
+                <span className={styles.orange}>Hidden Gem</span>
+              </h1>
+              <img src={titlePattern} alt="" className={styles.titlePattern} />
+            </div>
+            <p className={styles.body}>Walk around, follow the clues and try to find the hidden gem.</p>
+          </div>
+
+          <img src={circleBackground} alt="" className={styles.circleBackground} />
+
+          <div className={styles.cameraSection}>
+            <div className={styles.cameraWrapper}>
+              <div className={styles.takePicRow}>
+                <div className={styles.takePicLabel}>Take<br />a pic!</div>
+                <img src={takePicPattern} alt="" className={styles.takePicPattern} />
+              </div>
+              <img
+                src={stickersCamera}
+                alt="Camera view"
+                className={styles.cameraImage}
+              />
+              <img src={flashIcon} alt="" className={styles.flashIcon} />
+              <div className={styles.cameraControls}>
+                <img src={gallerySquare} alt="" />
+                <img src={cameraClickButton} alt="" className={animating ? styles.cameraBtnAnim : ''} />
+                <img src={flipCamera} alt="" />
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.noteRow}>
+            <img src={starPattern} alt="" className={styles.starPattern} />
+            <p className={styles.noteText}>
+              Don't forget to take pictures along the way. Unlock{' '}
+              <span className={styles.orange}>stickers</span> for each discovered gem!
+            </p>
+          </div>
+
+          {animating && (
+            <div className={styles.stickerOverlay}>
+              <img src={stickerOnboarding} alt="" className={styles.stickerAnim} />
+            </div>
+          )}
         </div>
       )}
 
