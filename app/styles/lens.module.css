@@ -11,6 +11,7 @@
 
 .lensContainer h1 {
   padding-bottom: 0.5rem;
+  font-size: 1.5rem;
 }
 
 .lensContainer h2 {
@@ -136,6 +137,8 @@
   background-color: var(--color-green-600);
   color: var(--color-white);
   font-size: 1.5625rem;
+  text-transform: uppercase;
+
 }
 
 .antwerp_link {
@@ -152,7 +155,3 @@
 }
 
 
-h3{
-  font-size: 1.5625rem;
-  text-transform: uppercase;
-}
