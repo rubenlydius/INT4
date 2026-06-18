@@ -240,10 +240,10 @@ export default function GemDetail() {
                 <p className={styles.popupText}>Spot on! You've successfully tracked down the hidden gem.</p>
                 <div className={styles.popupButtons}>
                   <Link to={`/camera`}>
-                    <button className={styles.revealHunt}>Open Camera</button>
+                    <button className={styles.revealHunt}>Skip to Gem Details</button>
                   </Link>
                   <Link to={`/gem/detail/${gem.id}`}>
-                    <button className={styles.foundHunt}>View Gem Details</button>
+                    <button className={styles.foundHunt}>Capture the Moment</button>
                   </Link>
                 </div>
               </>
