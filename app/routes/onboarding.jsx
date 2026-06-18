@@ -18,11 +18,11 @@ import cameraClickButton from '../assets/camera_click_button.svg'
 import gallerySquare from '../assets/galery_square.svg'
 import stickersCamera from '../assets/stickers_camera_onbording.png'
 import stickerOnboarding from '../assets/sticker_onbording.svg'
-import viewmasterDisc from '../assets/viewmaster_disc_onbording.png'
 import viewmasterDiscBg from '../assets/viewmaster_disc_background.svg'
 import cameraIconOnboarding from '../assets/camera_icon_onbording.svg'
 import penIconOnboarding from '../assets/pen_icon_onbording.svg'
 import shareIconOnboarding from '../assets/share_icon_onbording.svg'
+import iconOnboarding from '../assets/icon_onbroding.svg'
 
 export function meta() {
   return [{ title: "Welcome" }];
@@ -59,25 +59,29 @@ export default function Onboarding() {
     if (step < TOTAL_STEPS - 1) {
       setStep(step + 1)
     } else {
-      navigate('/lens/ann')
+      navigate('/signup')
     }
   }
 
   return (
     <div className={styles.page}>
 
-      <img src={topPattern} alt="" className={styles.topPattern} />
+      <div className={styles.topPatternRow}>
+        <img src={topPattern} alt="" className={styles.topPattern} />
+        <img src={topPattern} aria-hidden="true" className={styles.topPattern} />
+        <img src={topPattern} aria-hidden="true" className={styles.topPattern} />
+      </div>
 
       <div className={styles.topBar}>
         <div>
           {step > 0 && (
             <button className={styles.backBtn} onClick={() => setStep(step - 1)}>
-              &larr;
+              <img src={iconOnboarding} alt="back" />
             </button>
           )}
         </div>
         <button className={styles.skip} onClick={handleSkip}>
-          Skip &rsaquo;
+          Skip <img src={iconOnboarding} alt="" className={styles.skipArrow} />
         </button>
       </div>
 
@@ -100,6 +104,7 @@ export default function Onboarding() {
             <img src={antwerpPattern} alt="" className={styles.cityBg} />
           </div>
 
+          <div className={styles.blackGround} />
           <img src={storageUrl('gems/onboarding/antwerp_6.webp')} alt="Antwerp Six designers" className={styles.groupPhoto} />
           <img src={crossStitch} alt="" className={styles.bottomPattern} />
         </div>
@@ -189,7 +194,7 @@ export default function Onboarding() {
 
           <div className={styles.discSection}>
             <img src={viewmasterDiscBg} alt="" className={styles.discBackground} />
-            <img src={viewmasterDisc} alt="ViewMaster disc" className={styles.discImage} />
+            <img src={storageUrl('gems/onboarding/viewmaster_disc_onboarding.webp')} alt="ViewMaster disc" className={styles.discImage} />
           </div>
 
           <div className={styles.featureList}>
@@ -208,7 +213,7 @@ export default function Onboarding() {
               </div>
               <div className={styles.featureText}>
                 <p className={styles.featureTitle}>Create & Customize</p>
-                <p className={styles.featureBody}>Build your collection of Antwerp memories with pictures and stickers.</p>
+                <p className={styles.featureBody}>Build your collection of Antwerp memories with pictures and collected stickers.</p>
               </div>
             </div>
             <div className={styles.featureItem}>
