@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import styles from '../styles/profile.gems.module.css'
 import { storageUrl } from '../lib/storage'
@@ -25,10 +26,11 @@ export default function ProfileGems() {
   const navigate = useNavigate()
   const profile = profiles[id] || profiles.ona
 
-  if (profile.type !== 'owner') {
-    navigate(`/profile/${id}`)
-    return null
-  }
+  useEffect(() => {
+    if (profile.type !== 'owner') navigate(`/profile/${id}`)
+  }, [])
+
+  if (profile.type !== 'owner') return null
 
   return (
     <div className={styles.page}>

@@ -30,7 +30,7 @@ export default function Profile() {
 
     return (
         <div>
-            <div className={styles.settings_icon} onClick={() => navigate(`/profile/${id}/settings`)} style={{ cursor: 'pointer' }}>
+            <div className={styles.settings_icon} onClick={() => navigate(`/profile/${id}/settings`)}>
                 <img src={settingsIcon} alt="settings" />
             </div>
 
@@ -69,7 +69,7 @@ export default function Profile() {
                     <div className={styles.aboutyou_content}>
                         <div className={styles.aboutyou_header}>
                             <h2 className={styles.profile_h2}>About you</h2>
-                            <div className={styles.edit_flex}>
+                            <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/about`)}>
                                 <p className={styles.orange_to_detail}>Edit</p>
                                 <img src={simpleOrangeArrow} alt="arrow" />
                             </div>
@@ -89,7 +89,7 @@ export default function Profile() {
                 <>
                     <div className={styles.gems_added_header}>
                         <h2 className={styles.profile_h2}>Gems added by you</h2>
-                        <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/gems`)} style={{ cursor: 'pointer' }}>
+                        <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/gems`)}>
                             <p className={styles.orange_to_detail}>View all</p>
                             <img src={simpleOrangeArrow} alt="arrow" />
                         </div>
@@ -132,7 +132,7 @@ export default function Profile() {
                 <h2 className={styles.profile_h2}>
                     {isOwner ? 'Your Viewmasters' : `${profile.name}'s Viewmasters`}
                 </h2>
-                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/viewmasters`)} style={{ cursor: 'pointer' }}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/viewmasters`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
@@ -169,7 +169,7 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Sticker collection</h2>
-                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/stickers`)} style={{ cursor: 'pointer' }}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/stickers`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
