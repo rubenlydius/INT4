@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router'
 import styles from '../styles/profile.settings.module.css'
 import { profiles } from '../lib/profiles'
 
+import closeButton from '../assets/close_button.svg'
 import simpleOrangeArrow from '../assets/simple_orange_arrow.svg'
 import greyHalfArrow from '../assets/settings_grey_half_arrow.svg'
 import pencilIcon from '../assets/pencil_iccon.svg'
@@ -25,9 +26,11 @@ export default function ProfileSettings() {
 
   const [profileMode, setProfileMode] = useState(profile.type === 'owner' ? 'local' : 'visitor')
   const [notificationsOn, setNotificationsOn] = useState(false)
+  const [showVerifyPopup, setShowVerifyPopup] = useState(false)
 
   return (
-    <div className={styles.page}>
+    <>
+      <div className={styles.page}>
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
         <div className="top">
@@ -71,7 +74,7 @@ export default function ProfileSettings() {
               >Visitor</button>
               <button
                 className={profileMode === 'local' ? styles.mode_active : styles.mode_inactive}
-                onClick={() => setProfileMode('local')}
+                onClick={() => { setProfileMode('local'); setShowVerifyPopup(true) }}
               >Local</button>
             </div>
           </div>
@@ -147,6 +150,25 @@ export default function ProfileSettings() {
           </div>
         </div>
       </div>
+
     </div>
+
+    {showVerifyPopup && (
+      <div className={styles.popup_overlay} onClick={() => setShowVerifyPopup(false)}>
+        <div className={styles.popup_card} onClick={e => e.stopPropagation()}>
+          <button className={styles.popup_close} onClick={() => setShowVerifyPopup(false)}>
+            <img src={closeButton} alt="close" />
+          </button>
+          <h2 className={styles.popup_title}>Check your inbox!</h2>
+          <p className={styles.popup_body}>
+            We've sent a verification email to your address. Open it and follow the link to confirm your local status.
+          </p>
+          <button className={styles.popup_btn} onClick={() => setShowVerifyPopup(false)}>
+            Got it
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
