@@ -10,5 +10,5 @@ export default [
   route("/camera", "routes/camera.jsx"),
   route("/profile", "routes/profile.jsx"),
   route("/onboarding", "routes/onboarding.jsx"),
-
+  route("/signup", "routes/signup.jsx"),
 ];

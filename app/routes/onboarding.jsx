@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 import styles from '../styles/onboarding.module.css'
 import topPattern from '../assets/top_pattern_onbording_green.svg'
 import { storageUrl } from '../lib/storage'
@@ -32,8 +32,15 @@ const TOTAL_STEPS = 4;
 
 export default function Onboarding() {
   const navigate = useNavigate()
-  const [step, setStep] = useState(0)
+  const location = useLocation()
+  const [step, setStep] = useState(location.state?.step ?? 0)
   const [animating, setAnimating] = useState(false)
+
+  useEffect(() => {
+    if (location.state?.step !== undefined) {
+      setStep(location.state.step)
+    }
+  }, [location.state])
 
   useEffect(() => {
     const nav = document.querySelector('nav')
@@ -81,7 +88,7 @@ export default function Onboarding() {
           )}
         </div>
         <button className={styles.skip} onClick={handleSkip}>
-          Skip <img src={iconOnboarding} alt="" className={styles.skipArrow} />
+          Skip <span className={styles.skipArrow}>›</span>
         </button>
       </div>
 
