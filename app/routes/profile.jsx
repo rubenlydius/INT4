@@ -132,7 +132,7 @@ export default function Profile() {
                 <h2 className={styles.profile_h2}>
                     {isOwner ? 'Your Viewmasters' : `${profile.name}'s Viewmasters`}
                 </h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/viewmasters`)} style={{ cursor: 'pointer' }}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>

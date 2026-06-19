@@ -203,6 +203,17 @@
     white-space: nowrap;
 }
 
+.unverified_badge {
+    background-color: #EBEBEB;
+    color: var(--color-grey);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.875rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
 /* notification toggle switch */
 .toggle {
     width: 48px;

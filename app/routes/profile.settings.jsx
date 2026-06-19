@@ -23,8 +23,7 @@ export default function ProfileSettings() {
   const navigate = useNavigate()
   const profile = profiles[id] || profiles.ona
 
-  const isLocal = profile.keywords.includes('Local')
-  const [profileMode, setProfileMode] = useState(isLocal ? 'local' : 'visitor')
+  const [profileMode, setProfileMode] = useState(profile.type === 'owner' ? 'local' : 'visitor')
   const [notificationsOn, setNotificationsOn] = useState(false)
 
   return (
@@ -87,7 +86,9 @@ export default function ProfileSettings() {
               <p className={styles.row_title}>Local verification</p>
               <p className={styles.row_subtitle}>Verified</p>
             </div>
-            <span className={styles.verified_badge}>verified</span>
+            <span className={profileMode === 'local' ? styles.verified_badge : styles.unverified_badge}>
+              {profileMode === 'local' ? 'verified' : 'unverified'}
+            </span>
           </div>
         </div>
 
