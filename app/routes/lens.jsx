@@ -1,11 +1,15 @@
 import { useEffect } from "react";
-import { useParams, Link } from 'react-router'
+import { storageUrl } from '../lib/storage'
+import { useParams, useNavigate } from 'react-router'
 import styles from '../styles/lens.module.css'
 import { designers } from '../lib/designers'
 import arrowUrl from '../assets/arrow_green.svg'
 import modelPattern from '../assets/model_pattern.svg'
 import workPattern from '../assets/work_pattern.svg'
 import antwerpPattern from '../assets/antwerp_pattern.svg'
+import designerViemaster from '../assets/a6_viewmaster.svg'
+import DesignerWheel from '../components/DesignerWheel'
+
 
 export function meta() {
   return [{ title: "Lens" }];
@@ -13,6 +17,7 @@ export function meta() {
 
 export default function Lens() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const designer = designers[id] || designers.ann
 
   useEffect(() => {
@@ -58,17 +63,12 @@ export default function Lens() {
         </div>
       </main>
 
-      <nav className={styles.designer_nav}>
-        {Object.entries(designers).map(([key, d]) => (
-          <Link 
-            key={key} 
-            to={`/lens/${key}`}
-            className={id === key ? styles.active : ''}
-          >
-            {d.name} <br></br>
-          </Link>
-        ))}
-      </nav>
+      <DesignerWheel
+        activeKey={id || 'ann'}
+        onSelect={(key) => navigate(`/lens/${key}`)}
+        viewmasterSrc={designerViemaster}
+        wheelSrc={storageUrl('gems/designers/a6_designers.webp')}
+      />
     </div>
   )
 }
