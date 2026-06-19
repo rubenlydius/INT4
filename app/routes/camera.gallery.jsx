@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router";
 import { useEffect, useState } from 'react'
+import { Link } from "react-router";
 import { storageUrl } from '../lib/storage'
 import styles from '../styles/cameragallery.module.css'
 
@@ -11,7 +11,7 @@ import containerTop from '../assets/hintDropdownTop.svg'
 import containerBottom from '../assets/hintDropdownBottom.svg'
 import viewmasterIcon from '../assets/viewmaster_icon.svg'
 import blackArrow from '../assets/black_arrow.svg'
-import closeButton from '../assets/close_button.svg' // Added delete asset
+import closeButton from '../assets/close_button.svg'
 
 export function meta() {
     return [{ title: "Gallery" }];
@@ -22,11 +22,9 @@ const STATIC_PHOTO_COUNT = 12;
 export default function Gallery() {
     const [allPhotos, setAllPhotos] = useState([]);
     const [recentPhoto, setRecentPhoto] = useState(storageUrl(`gems/gallery/gallery_1.webp`));
-    const [selectedPhotoId, setSelectedPhotoId] = useState(null); // Track which image is clicked/focused
+    const [selectedPhotoId, setSelectedPhotoId] = useState(null);
 
-    // Helper function to pull assets and update state cleanly
     const loadPhotos = () => {
-        // 1. Build initial static asset photos list
         const basePhotos = Array.from({ length: STATIC_PHOTO_COUNT }, (_, i) => ({
             id: `static-${i}`,
             isLocalStorage: false,
@@ -34,7 +32,6 @@ export default function Gallery() {
             alt: `Gallery image ${i + 1}`
         }));
 
-        // 2. Fetch custom user captures from localStorage
         const localKeys = Object.keys(localStorage)
             .filter(k => k.startsWith('gem_photo_'))
             .sort((a, b) => {
@@ -44,7 +41,7 @@ export default function Gallery() {
             });
 
         const userPhotos = localKeys.map(key => ({
-            id: key, // Using the exact storage key string as the ID
+            id: key,
             isLocalStorage: true,
             src: localStorage.getItem(key),
             alt: "User captured gem photo"
@@ -53,7 +50,6 @@ export default function Gallery() {
         const combined = [...basePhotos, ...userPhotos];
         setAllPhotos(combined);
 
-        // Update the slider thumbnail presentation frame
         if (userPhotos.length > 0) {
             setRecentPhoto(userPhotos[userPhotos.length - 1].src);
         } else {
@@ -65,12 +61,11 @@ export default function Gallery() {
         loadPhotos();
     }, []);
 
-    // Handles completely wiping the record out of storage and visual state
     const handleDeletePhoto = (e, photoId) => {
-        e.stopPropagation(); // Stop the click from untoggling selection state instantly
+        e.stopPropagation();
         localStorage.removeItem(photoId);
-        setSelectedPhotoId(null); // Reset focus
-        loadPhotos(); // Refresh grid layout
+        setSelectedPhotoId(null);
+        loadPhotos();
     };
 
     return (
@@ -106,7 +101,6 @@ export default function Gallery() {
                             key={photo.id} 
                             className={styles.all_photos_img_wrapper}
                             onClick={() => setSelectedPhotoId(photo.id)}
-                            style={{ position: 'relative', cursor: 'pointer' }} // Ensure overlay lines up properly
                         >
                             <img
                                 src={photo.src}
@@ -114,25 +108,15 @@ export default function Gallery() {
                                 className={styles.all_photos_img}
                             />
 
-                            {/* Show close button overlay ONLY if this photo is clicked AND belongs to local storage */}
                             {selectedPhotoId === photo.id && photo.isLocalStorage && (
                                 <button
+                                    className={styles.delete_btn}
                                     onClick={(e) => handleDeletePhoto(e, photo.id)}
-                                    style={{
-                                        position: 'absolute',
-                                        top: '4px',
-                                        right: '4px',
-                                        background: 'transparent',
-                                        border: 'none',
-                                        padding: '4px',
-                                        cursor: 'pointer',
-                                        zIndex: 10
-                                    }}
                                 >
                                     <img 
                                         src={closeButton} 
                                         alt="Delete image" 
-                                        style={{ width: '24px', height: '24px', display: 'block' }}
+                                        className={styles.delete_btn_icon}
                                     />
                                 </button>
                             )}
