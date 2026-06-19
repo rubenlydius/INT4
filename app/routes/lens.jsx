@@ -10,7 +10,6 @@ import antwerpPattern from '../assets/antwerp_pattern.svg'
 import designerViemaster from '../assets/a6_viewmaster.svg'
 import DesignerWheel from '../components/DesignerWheel'
 
-
 export function meta() {
   return [{ title: "Lens" }];
 }
@@ -22,19 +21,30 @@ export default function Lens() {
 
   const allowedIndices = [0, 2, 3];
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [direction, setDirection] = useState('next'); 
 
   useEffect(() => {
     setCurrentIdx(0);
+    setDirection('next');
     if (id) {
       localStorage.setItem('selectedLens', id);
     }
-  }, [id]);
+
+    allowedIndices.forEach((idx) => {
+      if (designer.images[idx]) {
+        const img = new Image();
+        img.src = designer.images[idx];
+      }
+    });
+  }, [id, designer]);
 
   const handlePrev = () => {
+    setDirection('prev');
     setCurrentIdx((prev) => (prev === 0 ? allowedIndices.length - 1 : prev - 1));
   };
 
   const handleNext = () => {
+    setDirection('next');
     setCurrentIdx((prev) => (prev === allowedIndices.length - 1 ? 0 : prev + 1));
   };
 
@@ -65,9 +75,10 @@ export default function Lens() {
             alt="Previous" 
           />
           <img 
+            key={activeImageIndex}
             src={designer.images[activeImageIndex]} 
             alt="" 
-            className={styles.model}
+            className={`${styles.model} ${direction === 'next' ? styles.slideInRight : styles.slideInLeft}`}
           />
           <img 
             src={arrowUrl} 

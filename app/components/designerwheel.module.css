@@ -29,7 +29,7 @@
 
 .wheelStage.collapsed {
   /* Hides 70% of the stage, leaving exactly 30% of the top visible */
-  transform: translateY(20%); 
+  transform: translateY(21%); 
 }
 
 .track {
