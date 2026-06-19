@@ -33,14 +33,14 @@ const TOTAL_STEPS = 4;
 export default function Onboarding() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [step, setStep] = useState(location.state?.step ?? 0)
+  const [step, setStep] = useState(0)
   const [animating, setAnimating] = useState(false)
 
   useEffect(() => {
     if (location.state?.step !== undefined) {
       setStep(location.state.step)
     }
-  }, [location.state])
+  }, [location.key])
 
   useEffect(() => {
     const nav = document.querySelector('nav')
