@@ -1,0 +1,244 @@
+.page {
+    background-color: var(--color-white);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 6rem;
+}
+
+.header_area {
+    position: relative;
+    height: 159px;
+    padding-top: 58px;
+}
+
+.top_pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.back_btn {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-orange-200);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0px 1px 4.6px 0px rgba(0, 0, 0, 0.07);
+}
+
+.back_arrow {
+    width: 1rem;
+    height: 1rem;
+    transform: scaleX(-1);
+}
+
+.content {
+    padding: 1.25rem 1rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.section_label {
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-black);
+    text-transform: none;
+    margin: 1.5rem 0 0.5rem 0;
+}
+
+.section_label:first-of-type {
+    margin-top: 0;
+}
+
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 16px 1.25rem;
+    min-height: 60px;
+    cursor: pointer;
+}
+
+.divider {
+    height: 0.5px;
+    background-color: var(--color-orange-200);
+    margin: 0 1.25rem;
+}
+
+/* icon wrapper */
+.icon_wrap {
+    width: 38px;
+    height: 38px;
+    background-color: #FAF3EF;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+
+.icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    object-fit: contain;
+}
+
+.row_text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.row_title {
+    flex: 1;
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 15px;
+    color: var(--color-black);
+}
+
+.row_title_danger {
+    color: var(--color-orange);
+}
+
+.row_subtitle {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--color-grey);
+    font-weight: 400;
+}
+
+/* orange pencil button */
+.edit_btn {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-orange);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+    flex-shrink: 0;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.10);
+}
+
+.edit_icon {
+    width: 18px;
+    height: 18px;
+    display: block;
+    object-fit: contain;
+}
+
+/* visitor / local segmented toggle */
+.mode_toggle {
+    display: flex;
+    align-items: center;
+    background-color: var(--color-orange-50);
+    border-radius: var(--radius-full);
+    padding: 0.2rem;
+    gap: 0.125rem;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.10);
+}
+
+.mode_active {
+    background-color: var(--color-orange);
+    color: var(--color-white);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.875rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+.mode_inactive {
+    background-color: transparent;
+    color: var(--color-orange);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.875rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    min-height: 40px;
+}
+
+/* verified badge */
+.verified_badge {
+    background-color: var(--color-orange-200);
+    color: var(--color-orange);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.875rem;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* notification toggle switch */
+.toggle {
+    width: 48px;
+    height: 28px;
+    border-radius: var(--radius-full);
+    background-color: #d9d9d9;
+    position: relative;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+
+.toggle::after {
+    content: '';
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.toggle_on {
+    background-color: var(--color-orange);
+}
+
+.toggle_on::after {
+    transform: translateX(20px);
+}
+
+.row_arrow {
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+}
