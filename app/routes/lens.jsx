@@ -1,11 +1,14 @@
-import { useEffect } from "react";
-import { useParams, Link } from 'react-router'
+import { useEffect, useState } from "react";
+import { storageUrl } from '../lib/storage'
+import { useParams, useNavigate } from 'react-router'
 import styles from '../styles/lens.module.css'
 import { designers } from '../lib/designers'
 import arrowUrl from '../assets/arrow_green.svg'
 import modelPattern from '../assets/model_pattern.svg'
 import workPattern from '../assets/work_pattern.svg'
 import antwerpPattern from '../assets/antwerp_pattern.svg'
+import designerViemaster from '../assets/a6_viewmaster.svg'
+import DesignerWheel from '../components/DesignerWheel'
 
 export function meta() {
   return [{ title: "Lens" }];
@@ -13,13 +16,39 @@ export function meta() {
 
 export default function Lens() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const designer = designers[id] || designers.ann
 
+  const allowedIndices = [0, 2, 3];
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [direction, setDirection] = useState('next'); 
+
   useEffect(() => {
+    setCurrentIdx(0);
+    setDirection('next');
     if (id) {
       localStorage.setItem('selectedLens', id);
     }
-  }, [id]);
+
+    allowedIndices.forEach((idx) => {
+      if (designer.images[idx]) {
+        const img = new Image();
+        img.src = designer.images[idx];
+      }
+    });
+  }, [id, designer]);
+
+  const handlePrev = () => {
+    setDirection('prev');
+    setCurrentIdx((prev) => (prev === 0 ? allowedIndices.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setDirection('next');
+    setCurrentIdx((prev) => (prev === allowedIndices.length - 1 ? 0 : prev + 1));
+  };
+
+  const activeImageIndex = allowedIndices[currentIdx];
 
   return (
     <div className={styles.lensContainer}>
@@ -38,9 +67,26 @@ export default function Lens() {
 
         <div className={styles.runway}>
           <img src={modelPattern} alt="" className={styles.modelPattern}/>
-          <img src={arrowUrl} className={styles.arrow_l} alt="" />
-          <img src={designer.images[0]} alt="" className={styles.model}/>
-          <img src={arrowUrl} className={styles.arrow_r} alt="" />
+          <img 
+            src={arrowUrl} 
+            className={styles.arrow_l} 
+            onClick={handlePrev} 
+            style={{ cursor: 'pointer' }}
+            alt="Previous" 
+          />
+          <img 
+            key={activeImageIndex}
+            src={designer.images[activeImageIndex]} 
+            alt="" 
+            className={`${styles.model} ${direction === 'next' ? styles.slideInRight : styles.slideInLeft}`}
+          />
+          <img 
+            src={arrowUrl} 
+            className={styles.arrow_r} 
+            onClick={handleNext} 
+            style={{ cursor: 'pointer' }}
+            alt="Next" 
+          />
         </div>
 
         <h3 className={styles.work_h3}>{designer.his_her} work</h3>
@@ -58,17 +104,12 @@ export default function Lens() {
         </div>
       </main>
 
-      <nav className={styles.designer_nav}>
-        {Object.entries(designers).map(([key, d]) => (
-          <Link 
-            key={key} 
-            to={`/lens/${key}`}
-            className={id === key ? styles.active : ''}
-          >
-            {d.name} <br></br>
-          </Link>
-        ))}
-      </nav>
+      <DesignerWheel
+        activeKey={id || 'ann'}
+        onSelect={(key) => navigate(`/lens/${key}`)}
+        viewmasterSrc={designerViemaster}
+        wheelSrc={storageUrl('gems/designers/a6_designers.webp')}
+      />
     </div>
   )
 }
