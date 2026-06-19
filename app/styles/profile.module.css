@@ -5,6 +5,12 @@
 }
 
 
+.profile_page_wrapper{
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .settings_icon{
     display: flex;
     justify-content: end;
@@ -97,8 +103,8 @@
 
 .aboutyou_ContainerTop {
     display: block;
-    width: 100%;
-    /* margin: 0 1rem; */
+    width: auto;
+    margin-bottom: -1rem;
 }
 
 .aboutyou_container {
@@ -107,7 +113,7 @@
   
   .aboutyou_ContainerTop {
     display: block;
-    width: 100%;
+    width: auto;
     margin-bottom: -1rem;
   }
   

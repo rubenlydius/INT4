@@ -20,7 +20,6 @@ import gemFoundIcon from '../assets/gemfound_icon.svg'
 import sixGem from '../assets/a6_gem.svg';
 
 
-
 import Dropdown from '../components/dropdown'
 
 export function meta() {
@@ -28,8 +27,6 @@ export function meta() {
 }
 
 
-
-// ... keep your imports identical
 
 export default function GemDetail() {
   const { gemId } = useParams();
