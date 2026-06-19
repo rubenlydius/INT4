@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
+import { Link } from "react-router";
 import { createPortal } from "react-dom";
 import styles from "./designerwheel.module.css";
 
@@ -271,12 +272,14 @@ useEffect(() => {
         onTouchStart={handlePointerDown}
         onClick={handleClick}
       >
+        <div className={styles.wheelBackdropCircle} />
         <img
           src={viewmasterSrc}
           alt=""
           className={styles.viewmaster}
           draggable={false}
         />
+        
         <img
           src={wheelSrc}
           alt="Select a designer"
@@ -285,6 +288,11 @@ useEffect(() => {
           draggable={false}
           style={{ transform: `translateX(-50%) rotate(${angleRef.current}deg)` }}
         />
+        <div className={styles.designerOverlayBox}>
+            <Link to="/map" className={styles.exploreButton}>
+                Start exploring
+            </Link>
+        </div>
       </div>
       <div className={styles.pointerMark} aria-hidden="true" />
     </div>
