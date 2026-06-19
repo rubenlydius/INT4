@@ -110,6 +110,7 @@ export default function Lens() {
         viewmasterSrc={designerViemaster}
         wheelSrc={storageUrl('gems/designers/a6_designers.webp')}
       />
+      <div className={styles.lens_bottom_padding}></div>
     </div>
   )
 }
