@@ -37,7 +37,7 @@ export default function ProfileAbout() {
 
   useEffect(() => {
     if (profile.type !== 'owner') navigate(`/profile/${id}`)
-  }, [])
+  }, [navigate, id, profile.type])
 
   if (profile.type !== 'owner') return null
 

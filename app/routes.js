@@ -16,4 +16,6 @@ export default [
   route("/profile/:id/viewmasters", "routes/profile.viewmasters.jsx"),
   route("/profile/:id/stickers", "routes/profile.stickers.jsx"),
   route("/profile/:id/gems", "routes/profile.gems.jsx"),
+  route("/profile/:id/about", "routes/profile.about.jsx"),
+  route("/profile/:id/discovered", "routes/profile.discovered.jsx"),
 ];

@@ -107,7 +107,7 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Discovered gems</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/discovered`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
@@ -150,7 +150,7 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Photos taken</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate('/camera/gallery')}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
