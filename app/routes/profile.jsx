@@ -28,7 +28,7 @@ export default function Profile() {
     const [expanded, setExpanded] = useState(false);
 
     return (
-        <div>
+        <div className={styles.profile_page_wrapper}>
             <div className={styles.settings_icon}>
                 <img src={settingsIcon} alt="settings" />
             </div>
