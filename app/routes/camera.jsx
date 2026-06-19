@@ -65,21 +65,26 @@ export default function Camera() {
         };
     }, []);
 
-    // Simple capture method reading from your working Canvas stream
     const captureFrame = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Compression quality 0.4 handles keeping files near ~100KB to prevent storage cap limits
         const base64Image = canvas.toDataURL('image/jpeg', 0.4);
         
-        // Dynamic continuous structural indexing based on how many exist already
-        const existingKeys = Object.keys(localStorage).filter(k => k.startsWith('gem_photo_'));
-        const nextIndex = existingKeys.length + 1;
+        // 1. Grab all existing photo index numbers
+        const numericIds = Object.keys(localStorage)
+            .filter(k => k.startsWith('gem_photo_'))
+            .map(k => parseInt(k.replace('gem_photo_', ''), 10))
+            .filter(num => !isNaN(num));
+            
+        // 2. Find the absolute highest number used so far, or default to 0 if empty
+        const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
+        
+        // 3. Always increment past the highest structural ID so deletions never cause a collision
+        const nextIndex = maxId + 1;
         
         try {
             localStorage.setItem(`gem_photo_${nextIndex}`, base64Image);
-            // alert("Gem captured successfully!");
         } catch (e) {
             console.error("Storage limit reached:", e);
         }
