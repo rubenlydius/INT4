@@ -15,4 +15,5 @@ export default [
   route("/profile/:id/settings/language", "routes/profile.settings.language.jsx"),
   route("/profile/:id/viewmasters", "routes/profile.viewmasters.jsx"),
   route("/profile/:id/stickers", "routes/profile.stickers.jsx"),
+  route("/profile/:id/gems", "routes/profile.gems.jsx"),
 ];
