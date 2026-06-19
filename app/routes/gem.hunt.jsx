@@ -29,6 +29,8 @@ export function meta() {
 
 
 
+// ... keep your imports identical
+
 export default function GemDetail() {
   const { gemId } = useParams();
   const [gem, setGem] = useState(null);
@@ -36,11 +38,14 @@ export default function GemDetail() {
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
 
+  // --- ADD THESE STATES FOR HOT & COLD ---
+  const [userLocation, setUserLocation] = useState(null);
+  const [hcChecksUsed, setHcChecksUsed] = useState(0);
+
   const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
   const designer = designers[currentLens] || designers.ann;
 
   const [isOpen, setIsOpen] = useState(false);
-
   const [showRevealPopup, setShowRevealPopup] = useState(false);
   const [foundAttempts, setFoundAttempts] = useState(0);
   const [showFoundPopup, setShowFoundPopup] = useState(false);
@@ -49,9 +54,6 @@ export default function GemDetail() {
     setFoundAttempts(prev => prev + 1);
     setShowFoundPopup(true);
   };
-
-
-
 
   useEffect(() => {
     async function fetchGem() {
@@ -64,7 +66,6 @@ export default function GemDetail() {
       if (error) return console.error(error.message);
       setGem(data);
     }
-
     fetchGem();
   }, [gemId]);
 
@@ -85,23 +86,17 @@ export default function GemDetail() {
       }).setView(center, 15);
 
       mapInstanceRef.current = map;
-
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
 
       if (gem.a6_fav) {
-        // Apply your exact size multiplier from the main map
         const sizeMultiplier = 2; 
         const radiusInDegrees = (radius * 0.000009) * sizeMultiplier;
-  
-        // Construct bounds around the exact center of the Gem
         const latLngBounds = [
           [center[0] - radiusInDegrees, center[1] - radiusInDegrees],
           [center[0] + radiusInDegrees, center[1] + radiusInDegrees]
         ];
-  
         L.imageOverlay(sixGem, latLngBounds).addTo(map);
       } else {
-        // Standard circle fallback
         L.circle(center, {
           radius,
           color: "#00D77D",
@@ -117,6 +112,9 @@ export default function GemDetail() {
             const { latitude, longitude } = pos.coords;
             const latlng = [latitude, longitude];
       
+            // SAVE CURRENT COORDINATES TO STATE
+            setUserLocation({ lat: latitude, lng: longitude });
+
             if (!userMarkerRef.current) {
               const icon = L.divIcon({
                 html: `<img src="${currentLocationIcon}" class="${styles.pulseIcon}" />`,
@@ -142,10 +140,11 @@ export default function GemDetail() {
 
   const hintImages = [1, 2, 3].map(
     (n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`)
-  )
+  );
 
   return (
     <div className={styles.gemHunt}>
+      {/* ... keeping top layout structural code intact ... */}
       <div className={styles.top}>
         <Link to="/map">
           <img src={orangeArrow} alt="return" /> 
@@ -171,7 +170,6 @@ export default function GemDetail() {
         <img src={mapTop} alt="" className={styles.mapEdge} />
         <div className={styles.huntMapWrapper}>
           <div ref={mapRef} className={styles.huntMap} />
-
           <div className={styles.mapLabelBadge}>
           {gem.a6_fav ? (
             <img src={sixGem} alt="A6 Gem Icon" className={styles.badgeIcon} />
@@ -185,8 +183,21 @@ export default function GemDetail() {
       </div>
 
       <Dropdown title="Text hint" content={gem.abstract} icon={textHint} />
+      
       <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} infoNodeText="3 hints available"/>
-      <Dropdown title="Hot & Cold" content={gem.hint_2} icon={hotcoldHint} hotCold infoNodeText="0/3 used"/>    
+      
+      {/* UPDATE HOT & COLD DROPDOWN WITH GEOLOCATION PROPERTIES */}
+      <Dropdown 
+        title="Hot & Cold" 
+        content={gem.hint_2} 
+        icon={hotcoldHint} 
+        hotCold 
+        gemTarget={{ lat: gem.lat, lng: gem.lng, radius: gem.radius ?? 250 }}
+        userLocation={userLocation}
+        hcChecksUsed={hcChecksUsed}
+        setHcChecksUsed={setHcChecksUsed}
+        infoNodeText={`${hcChecksUsed}/3 used`}
+      />    
 
       <div className={styles.huntButtons}>
         <button className={styles.revealHunt} onClick={() => setShowRevealPopup(true)}>Reveal location</button>
@@ -196,7 +207,7 @@ export default function GemDetail() {
         </button>
       </div>
 
-
+      {/* ... keeping popup blocks completely identical ... */}
       {showRevealPopup && (
           <div className={styles.popupOverlay} onClick={() => setShowRevealPopup(false)}>
             <div className={styles.popup} onClick={e => e.stopPropagation()}>
@@ -239,10 +250,10 @@ export default function GemDetail() {
                 </div>
                 <p className={styles.popupText}>Spot on! You've successfully tracked down the hidden gem.</p>
                 <div className={styles.popupButtons}>
-                  <Link to={`/camera`}>
+                  <Link to={`/gem/detail/${gem.id}`}>
                     <button className={styles.revealHunt}>Skip to Gem Details</button>
                   </Link>
-                  <Link to={`/gem/detail/${gem.id}`}>
+                  <Link to={`/camera`}>
                     <button className={styles.foundHunt}>Capture the Moment</button>
                   </Link>
                 </div>
@@ -252,6 +263,5 @@ export default function GemDetail() {
         </div>
       )}
     </div>
-
   );
 }
