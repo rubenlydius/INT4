@@ -1,6 +1,6 @@
 import styles from '../styles/profile.module.css'
 import { useState } from 'react';
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import { profiles } from '../lib/profiles'
 
 import settingsIcon from '../assets/settings_icon.svg'
@@ -21,6 +21,7 @@ export function meta() {
 
 export default function Profile() {
     const { id } = useParams()
+    const navigate = useNavigate()
     const profile = profiles[id] || profiles.ona
 
     const isOwner = profile.type === 'owner'
@@ -29,7 +30,7 @@ export default function Profile() {
 
     return (
         <div>
-            <div className={styles.settings_icon}>
+            <div className={styles.settings_icon} onClick={() => navigate(`/profile/${id}/settings`)} style={{ cursor: 'pointer' }}>
                 <img src={settingsIcon} alt="settings" />
             </div>
 
