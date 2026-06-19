@@ -154,8 +154,10 @@
   padding: 2rem 1rem 7rem 1rem;
 }
 
-.lensContainer {
-  padding-bottom: 100vw;
+.lens_bottom_padding{
+  padding-bottom: 9rem;
+  background-color: var(--color-green-600);
+  margin-top: -1rem;
 }
 
 .slideOutLeft {
