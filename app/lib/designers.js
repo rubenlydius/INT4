@@ -17,6 +17,8 @@ export const designers = {
     images: [
       storageUrl('gems/designers/ann_d/ann_d_model1.avif'),
       storageUrl('gems/designers/ann_d/ann_d_model2.avif'),
+      storageUrl('gems/designers/ann_d/ann_d_model3.avif'),
+      storageUrl('gems/designers/ann_d/ann_d_model4.avif'),
     ],
   },
   walter: {
@@ -35,6 +37,8 @@ export const designers = {
     images: [
       storageUrl('gems/designers/walter/walter_model1.avif'),
       storageUrl('gems/designers/walter/walter_model2.avif'),
+      storageUrl('gems/designers/walter/walter_model3.avif'),
+      storageUrl('gems/designers/walter/walter_model4.avif'),
     ],
   },
   dirk_b: {
@@ -53,6 +57,8 @@ export const designers = {
     images: [
       storageUrl('gems/designers/dirk_b/dirk_b_model1.avif'),
       storageUrl('gems/designers/dirk_b/dirk_b_model2.avif'),
+      storageUrl('gems/designers/dirk_b/dirk_b_model3.avif'),
+      storageUrl('gems/designers/dirk_b/dirk_b_model4.avif'),
     ],
   },
   marina: {
@@ -71,6 +77,8 @@ export const designers = {
     images: [
       storageUrl('gems/designers/marina/marina_model1.avif'),
       storageUrl('gems/designers/marina/marina_model2.avif'),
+      storageUrl('gems/designers/marina/marina_model3.avif'),
+      storageUrl('gems/designers/marina/marina_model4.avif'),
     ],
   },
   dirk_vs: {
@@ -89,6 +97,8 @@ export const designers = {
     images: [
       storageUrl('gems/designers/dirk_vs/dirk_vs_model1.avif'),
       storageUrl('gems/designers/dirk_vs/dirk_vs_model2.avif'),
+      storageUrl('gems/designers/dirk_vs/dirk_vs_model3.avif'),
+      storageUrl('gems/designers/dirk_vs/dirk_vs_model4.avif'),
     ],
   },
   dries: {
@@ -107,6 +117,8 @@ export const designers = {
     images: [
       storageUrl('gems/designers/dries/dries_model1.avif'),
       storageUrl('gems/designers/dries/dries_model2.avif'),
+      storageUrl('gems/designers/dries/dries_model3.avif'),
+      storageUrl('gems/designers/dries/dries_model4.avif'),
     ],
   },
 }

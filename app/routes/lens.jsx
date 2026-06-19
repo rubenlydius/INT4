@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { storageUrl } from '../lib/storage'
 import { useParams, useNavigate } from 'react-router'
 import styles from '../styles/lens.module.css'
@@ -20,11 +20,25 @@ export default function Lens() {
   const navigate = useNavigate()
   const designer = designers[id] || designers.ann
 
+  const allowedIndices = [0, 2, 3];
+  const [currentIdx, setCurrentIdx] = useState(0);
+
   useEffect(() => {
+    setCurrentIdx(0);
     if (id) {
       localStorage.setItem('selectedLens', id);
     }
   }, [id]);
+
+  const handlePrev = () => {
+    setCurrentIdx((prev) => (prev === 0 ? allowedIndices.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentIdx((prev) => (prev === allowedIndices.length - 1 ? 0 : prev + 1));
+  };
+
+  const activeImageIndex = allowedIndices[currentIdx];
 
   return (
     <div className={styles.lensContainer}>
@@ -43,9 +57,25 @@ export default function Lens() {
 
         <div className={styles.runway}>
           <img src={modelPattern} alt="" className={styles.modelPattern}/>
-          <img src={arrowUrl} className={styles.arrow_l} alt="" />
-          <img src={designer.images[0]} alt="" className={styles.model}/>
-          <img src={arrowUrl} className={styles.arrow_r} alt="" />
+          <img 
+            src={arrowUrl} 
+            className={styles.arrow_l} 
+            onClick={handlePrev} 
+            style={{ cursor: 'pointer' }}
+            alt="Previous" 
+          />
+          <img 
+            src={designer.images[activeImageIndex]} 
+            alt="" 
+            className={styles.model}
+          />
+          <img 
+            src={arrowUrl} 
+            className={styles.arrow_r} 
+            onClick={handleNext} 
+            style={{ cursor: 'pointer' }}
+            alt="Next" 
+          />
         </div>
 
         <h3 className={styles.work_h3}>{designer.his_her} work</h3>
