@@ -21,7 +21,7 @@ export default function Navbar() {
     { to: lensHref, label: "Lens", iconB: lensB, iconW: lensW, match: "/lens" },
     { to: "/map", label: "Map", iconB: mapB, iconW: mapW, match: "/map" },
     { to: "/camera", label: "Camera", iconB: cameraB, iconW: cameraW, match: "/camera" },
-    { to: "/profile", label: "Profile", iconB: profileB, iconW: profileW, match: "/profile" },
+    { to: "/profile/ona", label: "Profile", iconB: profileB, iconW: profileW, match: "/profile" },
   ];
 
   return (
