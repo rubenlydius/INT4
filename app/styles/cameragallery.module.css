@@ -125,3 +125,28 @@
     align-items: end;
 
 }
+
+.all_photos_img_wrapper {
+    position: relative;
+    cursor: pointer;
+}
+
+.delete_btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    background: transparent;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.delete_btn_icon {
+    width: 3rem;
+    height: 3rem;
+    display: block;
+}

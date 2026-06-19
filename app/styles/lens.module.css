@@ -71,6 +71,7 @@
   height: 100%;
   object-fit: contain;
   object-position: center;
+  will-change: transform, opacity;
 }
 
 .arrow_l {
@@ -138,7 +139,6 @@
   color: var(--color-white);
   font-size: 1.5625rem;
   text-transform: uppercase;
-
 }
 
 .antwerp_link {
@@ -154,4 +154,48 @@
   padding: 2rem 1rem 7rem 1rem;
 }
 
+.lens_bottom_padding{
+  padding-bottom: 9rem;
+  background-color: var(--color-green-600);
+  margin-top: -1rem;
+}
 
+.slideOutLeft {
+  transform: translateX(-150px);
+  opacity: 0;
+}
+
+.slideOutRight {
+  transform: translateX(150px);
+  opacity: 0;
+}
+
+.slideInRight {
+  animation: slideInFromRight 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.slideInLeft {
+  animation: slideInFromLeft 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(150px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-150px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}

@@ -29,7 +29,7 @@ export default function Profile() {
     const [expanded, setExpanded] = useState(false);
 
     return (
-        <div>
+        <div className={styles.profile_page_wrapper}>
             <div className={styles.settings_icon} onClick={() => navigate(`/profile/${id}/settings`)}>
                 <img src={settingsIcon} alt="settings" />
             </div>
@@ -177,7 +177,7 @@ export default function Profile() {
             <img src={stickerSeparator} alt="" className={styles.sticker_blocks} />
             <div className={styles.stickers_collected}>
                 {profile.stickers.map((sticker, i) => (
-                    <img key={i} src={sticker} alt="sticker" className={styles.profile_stickers}/>
+                    <img key={i} src={sticker} alt="sticker" className={styles.profile_stickers} />
                 ))}
             </div>
             <img src={stickerBottom} alt="" className={styles.sticker_blocks} />

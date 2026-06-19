@@ -1,0 +1,151 @@
+
+.wheelStage {
+  position: fixed;
+  bottom: -25rem;
+  left: 0;
+  width: 100%;
+  height: 180vw;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 50;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(0);
+}
+
+.wheelStage.collapsed {
+  transform: translateY(21%); 
+}
+
+.track {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180vw; 
+  height: 180vw; 
+  pointer-events: auto; 
+  cursor: grab;
+}
+
+.viewmaster,
+.designerWheel {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 180vw;
+  height: 180vw;
+  user-select: none;
+  -webkit-user-drag: none;
+  transform-origin: 50% 50%;
+  object-fit: contain;
+  pointer-events: auto;
+}
+
+.viewmaster {
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.designerWheel {
+  --wheel-padding: 3rem; 
+  top: var(--wheel-padding);
+  left: 50%;
+  width: calc(180vw - (var(--wheel-padding) * 2));
+  height: calc(180vw - (var(--wheel-padding) * 2));
+  transform: translateX(-50%) rotate(0deg);
+  z-index: 2;
+  touch-action: none;
+}
+
+.designerWheel:active {
+  cursor: grabbing;
+}
+
+.collapsed .designerWheel {
+  cursor: pointer;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .wheelStage {
+    transition: none;
+  }
+}
+
+.designerOverlayBox {
+    position: absolute;
+    top: 2.5rem; 
+    left: 50%;
+    transform: translateX(-48%);
+    width: 7.5rem;     
+    height: 9rem;        
+    box-sizing: border-box;
+    background-color: transparent;
+    z-index: 3;           
+    pointer-events: none;   
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    transition: opacity 0.3s ease;
+  }
+  
+  .exploreButton {
+    background-color: var(--color-green);
+    color: var(--color-white);
+    padding: 0.5rem 1rem;
+    border-radius: 99px;
+    font-size: 1rem;
+    font-weight: 700;
+    pointer-events: auto; 
+    margin-bottom: -1rem; 
+    width: 9rem;
+    text-align: center;
+  }
+
+  .collapsed .designerOverlayBox {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .wheelBackdropCircle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: #00b56aba;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+@media (min-width: 300px) and (max-width: 600px) {
+  .wheelStage {
+    height: 180vw;
+    
+    /* adjust this to change up position */
+    bottom: -100vw; 
+  }
+
+  .wheelStage.collapsed {
+    /* adjust this to change collapsed position */
+    transform: translateY(37vw); 
+  }
+
+  /* Keep these exactly as they are so the circles don't warp */
+  .track,
+  .viewmaster {
+    width: 180vw;
+    height: 180vw;
+  }
+  .designerWheel {
+    --wheel-padding: 3rem;
+    width: calc(180vw - (var(--wheel-padding) * 2));
+    height: calc(180vw - (var(--wheel-padding) * 2));
+  }
+}

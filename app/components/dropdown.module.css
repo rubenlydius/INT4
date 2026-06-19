@@ -153,12 +153,89 @@
       padding: 0 0 0.75rem 0;
     }
 
-  .hotColdBar {
-
-    padding: 1rem 1rem;
-    border-radius: 999px;
-    background: linear-gradient(90deg, #5596FF, #FF691E);
-  }
+    .hotColdBar {
+      position: relative;
+      padding: 0.5rem 0;
+      height: 2rem;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #5596FF, #FF691E);
+    }
+    
+    .proximityIndicator {
+      position: absolute;
+      top: 50%;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      border: 2px solid var(--color-white, #ffffff);
+      background-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      
+      
+      animation: glideFromColdSide 10s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @keyframes glideFromColdSide {
+      0% {
+        opacity: 0;
+        left: 0%;
+        transform: translate(0%, -50%) scale(0.5);
+      }
+      15% {
+        opacity: 1;
+        left: var(--target-left);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      90% {
+        opacity: 1;
+        left: var(--target-left);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% {
+        opacity: 0;
+        left: var(--target-left);
+        transform: translate(-50%, -50%) scale(0.7);
+      }
+    }
+    
+    @keyframes proximitySequence {
+      0% { 
+        opacity: 0;
+        left: 0% !important;
+        transform: translate(0%, -50%) scale(0.6); 
+      }
+      12% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+      90% { 
+        opacity: 1; 
+        transform: translate(-50%, -50%) scale(1);
+      }
+      100% { 
+        opacity: 0; 
+        transform: translate(-50%, -50%) scale(0.8);
+      }
+    }
+    
+    .actionRow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+    
+    .disabledPill {
+      opacity: 0.4;
+      cursor: not-allowed;
+      border-color: var(--color-grey, #ccc);
+    }
+    
+    .warningMessage {
+      color: #FF691E;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
 
   .hotColdLabel{
     display: flex;
