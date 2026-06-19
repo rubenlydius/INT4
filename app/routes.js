@@ -8,7 +8,8 @@ export default [
   route("/gem/:gemId", "routes/gem.hunt.jsx"),
   route("/gem/detail/:gemId", "routes/gem.detail.jsx"),
   route("/camera", "routes/camera.jsx"),
-  route("/profile", "routes/profile.jsx"),
+  route("/camera/gallery", "routes/camera.gallery.jsx"),
+  route("/profile/:id", "routes/profile.jsx"),
   route("/onboarding", "routes/onboarding.jsx"),
   route("/signup", "routes/signup.jsx"),
 ];

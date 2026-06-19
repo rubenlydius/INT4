@@ -1,0 +1,352 @@
+.spacing{
+    padding-bottom: 6rem ; 
+    margin-top: -0.1rem;
+    background-color: var(--color-green-600);
+}
+
+
+.settings_icon{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    background-color: var(--color-orange);
+    padding: 2rem 1rem 0 1rem; 
+}
+
+.settings_icon img{
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: rgb(255, 227, 214, 0.3);
+    border-radius: 99px;
+    padding: 0.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.profile_info{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -0.1rem 0 -0.1rem 0;
+    flex-direction: column;
+    background-color: var(--color-orange);
+    color: var(--color-white);
+    gap: 1rem;
+}
+
+.profile_picture{
+    width: 11rem;
+}
+
+.profile_keywords{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: -0.5rem;
+}
+
+.info_bubbles {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0 1rem 2rem 1rem;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.bubble_wrapper:nth-child(2) {
+    position: relative;
+    top: 4rem; 
+}
+
+.bubble_wrapper {
+    position: relative;
+}
+
+.bubble_wrapper img {
+    width: 8rem;
+    height: auto;
+    display: block;
+}
+
+.bubble_wrapper p{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--color-grey);
+    font-size: 0.8rem;
+    text-align: center;
+    pointer-events: none;
+    font-size: 1rem;
+    line-height: 1.1;
+    margin-top: 0.25rem;
+}
+
+.bubble_number{
+    font-size: 1.25rem;
+    font-family: var(--font-display);
+    color: var(--color-black);
+    
+}
+
+.profile_transition{
+    display: block;
+    width: 100vw;
+}
+
+.aboutyou_ContainerTop {
+    display: block;
+    width: 100%;
+    /* margin: 0 1rem; */
+}
+
+.aboutyou_container {
+    margin: 1rem 1rem 0 1rem;
+  }
+  
+  .aboutyou_ContainerTop {
+    display: block;
+    width: 100%;
+    margin-bottom: -1rem;
+  }
+  
+  .aboutyou_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0rem 1.25rem;
+  }
+
+  .profile_h2 {
+    font-size: 1.25rem;
+    color: var(--color-black);
+    text-transform: none;
+  }
+
+  .orange_to_detail{
+    color: var(--color-orange);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 1rem;
+  }
+  
+  .containerSeperator {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+  }
+
+.aboutyou_content{
+    background-color: #ffffff;
+    border-radius: 0 0 1rem 1rem;
+}
+
+.edit_flex{
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 0.75rem;
+}
+
+.aboutyou_text{
+    padding: 0rem 1.25rem 0.5rem 1.25rem;
+}
+
+.readMore {
+    color: var(--color-green);
+    text-decoration: underline;
+    text-transform: uppercase;
+    font-size: 1rem;
+    padding: 0 1.25rem 1rem 1.25rem;
+    display: block;
+}
+
+.gems_added_header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 3rem 1rem 1rem 1rem;
+}
+
+.profile_gems {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1.25rem;
+}
+
+.profile_gems img {
+    width: 8rem;
+    height: 8rem;
+    object-fit: cover;
+    border-radius: 1rem;
+}
+
+.addGem {
+    width: 8rem;
+    height: 8rem;
+    border-radius: 1rem;
+    border: 1.5px dashed var(--color-green);
+    background-color: var(--color-green-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.addGem img {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 0;
+    object-fit: contain;
+    margin: 0 0 -1rem 0;
+}
+
+.discovered_gems_container{
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 18px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* gap: 1rem; */
+    margin: 1rem;
+}
+.discovered_gems_left{
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: center;
+}
+
+.discovered_gem_sticker{
+    width: 3.75rem;
+    object-fit: contain;
+}
+
+.discovered_gems_text{
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.discovered_gems_left h3{
+    font-size: 1.25rem;
+    text-transform: none;
+    font-family: var(--font-body);
+    font-weight: 700; 
+}
+
+.discovered_gems_left p{
+    font-size: 1.125rem;
+    font-weight: 300;
+}
+
+.discovered_gems_container p{
+    height: fit-content;
+}
+
+.made_by{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    gap: 0.5rem;
+}
+
+.made_by img{
+    width: 1.5rem;
+    height: 1.5rem;        
+    border-radius: 999px;   
+    object-fit: cover;
+}
+
+.your_viewmasters{
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin: 1.25rem; 
+}
+
+.plus_viewmaster{
+    border-radius: 999px;
+    border: 1.5px dashed var(--color-green);
+    background-color: var(--color-green-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.plus_viewmaster_button{
+    margin: 0 -0.125rem -0.5rem 0;
+}
+
+.gallery_recents{
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr);
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.25rem;
+}
+
+.gallery_recents img{
+    object-fit: cover;
+    place-self: center;
+    height: 5.25rem;
+    width: 5.25rem;
+    border-radius: 1rem;
+}
+
+.gallery_recent_last {
+    position: relative;  /* anchor for the overlay */
+    height: 5.25rem;
+    width: 5.25rem;
+}
+
+.gallery_recent_last img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 1rem;
+    display: block;
+}
+
+.gallery_recent_overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 1rem;
+    background: rgba(0, 77, 45, 0.75);
+    backdrop-filter: blur(3px) brightness(1.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.gallery_recent_count {
+    color: var(--color-white);
+    font-size: 1.25rem;
+    font-family: var(--font-display);
+    margin-bottom: -0.25rem;
+}
+
+.sticker_blocks{
+    width: 100vw;
+}
+
+.stickers_collected{
+    display: flex; 
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 1.25rem; 
+    align-items: center;
+}
+
+.profile_stickers{
+    height: 5.25rem;
+}

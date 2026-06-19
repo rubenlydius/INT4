@@ -8,6 +8,14 @@
 
 @font-face {
   font-family: 'SunAntwerpen';
+  src: url('/fonts/SunAntwerpen_300.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SunAntwerpen';
   src: url('/fonts/SunAntwerpen_500.woff') format('woff');
   font-weight: 500;
   font-style: normal;
@@ -42,6 +50,7 @@
   --color-green:     #00B569;
   --color-green-50:  #EEF9F4;
   --color-green-100: #BEF5DE;
+  --color-green-500: #00D77D;
   --color-green-600: #009255;
   --color-green-900: #002B19;
 
@@ -163,19 +172,26 @@ p{
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   width: 100%;
-  padding: 1rem;
+  padding: 1rem 1rem 0 1rem;
   position: relative;
   z-index: 2;
   box-sizing: border-box;
+  background-color: #ffffff;
 }
 
 .top h1 {
   grid-column: 2;
   text-align: center;
   font-size: 1rem;
+
 }
 
 .comments_title{
   padding: 1rem
 }
 
+.titleTransititon{
+  margin-top: 0rem;
+  width: 100vw;
+  
+}

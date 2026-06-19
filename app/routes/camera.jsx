@@ -1,3 +1,4 @@
+import { useParams, Link } from "react-router";
 import { useEffect, useRef } from 'react';
 import styles from '../styles/camera.module.css';
 
@@ -5,6 +6,11 @@ import cameraTop from '../assets/camera_top.svg';
 import captureButton from '../assets/camera_capture.svg'
 import flipCamera from '../assets/flip_camera.svg'
 import flashCamera from '../assets/camera_flash.svg'
+
+
+export function meta() {
+    return [{ title: "Camera" }];
+  }
 
 export default function Camera() {
     const videoRef = useRef(null);
@@ -92,11 +98,13 @@ export default function Camera() {
                 </div>
 
                 <div className={styles.bottomControls}>
+                    <Link to={`/camera/gallery`}>
                         <img 
                             src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp" 
                             alt="gallery" 
                             className={styles.gallery}
                         />
+                    </Link>
 
                     <button className={`${styles.controlBtn} ${styles.captureBtn}`}>
                         <img src={captureButton} alt="Capture Gem" />
