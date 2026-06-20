@@ -1,7 +1,10 @@
 import type { Config } from "@react-router/dev/config";
 
+const isProduction = process.env.GITHUB_ACTIONS === "true";
+
 export default {
   ssr: false,
+  basename: isProduction ? "/INT4/" : "/",
 
   future: {
     v8_middleware: true,
