@@ -10,16 +10,4 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
-
-  build: {
-    assetsDir: "assets",
-  },
-  experimental: {
-    renderBuiltUrl(filename, { type }) {
-      if (isProduction && type === "asset") {
-        return `/INT4/${filename}`;
-      }
-      return filename;
-    }
-  }
 });
