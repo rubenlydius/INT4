@@ -1,0 +1,955 @@
+.page {
+  --photo-bottom: 130px;
+  --crossstitch-bottom: 135px;
+  --black-rise: 41px;
+  position: relative;
+  height: 100svh;
+  background-color: var(--color-white);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hide the global navbar on onboarding */
+.page~nav {
+  display: none;
+}
+
+/* Top pattern */
+.topPatternRow {
+  display: flex;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.topPattern {
+  width: 100%;
+  flex-shrink: 0;
+  display: block;
+}
+
+/* Skip bar */
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--space-4) var(--space-4);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* Back button */
+.backBtn {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-green-50);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4.6px 0 rgba(0, 0, 0, 0.07);
+}
+
+/* Skip button */
+.skip {
+  width: 74px;
+  height: 40px;
+  background-color: var(--color-white);
+  border: 1.5px solid var(--color-green);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--color-black);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.skipArrow {
+  font-size: 1.25rem;
+  line-height: 1;
+  display: inline-block;
+}
+
+/* Slide Container */
+.slide {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 120px;
+}
+
+.content {
+  padding: var(--space-1) var(--space-6) 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  color: var(--color-green);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-size: 1.875rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--color-black);
+}
+
+.orange {
+  color: var(--color-orange);
+}
+
+.greenBold {
+  color: var(--color-green);
+  font-weight: 700;
+}
+
+.body {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  line-height: 1.4;
+  color: var(--color-black);
+}
+
+/* City background */
+.imageSection {
+  position: absolute;
+  bottom: 130px;
+  opacity: 0.5;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.cityBg {
+  width: 100%;
+  display: block;
+}
+
+/* Black ground behind city pixels */
+.blackGround {
+  display: none;
+}
+
+/* Group photo */
+.groupPhoto {
+  position: absolute;
+  bottom: var(--photo-bottom);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Cross-stitch */
+.bottomPattern {
+  position: absolute;
+  bottom: var(--crossstitch-bottom);
+  left: 0;
+  width: 100%;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Map image */
+.mapImageSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-3) var(--space-6) 0;
+  flex: 1;
+  min-height: 0;
+}
+
+.mapImage {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 48dvh;
+  border-radius: 20px;
+  object-fit: contain;
+}
+
+/* Diamonds — slide 2 */
+.orangeDiamond {
+  position: absolute;
+  right: 35px;
+  bottom: 345px;
+  width: 83.04px;
+  height: 72.82px;
+  pointer-events: none;
+}
+
+.greenDiamond {
+  position: absolute;
+  left: 20px;
+  bottom: 262px;
+  pointer-events: none;
+}
+
+/* Slide 3 — Find the Hidden Gem */
+.headingWithPattern {
+  display: flex;
+  align-items: flex-end;
+  gap: 9px;
+}
+
+.titlePattern {
+  flex-shrink: 0;
+  margin-bottom: 8px;
+}
+
+.circleBackground {
+  position: absolute;
+  right: -80px;
+  top: 225px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cameraSection {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+padding: var(--space-4) var(--space-6) var(--space-4) var(--space-6);
+  z-index: 1;
+  flex: 1.5;
+  min-height: 0;
+}
+
+.cameraWrapper {
+  position: relative;
+  flex-shrink: 1;
+  max-height: 38dvh;
+}
+
+.cameraImage {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 38dvh;
+  object-fit: contain;
+  display: block;
+}
+
+.takePicRow {
+  position: absolute;
+  top: 32px;
+  left: -38px;
+  display: flex;
+  align-items: end;
+  z-index: 3;
+}
+
+.takePicLabel {
+  background-color: var(--color-green);
+  color: var(--color-white);
+  padding: var(--space-2) var(--space-4);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+
+.flashIcon {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 3;
+  pointer-events: none;
+  transform: scale(0.85);
+}
+
+.cameraControls {
+  position: absolute;
+  bottom: var(--space-2);
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-4);
+  z-index: 3;
+}
+
+.cameraControls img[src*="galery_square"],
+.cameraControls img[src*="flip_camera_onbording"] {
+  height: 26.35px !important;
+  width: auto !important;
+  object-fit: contain;
+  transform: none !important;
+}
+
+.takePicPattern {
+  flex-shrink: 0;
+  transform: scale(1.15);
+}
+
+.noteRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-6) 0;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.starPattern {
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.noteText {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--color-black);
+}
+
+/* Slide 4 — Your Digital ViewMaster */
+.discSection {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-2) 0 0;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;
+  overflow: visible;
+}
+
+.discBackground {
+  position: absolute;
+  right: -15px;
+  top: -25px;
+  z-index: 0;
+  pointer-events: none;
+  transform: scale(1.1);
+  transform-origin: right top;
+}
+
+.discImage {
+  position: relative;
+  width: auto;
+  height: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  z-index: 1;
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-6);
+  position: relative;
+  z-index: 2;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.iconCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--color-orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.iconCircle img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+.featureText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.featureTitle {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-orange);
+}
+
+.featureBody {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--color-grey);
+}
+
+/* Sticker animation */
+@keyframes cameraBtnPress {
+  0% { transform: scale(1); }
+  12% { transform: scale(0.62); }
+  76% { transform: scale(0.62); }
+  88% { transform: scale(1.14); }
+  94% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@keyframes stickerReveal {
+  0% { transform: translate(-50%, -50%) scale(0) rotate(-8deg); opacity: 0; }
+  20% { transform: translate(-50%, -50%) scale(1.18) rotate(3deg); opacity: 1; }
+  32% { transform: translate(-50%, -50%) scale(0.93) rotate(-1deg); opacity: 1; }
+  42% { transform: translate(-50%, -50%) scale(1.04) rotate(0deg); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  72% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+  92% { transform: translate(-50%, -50%) scale(0.7) rotate(4deg); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(0) rotate(4deg); opacity: 0; }
+}
+
+.cameraBtnAnim {
+  animation: cameraBtnPress 2.2s ease forwards;
+}
+
+.stickerOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.stickerAnim {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+  animation: stickerReveal 1.6s ease 0.3s forwards;
+}
+
+/* Footers */
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 5.5rem var(--space-6) var(--space-6);
+  background-color: var(--color-black);
+  z-index: 3;
+  clip-path: polygon(0 var(--black-rise), 100% 0, 100% 100%, 0 100%);
+}
+
+.footerLight {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  z-index: 15;
+  background-color: var(--color-white);
+}
+
+.footerCompact {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-6) var(--space-6);
+  z-index: 15;
+  background-color: var(--color-white);
+}
+
+/* Dots */
+.dots {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-green-100);
+  display: inline-block;
+}
+
+.dotActive {
+  width: 12px;
+  height: 12px;
+  display: inline-block;
+}
+
+/* Continue button */
+.continueBtn {
+  width: 100%;
+  padding: var(--space-3);
+  background-color: var(--color-green);
+  color: var(--color-white);
+  border-radius: var(--radius-full);
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  font-weight: 800;
+  text-align: center;
+  cursor: pointer;
+  border: none;
+  transition: background-color var(--transition-fast);
+}
+
+.continueBtn:active {
+  background-color: var(--color-green-600);
+}
+
+/* SHORT SCREENS */
+@media (max-height: 700px) and (max-width: 644px) {
+  .discImage {
+    max-height: 140px;
+  }
+
+  .discSection {
+    padding-top: 0;
+  }
+
+  .featureList {
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .featureItem {
+    gap: 10px;
+  }
+
+  .iconCircle {
+    width: 30px;
+    height: 30px;
+  }
+
+  .iconCircle img {
+    width: 13px;
+    height: 13px;
+  }
+
+  .featureTitle {
+    font-size: 0.9375rem;
+  }
+
+  .featureBody {
+    font-size: 0.8125rem;
+    line-height: 1.3;
+  }
+}
+
+/* VERY SHORT SCREENS */
+@media (max-height: 680px) and (max-width: 644px) {
+  .discImage {
+    max-height: 110px;
+  }
+
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .body {
+    font-size: 0.875rem;
+    line-height: 1.3;
+  }
+
+  .featureTitle {
+    font-size: 0.875rem;
+  }
+
+  .featureBody {
+    font-size: 0.75rem;
+    line-height: 1.25;
+  }
+
+  .featureList {
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .slide {
+    padding-bottom: 100px;
+  }
+}
+
+/* DESKTOP */
+@media (min-width: 645px) {
+
+  .topPatternRow { overflow: visible; }
+  .topPattern { width: 33.33%; }
+
+  .page { display: flex; flex-direction: column; }
+
+  .topBar {
+    width: 100%;
+    padding: var(--space-6) var(--space-16);
+    box-sizing: border-box;
+  }
+
+  /* Typography */
+  .label {
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  .heading {
+    font-size: 4rem;
+    line-height: 1.2;
+  }
+
+  .body {
+    font-size: 1.25rem;
+    line-height: 1.65;
+  }
+
+  .slide {
+    flex: 1;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    column-gap: var(--space-12);
+    row-gap: var(--space-3);
+    align-content: center;
+    align-items: center;
+    padding: var(--space-6) var(--space-16) var(--space-4);
+    overflow: visible;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .content {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0;
+    gap: var(--space-4);
+    align-self: center;
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Slide 0 */
+  .imageSection {
+    left: 55%;
+    width: 42%;
+    bottom: 0;
+  }
+
+  .groupPhoto {
+    left: auto;
+    right: var(--space-12);
+    transform: none;
+    width: 38%;
+    bottom: 80px;
+    z-index: 1;
+  }
+
+  .bottomPattern {
+    left: 55%;
+    width: 42%;
+    bottom: 16px;
+  }
+
+  .blackGround {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 55%;
+    width: 42%;
+    aspect-ratio: 399 / 71;
+    background-color: var(--color-black);
+    clip-path: polygon(0 60%, 100% 0%, 100% 100%, 0% 100%);
+    z-index: 3;
+  }
+
+  /* Slide 1 */
+  .mapImageSection {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0;
+    justify-content: center;
+    align-self: center;
+  }
+
+  .mapImage {
+    max-height: 74dvh;
+    width: auto;
+    max-width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.14);
+  }
+
+  .orangeDiamond {
+    right: 5%;
+    bottom: 48%;
+    width: 96px;
+    height: auto;
+  }
+
+  .greenDiamond {
+    left: 46%;
+    bottom: 26%;
+    width: 64px;
+    height: auto;
+  }
+
+  /* Button sizes + hover effects */
+  .backBtn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.375rem;
+    transition: background-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .backBtn:hover {
+    background-color: var(--color-green);
+    transform: scale(1.08);
+  }
+
+  .backBtn:hover img {
+    filter: invert(1);
+  }
+
+  .skip {
+    width: 96px;
+    height: 48px;
+    font-size: 1.0625rem;
+    transition: background-color 0.18s ease, color 0.18s ease;
+  }
+
+  .skip:hover {
+    background-color: var(--color-green);
+    color: var(--color-white);
+  }
+
+  .skip:hover .skipArrow {
+    filter: invert(1);
+  }
+
+  .continueBtn {
+    padding: var(--space-4) var(--space-14);
+    font-size: 1.25rem;
+    transition: background-color 0.18s ease, transform 0.18s ease;
+  }
+
+  .continueBtn:hover {
+    background-color: var(--color-green-600);
+    transform: scale(1.03);
+  }
+
+  /* ── Slide 2 — Find the Hidden Gem ── */
+  .cameraSection {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: var(--space-16);
+    width: calc(50% - var(--space-12));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+    z-index: 1;
+  }
+
+  .cameraWrapper {
+    position: relative;
+    width: fit-content;
+    height: fit-content;
+    overflow: visible;
+  }
+
+  .cameraImage {
+    height: 82dvh;
+    width: auto;
+    max-width: 100%;
+    display: block;
+  }
+
+  /* Flash */
+  .flashIcon {
+    pointer-events: auto;
+    cursor: pointer;
+    transform: scale(1.15);
+    transition: transform 0.18s ease, opacity 0.15s ease;
+  }
+
+  .flashIcon:hover {
+    transform: scale(1.3);
+    opacity: 0.75;
+  }
+
+  /* Camera control buttons */
+  .cameraControls img[src*="galery_square"],
+  .cameraControls img[src*="flip_camera_onbording"] {
+    height: 38px !important;
+    cursor: pointer;
+    transition: transform 0.18s ease, opacity 0.15s ease;
+  }
+
+  .cameraControls img[src*="galery_square"]:hover,
+  .cameraControls img[src*="flip_camera_onbording"]:hover {
+    transform: scale(1.2);
+    opacity: 0.75;
+  }
+
+  /* Shutter button */
+  .cameraControls img[src*="camera_click_button"] {
+    transform: scale(1.35);
+    cursor: pointer;
+    transition: transform 0.18s ease, opacity 0.15s ease;
+  }
+
+  .cameraControls img[src*="camera_click_button"]:hover {
+    transform: scale(1.5);
+    opacity: 0.85;
+  }
+
+  .circleBackground {
+    right: -5%;
+    top: 5%;
+    transform: scale(1.5);
+    transform-origin: right top;
+    opacity: 0.55;
+  }
+
+  .noteRow {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 0 0 0;
+    margin-top: 0;
+  }
+
+  .noteText {
+    font-size: 1.125rem;
+  }
+
+  .stickerAnim {
+    left: calc(75% - 40px);
+  }
+
+  /* Slide 3 — Your Digital ViewMaster */
+  .discSection {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    padding: 0;
+    justify-content: center;
+    align-self: center;
+  }
+
+  .discImage {
+    width: 420px;
+    max-width: 90%;
+    height: auto;
+    max-height: none;
+  }
+
+  .discBackground {
+    right: 5%;
+    top: -5%;
+    transform: scale(1.7);
+    transform-origin: center top;
+  }
+
+  .featureList {
+    grid-column: 1;
+    grid-row: 2;
+    margin-top: 0;
+    padding-left: 0;
+    gap: var(--space-4);
+  }
+
+  .featureItem {
+    gap: var(--space-5);
+  }
+
+  .iconCircle {
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+  }
+
+  .iconCircle img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .featureTitle {
+    font-size: 1.25rem;
+  }
+
+  .featureBody {
+    font-size: 1rem;
+  }
+
+  /* Footer */
+  .footer,
+  .footerLight,
+  .footerCompact {
+    position: relative;
+    background-color: transparent !important;
+    clip-path: none !important;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-6);
+    padding: var(--space-4) var(--space-16) var(--space-8);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+  }
+
+  .continueBtn {
+    width: auto;
+    padding: var(--space-4) var(--space-12);
+    font-size: 1.125rem;
+  }
+}

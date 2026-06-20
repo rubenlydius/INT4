@@ -1,9 +1,12 @@
 import type { Config } from "@react-router/dev/config";
 
+const isProduction = process.env.GITHUB_ACTIONS === "true";
+
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
-  ssr: true,
+  basename: isProduction ? "/INT4/" : "/",
+
+  ssr: false,
+
   future: {
     v8_middleware: true,
     v8_passThroughRequests: true,

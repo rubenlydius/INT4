@@ -18,4 +18,6 @@ export default [
   route("/profile/:id/gems", "routes/profile.gems.jsx"),
   route("/profile/:id/about", "routes/profile.about.jsx"),
   route("/profile/:id/discovered", "routes/profile.discovered.jsx"),
+  route("/onboarding", "routes/onboarding.jsx"),
+  route("/signup", "routes/signup.jsx"),
 ];
