@@ -1,6 +1,6 @@
 import styles from '../styles/profile.module.css'
 import { useState } from 'react';
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import { profiles } from '../lib/profiles'
 
 import settingsIcon from '../assets/settings_icon.svg'
@@ -21,6 +21,7 @@ export function meta() {
 
 export default function Profile() {
     const { id } = useParams()
+    const navigate = useNavigate()
     const profile = profiles[id] || profiles.ona
 
     const isOwner = profile.type === 'owner'
@@ -29,7 +30,7 @@ export default function Profile() {
 
     return (
         <div className={styles.profile_page_wrapper}>
-            <div className={styles.settings_icon}>
+            <div className={styles.settings_icon} onClick={() => navigate(`/profile/${id}/settings`)}>
                 <img src={settingsIcon} alt="settings" />
             </div>
 
@@ -68,7 +69,7 @@ export default function Profile() {
                     <div className={styles.aboutyou_content}>
                         <div className={styles.aboutyou_header}>
                             <h2 className={styles.profile_h2}>About you</h2>
-                            <div className={styles.edit_flex}>
+                            <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/about`)}>
                                 <p className={styles.orange_to_detail}>Edit</p>
                                 <img src={simpleOrangeArrow} alt="arrow" />
                             </div>
@@ -88,7 +89,7 @@ export default function Profile() {
                 <>
                     <div className={styles.gems_added_header}>
                         <h2 className={styles.profile_h2}>Gems added by you</h2>
-                        <div className={styles.edit_flex}>
+                        <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/gems`)}>
                             <p className={styles.orange_to_detail}>View all</p>
                             <img src={simpleOrangeArrow} alt="arrow" />
                         </div>
@@ -106,7 +107,7 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Discovered gems</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/discovered`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
@@ -131,7 +132,7 @@ export default function Profile() {
                 <h2 className={styles.profile_h2}>
                     {isOwner ? 'Your Viewmasters' : `${profile.name}'s Viewmasters`}
                 </h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/viewmasters`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
@@ -149,7 +150,7 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Photos taken</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate('/camera/gallery')}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
@@ -168,7 +169,7 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Sticker collection</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/stickers`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
@@ -176,7 +177,7 @@ export default function Profile() {
             <img src={stickerSeparator} alt="" className={styles.sticker_blocks} />
             <div className={styles.stickers_collected}>
                 {profile.stickers.map((sticker, i) => (
-                    <img key={i} src={sticker} alt="sticker" className={styles.profile_stickers}/>
+                    <img key={i} src={sticker} alt="sticker" className={styles.profile_stickers} />
                 ))}
             </div>
             <img src={stickerBottom} alt="" className={styles.sticker_blocks} />
