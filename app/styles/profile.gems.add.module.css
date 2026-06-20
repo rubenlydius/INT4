@@ -234,3 +234,39 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+.address_wrap {
+    position: relative;
+}
+
+.suggestions {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background-color: var(--color-white);
+    border-radius: 16px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.12);
+    z-index: 1000;
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.suggestion {
+    padding: 0.75rem 1.25rem;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-black);
+    cursor: pointer;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.suggestion:last-child {
+    border-bottom: none;
+}
+
+.suggestion:active {
+    background-color: var(--color-green-100);
+}

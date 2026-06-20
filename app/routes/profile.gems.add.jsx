@@ -29,6 +29,21 @@ async function geocodeAddress(address) {
   return null
 }
 
+async function fetchSuggestions(query) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query + ', Antwerp, Belgium')}&format=json&limit=5`
+    )
+    return await res.json()
+  } catch {
+    return []
+  }
+}
+
+function shortAddress(displayName) {
+  return displayName.split(',').slice(0, 3).join(',').trim()
+}
+
 export default function AddGem() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -42,10 +57,12 @@ export default function AddGem() {
   const [geocoding, setGeocoding] = useState(false)
   const [geocodeError, setGeocodeError] = useState(false)
   const [geocoded, setGeocoded] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
 
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const circleRef = useRef(null)
+  const debounceRef = useRef(null)
 
   useEffect(() => {
     let mounted = true
@@ -78,6 +95,7 @@ export default function AddGem() {
 
     return () => {
       mounted = false
+      if (debounceRef.current) clearTimeout(debounceRef.current)
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove()
         mapInstanceRef.current = null
@@ -93,8 +111,32 @@ export default function AddGem() {
     mapInstanceRef.current.setView([coords.lat, coords.lng], 16)
   }, [coords, radius])
 
+  function handleAddressChange(value) {
+    setAddress(value)
+    setGeocodeError(false)
+    setGeocoded(false)
+    setSuggestions([])
+
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    if (value.trim().length < 3) return
+
+    debounceRef.current = setTimeout(async () => {
+      const results = await fetchSuggestions(value)
+      setSuggestions(results)
+    }, 400)
+  }
+
+  function selectSuggestion(s) {
+    setAddress(shortAddress(s.display_name))
+    setCoords({ lat: parseFloat(s.lat), lng: parseFloat(s.lon) })
+    setGeocoded(true)
+    setGeocodeError(false)
+    setSuggestions([])
+  }
+
   async function handleAddressBlur() {
-    if (!address.trim()) return
+    setSuggestions([])
+    if (!address.trim() || geocoded) return
     setGeocoding(true)
     setGeocodeError(false)
     const result = await geocodeAddress(address)
@@ -146,20 +188,36 @@ export default function AddGem() {
           <label htmlFor="gem-address" className={styles.label}>
             Address<span className={styles.required}>*</span>
           </label>
-          <div className={`${styles.input_wrap} ${geocodeError ? styles.input_wrap_error : ''}`}>
-            <img src={locationIcon} alt="" className={styles.input_icon} />
-            <input
-              id="gem-address"
-              name="address"
-              type="text"
-              autoComplete="off"
-              className={styles.input}
-              placeholder="Where is it?"
-              value={address}
-              onChange={e => { setAddress(e.target.value); setGeocodeError(false); setGeocoded(false) }}
-              onBlur={handleAddressBlur}
-              onKeyDown={e => e.key === 'Enter' && handleAddressBlur()}
-            />
+          <div className={styles.address_wrap}>
+            <div className={`${styles.input_wrap} ${geocodeError ? styles.input_wrap_error : ''}`}>
+              <img src={locationIcon} alt="" className={styles.input_icon} />
+              <input
+                id="gem-address"
+                name="address"
+                type="text"
+                autoComplete="off"
+                className={styles.input}
+                placeholder="Where is it?"
+                value={address}
+                onChange={e => handleAddressChange(e.target.value)}
+                onBlur={handleAddressBlur}
+                onKeyDown={e => e.key === 'Enter' && handleAddressBlur()}
+              />
+            </div>
+            {suggestions.length > 0 && (
+              <ul className={styles.suggestions}>
+                {suggestions.map((s, i) => (
+                  <li
+                    key={i}
+                    className={styles.suggestion}
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => selectSuggestion(s)}
+                  >
+                    {shortAddress(s.display_name)}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
           {geocoding && <p className={styles.hint}>Finding location…</p>}
           {geocodeError && <p className={styles.hint_error}>Address not found — try being more specific</p>}
