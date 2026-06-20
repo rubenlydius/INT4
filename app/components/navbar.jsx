@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router";
 import styles from './navbar.module.css';
+import { useState, useEffect } from "react";
 
 import lensB from '../assets/lens_iconB.svg';
 import mapB from '../assets/map_iconB.svg';
@@ -12,10 +13,12 @@ import profileW from '../assets/profile_iconW.svg';
 
 export default function Navbar() {
   const location = useLocation();
+  const [lensHref, setLensHref] = useState("/lens/ann");
 
-  const lensHref = typeof window !== "undefined"
-    ? `/lens/${localStorage.getItem('selectedLens') || 'ann_d'}`
-    : "/lens/ann_d";
+  useEffect(() => {
+    const lens = localStorage.getItem('selectedLens') || 'ann';
+    setLensHref(`/lens/${lens}`);
+  }, []);
 
   const items = [
     { to: lensHref, label: "Lens", iconB: lensB, iconW: lensW, match: "/lens" },
