@@ -7,6 +7,7 @@ export default [
   route("/gem/detail/:gemId", "routes/gem.detail.jsx"),
   route("/camera", "routes/camera.jsx"),
   route("/camera/gallery", "routes/camera.gallery.jsx"),
+  route("/camera/viewmaster", "routes/camera.viewmaster.jsx"),
   route("/profile/:id", "routes/profile.jsx"),
   route("/profile/:id/settings", "routes/profile.settings.jsx"),
   route("/profile/:id/settings/details", "routes/profile.settings.details.jsx"),
