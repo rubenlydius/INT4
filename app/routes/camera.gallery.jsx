@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { storageUrl } from '../lib/storage'
 import styles from '../styles/cameragallery.module.css'
 
@@ -20,6 +20,7 @@ export function meta() {
 const STATIC_PHOTO_COUNT = 12;
 
 export default function Gallery() {
+    const navigate = useNavigate()
     const [allPhotos, setAllPhotos] = useState([]);
     const [recentPhoto, setRecentPhoto] = useState(storageUrl(`gems/gallery/gallery_1.webp`));
     const [selectedPhotoId, setSelectedPhotoId] = useState(null);
@@ -124,7 +125,7 @@ export default function Gallery() {
                     ))}
                 </div>
 
-                <div className={styles.viewmaster_container}>
+                <div className={styles.viewmaster_container} onClick={() => navigate('/camera/viewmaster')} style={{ cursor: 'pointer' }}>
                     <img src={containerTop} alt="" />
                     <div className={styles.viewmaster_content}>
                         <div className={styles.left_block}>
