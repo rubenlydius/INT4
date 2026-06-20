@@ -1,9 +1,14 @@
 import type { Config } from "@react-router/dev/config";
 
+// GitHub Actions automatically sets GITHUB_ACTIONS to 'true' during deployment builds
+const isProduction = process.env.GITHUB_ACTIONS === "true";
+
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
-  ssr: true,
+  // Use the repo subfolder in production, use root "/" for local development
+  basename: isProduction ? "/INT4/" : "/",
+
+  ssr: false,
+
   future: {
     v8_middleware: true,
     v8_passThroughRequests: true,
