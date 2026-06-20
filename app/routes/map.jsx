@@ -85,7 +85,8 @@ export default function Map() {
         .select("*")
         .not("lat", "is", null)
         .not("lng", "is", null)
-        .eq("a6_link", dbDesignerName);
+        .eq("a6_link", dbDesignerName)
+        .eq("verified", true);
 
       if (error) {
         console.error(error.message);

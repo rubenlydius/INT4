@@ -76,12 +76,13 @@
     background-color: var(--color-green);
     color: var(--color-white);
     font-weight: 600;
+    padding: 0.5rem 1rem;
 }
 
 .pill_x {
-    width: 1.1rem;
-    height: 1.1rem;
-    padding: 0.15rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.25rem;
     object-fit: contain;
     background-color: var(--color-white);
     border-radius: 999px;
