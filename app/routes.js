@@ -1,8 +1,7 @@
 import { route } from "@react-router/dev/routes";
 
 export default [
-  route("lens/:id", "routes/lens.jsx"), 
-
+  route("/lens/:id", "routes/lens.jsx"), 
   route("/map", "routes/map.jsx"),
   route("/gem/:gemId", "routes/gem.hunt.jsx"),
   route("/gem/detail/:gemId", "routes/gem.detail.jsx"),
