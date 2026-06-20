@@ -63,7 +63,7 @@
     padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
 /* Shared field wrapper */
@@ -74,10 +74,9 @@
 }
 
 .label {
-    font-family: var(--font-body);
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-grey);
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-black);
 }
 
 .required {
@@ -161,11 +160,9 @@
     -webkit-appearance: none;
     height: 6px;
     border-radius: 999px;
-    background: linear-gradient(
-        to right,
-        var(--color-green) var(--p, 0%),
-        var(--color-green-100) var(--p, 0%)
-    );
+    background: linear-gradient(to right,
+            var(--color-green) var(--p, 0%),
+            var(--color-green-100) var(--p, 0%));
     outline: none;
     cursor: pointer;
     margin-top: 0.5rem;
@@ -289,12 +286,13 @@
     background-color: var(--color-green);
     color: var(--color-white);
     font-weight: 600;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
 }
 
 .type_pill_x {
-    width: 1.1rem;
-    height: 1.1rem;
-    padding: 0.15rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.25rem;
     object-fit: contain;
     background-color: var(--color-white);
     border-radius: 999px;
@@ -396,7 +394,7 @@
 }
 
 .textarea:focus {
-    box-shadow: 0 0 0 2px var(--color-orange-200);
+    box-shadow: 0 0 0 2px var(--color-green);
 }
 
 .char_count {
@@ -448,7 +446,8 @@
     background-color: var(--color-white);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-    overflow: hidden;
+    max-height: 45vh;
+    overflow-y: auto;
     z-index: 100;
 }
 
@@ -484,6 +483,86 @@
 .optional {
     color: var(--color-green);
     font-style: italic;
+}
+
+/* Spoiler warning in gem name description */
+.spoiler_warning {
+    color: var(--color-orange);
+    font-weight: 700;
+}
+
+/* Hint photos upload box (empty state) */
+.hint_photos_box {
+    width: 100%;
+    min-height: 180px;
+    border: 2px dashed var(--color-green);
+    border-radius: 12px;
+    background-color: var(--color-green-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Grid of uploaded hint photo thumbnails */
+.hint_photos_grid {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.hint_photo_wrap {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.hint_photo_thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hint_photo_remove {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.hint_photo_remove_icon {
+    width: 12px;
+    height: 12px;
+    filter: brightness(0) invert(1);
+}
+
+/* Add more photos button (appears next to thumbnails) */
+.hint_add_more {
+    width: 100px;
+    height: 100px;
+    border-radius: 10px;
+    border: 2px dashed var(--color-green);
+    background-color: var(--color-green-50);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 /* Sticker editor overlay */
@@ -626,4 +705,296 @@
 .continue_disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+/* ── Review page (step 4) ── */
+.review_header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.review_header_left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.review_gem_name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-black);
+    line-height: 1.1;
+    text-transform: none;
+}
+
+.review_added_by {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-grey);
+}
+
+.review_pills {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.review_pill {
+    font-family: var(--font-body);
+    font-size: 16px;
+    background-color: var(--color-green-100);
+    color: var(--color-green-900);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+}
+
+.review_sticker {
+    width: 130px;
+    height: 130px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
+}
+
+.review_section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.review_location_name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-black);
+    line-height: 1.1;
+    text-transform: none;
+}
+
+.review_desc {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-black);
+    line-height: 1.65;
+}
+
+/* Address row */
+.review_address_row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.25rem;
+}
+
+.review_address_item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.review_icon_circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #EEF9F4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+.review_address_icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.review_green_divider {
+    height: 44px;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.review_address_text {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    color: var(--color-black);
+    line-height: 1.4;
+}
+
+.review_radius_label {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-black);
+    line-height: 1;
+    margin-bottom: 2px;
+}
+
+.review_radius_value {
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-black);
+    line-height: 1;
+}
+
+.review_radius_unit {
+    font-size: 1rem;
+    margin-left: 1px;
+    color: var(--color-green);
+}
+
+/* Clues section */
+.review_clues_section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.review_section_title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    color: var(--color-black);
+    text-transform: none;
+}
+
+.review_clue_subtitle {
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--color-orange);
+    text-transform: none;
+}
+
+.review_clue_text {
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    color: var(--color-black);
+    line-height: 1.65;
+    margin-bottom: 0.25rem;
+}
+
+.review_text_hint_block {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.review_corner_decoration {
+    position: absolute;
+    bottom: 10px;
+    right: -16px;
+    width: auto;
+    height: auto;
+    pointer-events: none;
+}
+
+/* Visual hints: */
+.review_hints_row {
+    display: flex;
+    overflow-x: auto;
+    gap: 12px;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+}
+
+.review_hints_row::-webkit-scrollbar {
+    display: none;
+}
+
+.review_hint_wrap {
+    flex-shrink: 0;
+    width: 170px;
+    height: 170px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.review_hint_wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 12px;
+    box-shadow: inset 0 3px 14px rgba(0, 0, 0, 0.18);
+    pointer-events: none;
+}
+
+.review_hint_photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.review_no_hints {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    color: var(--color-grey);
+    font-style: italic;
+}
+
+/* About You */
+.review_about_card {
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.review_about_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.review_about_avatar {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.review_about_name_wrap {
+    display: flex;
+    flex-direction: column;
+}
+
+.review_about_name {
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-black);
+    line-height: 1.2;
+}
+
+.review_about_bio {
+    font-family: var(--font-body);
+    font-size: 1.125rem;
+    color: var(--color-black);
+    line-height: 1.65;
+}
+
+.review_about_socials {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 1rem;
+    height: 2rem;
 }

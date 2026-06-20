@@ -9,6 +9,14 @@ import xIcon from '../assets/x_icon.svg'
 import locationIcon from '../assets/location_icon_green.svg'
 import foldedMapIcon from '../assets/folded_map_icon.svg'
 import dropdownArrow from '../assets/dropdownArrow.svg'
+import photosStackedIcon from '../assets/photos_stacked_icon.svg'
+import walkingIcon from '../assets/walking_icon.svg'
+import greenDivider from '../assets/green_devider_add_gem.svg'
+import cornerDecoration from '../assets/corrner_decoration_add_gem.svg'
+import instagramIcon from '../assets/instagram_icon.svg'
+import pinterestIcon from '../assets/pinterest_icon.svg'
+import behanceIcon from '../assets/behance_icon.svg'
+import { profiles } from '../lib/profiles'
 
 export function meta() {
   return [{ title: "Add a Gem" }]
@@ -16,7 +24,7 @@ export function meta() {
 
 const ANTWERP = { lat: 51.2194, lng: 4.4025 }
 const TOTAL_STEPS = 4
-const STEP_TITLES = ['Location', 'The gem', 'Details', 'Review']
+const STEP_TITLES = ['Location', 'The gem', 'The Hints', 'Gem Description']
 
 const DESIGNERS = [
   { name: 'Dries Van Noten',       short: 'Dries V' },
@@ -29,6 +37,7 @@ const DESIGNERS = [
 
 const DESC_MAX = 500
 const CONN_MAX = 500
+const HINT_MAX = 1000
 
 async function geocodeAddress(address) {
   try {
@@ -178,9 +187,21 @@ export default function AddGem() {
   const circleRef = useRef(null)
   const debounceRef = useRef(null)
 
-  // Revoke the sticker preview blob URL when the component unmounts to free memory
+  // Step 3
+  const [gemName, setGemName] = useState('')
+  const [textHint, setTextHint] = useState('')
+  const [hintPhotos, setHintPhotos] = useState([])
+  const [hintPreviews, setHintPreviews] = useState([])
+
+  const hintInputRef = useRef(null)
+  const hintPreviewUrlsRef = useRef([])
+
+  // Revoke all blob URLs when the component unmounts to free memory
   useEffect(() => {
-    return () => { if (stickerPreviewUrlRef.current) URL.revokeObjectURL(stickerPreviewUrlRef.current) }
+    return () => {
+      if (stickerPreviewUrlRef.current) URL.revokeObjectURL(stickerPreviewUrlRef.current)
+      hintPreviewUrlsRef.current.forEach(url => URL.revokeObjectURL(url))
+    }
   }, [])
 
   useEffect(() => {
@@ -390,6 +411,27 @@ export default function AddGem() {
     setPendingBlob(null)
   }
 
+  const canContinueStep3 = gemName.trim() && textHint.trim() && hintPhotos.length > 0
+
+  function handleHintPhotosChange(e) {
+    const files = Array.from(e.target.files || [])
+    if (!files.length) return
+    const remaining = 3 - hintPhotos.length
+    const toAdd = files.slice(0, remaining)
+    const newUrls = toAdd.map(f => URL.createObjectURL(f))
+    hintPreviewUrlsRef.current = [...hintPreviewUrlsRef.current, ...newUrls]
+    setHintPhotos(prev => [...prev, ...toAdd])
+    setHintPreviews(prev => [...prev, ...newUrls])
+    e.target.value = ''
+  }
+
+  function removeHintPhoto(index) {
+    URL.revokeObjectURL(hintPreviews[index])
+    hintPreviewUrlsRef.current = hintPreviewUrlsRef.current.filter((_, i) => i !== index)
+    setHintPhotos(prev => prev.filter((_, i) => i !== index))
+    setHintPreviews(prev => prev.filter((_, i) => i !== index))
+  }
+
   function handleBack() {
     if (step === 1) navigate(`/profile/${id}/gems`)
     else setStep(s => s - 1)
@@ -398,9 +440,11 @@ export default function AddGem() {
   function handleContinue() {
     if (step === 1 && canContinueStep1) setStep(2)
     if (step === 2 && canContinueStep2) setStep(3)
+    if (step === 3 && canContinueStep3) setStep(4)
+    if (step === 4) navigate(`/profile/${id}/gems`)
   }
 
-  const canContinue = step === 1 ? canContinueStep1 : step === 2 ? canContinueStep2 : false
+  const canContinue = step === 1 ? canContinueStep1 : step === 2 ? canContinueStep2 : step === 3 ? canContinueStep3 : true
 
   return (
     <div className={styles.page}>
@@ -547,11 +591,7 @@ export default function AddGem() {
                     <img src={stickerPreview} alt="sticker preview" className={styles.sticker_preview} />
                   ) : (
                     <div className={styles.sticker_icon_wrap}>
-                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" strokeWidth="1.5">
-                        <rect x="3" y="3" width="18" height="18" rx="3" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <path d="m21 15-5-5L5 21" />
-                      </svg>
+                      <img src={photosStackedIcon} alt="" width="48" height="48" />
                       <div className={styles.sticker_plus}>
                         <svg width="16" height="16" viewBox="0 0 24 24">
                           <path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
@@ -563,7 +603,7 @@ export default function AddGem() {
                 <input
                   ref={stickerInputRef}
                   type="file"
-                  name="image_url"
+                  name="sticker_url"
                   accept="image/*"
                   className={styles.sticker_input}
                   onChange={e => handleStickerChange(e.target.files?.[0])}
@@ -632,28 +672,238 @@ export default function AddGem() {
                 )}
               </div>
 
-              {a6Link && (
-                <div className={styles.textarea_wrap} style={{ marginTop: '1rem' }}>
-                  <label htmlFor="gem-connection" className={styles.connection_label}>
-                    Share what connects this place to the designer who inspired you.{' '}
-                    <span className={styles.optional}>(optional)</span>
-                  </label>
-                  <textarea
-                    id="gem-connection"
-                    name="connection_to"
-                    className={styles.textarea}
-                    placeholder="Dries Van Noten often draws inspiration from flowers, gardens, and the beauty of nature. I feel like the Begijnhof reflects that same spirit."
-                    value={connectionTo}
-                    maxLength={CONN_MAX}
-                    rows={4}
-                    onChange={e => setConnectionTo(e.target.value)}
-                  />
-                  <p className={styles.char_count}>{connectionTo.length}/{CONN_MAX}</p>
-                </div>
-              )}
+              <div className={styles.textarea_wrap} style={{ marginTop: '1rem' }}>
+                <label htmlFor="gem-connection" className={styles.connection_label}>
+                  Share what connects this place to the designer who inspired you.{' '}
+                  <span className={styles.optional}>(optional)</span>
+                </label>
+                <textarea
+                  id="gem-connection"
+                  name="connection_to"
+                  className={styles.textarea}
+                  placeholder="Dries Van Noten often draws inspiration from flowers, gardens, and the beauty of nature. I feel like the Begijnhof reflects that same spirit."
+                  value={connectionTo}
+                  maxLength={CONN_MAX}
+                  rows={4}
+                  onChange={e => setConnectionTo(e.target.value)}
+                />
+                <p className={styles.char_count}>{connectionTo.length}/{CONN_MAX}</p>
+              </div>
             </div>
           </>
         )}
+
+        {/* Step 3: The Hints */}
+        {step === 3 && (
+          <>
+            {/* Gem Name */}
+            <div className={styles.section_block}>
+              <p className={styles.section_heading}>
+                Gem Name<span className={styles.required}>*</span>
+              </p>
+              <p className={styles.sticker_desc}>
+                This name will be visible for people before they start their hunt, so make sure you{' '}
+                <strong className={styles.spoiler_warning}>don't spoil the actual name of the place</strong>
+              </p>
+              <div className={styles.input_wrap}>
+                <input
+                  id="gem-name"
+                  name="gem_name"
+                  type="text"
+                  autoComplete="off"
+                  className={styles.input}
+                  placeholder="Think of something obscure or fun"
+                  value={gemName}
+                  onChange={e => setGemName(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Text hint */}
+            <div className={styles.section_block}>
+              <p className={styles.section_heading}>
+                Text hint<span className={styles.required}>*</span>
+              </p>
+              <p className={styles.sticker_desc}>Write something abstract, don't make it too easy.</p>
+              <div className={styles.textarea_wrap}>
+                <textarea
+                  id="gem-hint"
+                  name="abstract"
+                  className={styles.textarea}
+                  placeholder="Begin your journey where wide concrete stairs climb toward glass and steel. Inside a metallic tunnel, solid walls dissolve into thousands of organic oval cutouts…"
+                  value={textHint}
+                  maxLength={HINT_MAX}
+                  rows={6}
+                  onChange={e => setTextHint(e.target.value)}
+                />
+                <p className={styles.char_count}>{textHint.length}/{HINT_MAX}</p>
+              </div>
+            </div>
+
+            {/* Visual hints */}
+            <div className={styles.section_block}>
+              <p className={styles.section_heading}>
+                Visual hints<span className={styles.required}>*</span>
+              </p>
+              <p className={styles.sticker_desc}>
+                Snap 1-3 hint photos, make them gradually easier. Skip the obvious storefront, shoot unique close-ups, textures, or street details instead.
+              </p>
+              {hintPreviews.length > 0 ? (
+                <div className={styles.hint_photos_grid}>
+                  {hintPreviews.map((url, i) => (
+                    <div key={i} className={styles.hint_photo_wrap}>
+                      <img src={url} alt={`hint ${i + 1}`} className={styles.hint_photo_thumb} />
+                      <button
+                        className={styles.hint_photo_remove}
+                        onClick={() => removeHintPhoto(i)}
+                        type="button"
+                        aria-label="Remove photo"
+                      >
+                        <img src={xIcon} alt="" className={styles.hint_photo_remove_icon} />
+                      </button>
+                    </div>
+                  ))}
+                  {hintPhotos.length < 3 && (
+                    <button
+                      className={styles.hint_add_more}
+                      onClick={() => hintInputRef.current?.click()}
+                      type="button"
+                      aria-label="Add another hint photo"
+                    >
+                      <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5v14M5 12h14" stroke="var(--color-green)" strokeWidth="2.5" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button
+                  className={styles.hint_photos_box}
+                  onClick={() => hintInputRef.current?.click()}
+                  type="button"
+                  aria-label="Add hint photos"
+                >
+                  <div className={styles.sticker_icon_wrap}>
+                    <img src={photosStackedIcon} alt="" width="56" height="56" />
+                    <div className={styles.sticker_plus}>
+                      <svg width="16" height="16" viewBox="0 0 24 24">
+                        <path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                  </div>
+                </button>
+              )}
+              <input
+                ref={hintInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className={styles.sticker_input}
+                onChange={handleHintPhotosChange}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Step 4: Gem Description (review) */}
+        {step === 4 && (() => {
+          const profile = profiles[id] || profiles.ona
+          const fullDesigner = DESIGNERS.find(d => d.short === a6Link)?.name
+          return (
+            <>
+              {/* Gem name + sticker */}
+              <div className={styles.review_header}>
+                <div className={styles.review_header_left}>
+                  <h2 className={styles.review_gem_name}>{gemName}</h2>
+                  <p className={styles.review_added_by}>
+                    Added by {profile.name}
+                    {fullDesigner && <> · {fullDesigner} lens</>}
+                  </p>
+                  <div className={styles.review_pills}>
+                    {selectedType && <span className={styles.review_pill}>{selectedType}</span>}
+                  </div>
+                </div>
+                {stickerPreview && (
+                  <img src={stickerPreview} alt="sticker" className={styles.review_sticker} />
+                )}
+              </div>
+
+              {/* Location + description + address */}
+              <div className={styles.review_section}>
+                <h2 className={styles.review_location_name}>{locationName}</h2>
+                <p className={styles.review_desc}>{description}</p>
+                <div className={styles.review_address_row}>
+                  <div className={styles.review_address_item}>
+                    <div className={styles.review_icon_circle}>
+                      <img src={locationIcon} alt="" className={styles.review_address_icon} />
+                    </div>
+                    <p className={styles.review_address_text}>{address}</p>
+                  </div>
+                  <img src={greenDivider} alt="" className={styles.review_green_divider} />
+                  <div className={styles.review_address_item}>
+                    <div className={styles.review_icon_circle}>
+                      <img src={walkingIcon} alt="" className={styles.review_address_icon} />
+                    </div>
+                    <div>
+                      <p className={styles.review_radius_label}>Radius</p>
+                      <p className={styles.review_radius_value}>{radius}<span className={styles.review_radius_unit}>m</span></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clues */}
+              <div className={styles.review_clues_section}>
+                <h2 className={styles.review_section_title}>Clues</h2>
+                <p className={styles.review_clue_subtitle}>Text hint</p>
+                <div className={styles.review_text_hint_block}>
+                  <p className={styles.review_clue_text}>{textHint}</p>
+                  <img src={cornerDecoration} alt="" className={styles.review_corner_decoration} />
+                </div>
+                <p className={styles.review_clue_subtitle}>Visual hints</p>
+                {hintPreviews.length > 0 ? (
+                  <div className={styles.review_hints_row}>
+                    {hintPreviews.map((url, i) => (
+                      <div key={i} className={styles.review_hint_wrap}>
+                        <img src={url} alt={`hint ${i + 1}`} className={styles.review_hint_photo} />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className={styles.review_no_hints}>No visual hints added</p>
+                )}
+              </div>
+
+              {/* About You */}
+              <div className={styles.review_section}>
+                <h2 className={styles.review_section_title}>About You</h2>
+                <div className={styles.review_about_card}>
+                  <div className={styles.review_about_header}>
+                    <img src={profile.avatar} alt={profile.name} className={styles.review_about_avatar} />
+                    <div className={styles.review_about_name_wrap}>
+                      <p className={styles.review_about_name}>{profile.name}</p>
+                      {profile.keywords?.[1] && (
+                        <p className="info_node">{profile.keywords[1]}</p>
+                      )}
+                    </div>
+                  </div>
+                  <p className={styles.review_about_bio}>{profile.bio?.full}</p>
+                  <div className={styles.review_about_socials}>
+                    {['lisa', 'ona', 'jens'].some(n => profile.name?.toLowerCase().includes(n)) && (
+                      <img src={instagramIcon} alt="Instagram" />
+                    )}
+                    {['lisa', 'ona'].some(n => profile.name?.toLowerCase().includes(n)) && (
+                      <img src={pinterestIcon} alt="Pinterest" />
+                    )}
+                    {profile.name?.toLowerCase().includes('lisa') && (
+                      <img src={behanceIcon} alt="Behance" />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )
+        })()}
 
         {/* Step dots + continue */}
         <div className={styles.steps}>
@@ -668,7 +918,7 @@ export default function AddGem() {
           className={`${styles.continue_btn} ${!canContinue ? styles.continue_disabled : ''}`}
           onClick={handleContinue}
         >
-          Continue
+          {step === 4 ? 'Submit Gem' : 'Continue'}
         </button>
 
       </div>
