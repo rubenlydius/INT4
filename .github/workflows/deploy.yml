@@ -34,9 +34,12 @@ jobs:
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
-      - name: Copy index.html to 404.html for SPA routing
-        run: cp ./build/client/index.html ./build/client/404.html
+      - name: Set up SPA routing and bypass Jekyll
+        run: |
+          cp ./build/client/index.html ./build/client/404.html
+          touch ./build/client/.nojekyll
 
       - name: Upload production artifact
         uses: actions/upload-pages-artifact@v3
