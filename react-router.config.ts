@@ -1,10 +1,6 @@
 import type { Config } from "@react-router/dev/config";
 
-const isProduction = process.env.GITHUB_ACTIONS === "true";
-
 export default {
-  basename: isProduction ? "/INT4/" : "/",
-
   ssr: false,
 
   future: {
