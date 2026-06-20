@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   isRouteErrorResponse,
   Links,
@@ -6,6 +7,8 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
+  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
@@ -45,12 +48,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // React Router automatically accounts for the "/INT4/" basename.
+    // Both locally and in production, the true root domain path matches exactly "/"
+    if (location.pathname === "/") {
+      const savedLens = localStorage.getItem("selectedLens") || "ann";
+      
+      // replace: true ensures the user doesn't get trapped when clicking the browser back button
+      navigate(`/lens/${savedLens}`, { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
   return (
     <>
-  <Outlet />
-  <Navbar />
-  </>
-  )
+      <Outlet />
+      <Navbar />
+    </>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
