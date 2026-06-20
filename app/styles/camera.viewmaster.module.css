@@ -235,7 +235,6 @@
     width: 7px;
     height: 14px;
     background: white;
-    border-radius: 0;
 }
 
 .disc_center {
@@ -541,7 +540,6 @@
     margin-bottom: 0.4rem;
     padding-right: 3.5rem;
     text-transform: none;
-    font-style: normal;
 }
 
 .modal_sub {

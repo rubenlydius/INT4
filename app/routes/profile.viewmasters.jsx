@@ -43,7 +43,7 @@ export default function ProfileViewmasters() {
         </div>
 
         <div className={styles.grid}>
-          <div className={styles.add_btn}>
+          <div className={styles.add_btn} onClick={() => navigate('/camera/viewmaster')} style={{ cursor: 'pointer' }}>
             <img src={plusIconStroke} alt="add viewmaster" className={styles.plus_icon} />
           </div>
           {VIEWMASTERS.map((vm, i) => (

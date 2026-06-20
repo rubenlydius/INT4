@@ -142,7 +142,7 @@ export default function CameraViewmaster() {
 
             <img src={mapHeader} alt="" className={styles.header_pattern} />
 
-            {/* ── Step 1: Photo selection ── */}
+            {/* Step 1: Photo selection */}
             {step === 1 && (
                 <div className={styles.content}>
                     <h2 className={styles.page_title}>Make your ViewMaster</h2>
@@ -183,7 +183,7 @@ export default function CameraViewmaster() {
                 </div>
             )}
 
-            {/* ── Step 2: Style disc ── */}
+            {/* Step 2: Style disc */}
             {step === 2 && (
                 <div className={styles.content}>
                     <h2 className={styles.page_title}>Style your ViewMaster</h2>
@@ -206,7 +206,7 @@ export default function CameraViewmaster() {
                             <div className={styles.disc_arrow_indicator}>↑</div>
                             {placedStickers.map((url, i) => (
                                 <img
-                                    key={i}
+                                    key={url}
                                     src={url}
                                     alt=""
                                     className={styles.placed_sticker}
@@ -295,7 +295,7 @@ export default function CameraViewmaster() {
                 </div>
             )}
 
-            {/* ── Bottom action ── */}
+            {/* Bottom action */}
             {step === 1 && (
                 <div className={styles.floating_btn_wrap}>
                     <button
@@ -326,7 +326,7 @@ export default function CameraViewmaster() {
                     </button>
                 </div>
             )}
-            {/* ── Share modal ── */}
+            {/* Share modal */}
             {showShare && (
                 <div className={styles.modal_overlay} onClick={() => setShowShare(false)}>
                     <div className={styles.modal} onClick={e => e.stopPropagation()}>
@@ -353,7 +353,7 @@ export default function CameraViewmaster() {
                                     <div className={styles.disc_center} />
                                     {placedStickers.map((url, i) => (
                                         <img
-                                            key={i}
+                                            key={url}
                                             src={url}
                                             alt=""
                                             className={styles.placed_sticker}
