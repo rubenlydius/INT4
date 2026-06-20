@@ -21,7 +21,8 @@ const STATIC_PHOTO_COUNT = 12;
 
 export default function Gallery() {
     const [allPhotos, setAllPhotos] = useState([]);
-    const [recentPhoto, setRecentPhoto] = useState(storageUrl(`gems/gallery/gallery_1.webp`));
+    const [recentFive, setRecentFive] = useState([]);
+    const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedPhotoId, setSelectedPhotoId] = useState(null);
 
     const loadPhotos = () => {
@@ -50,11 +51,10 @@ export default function Gallery() {
         const combined = [...basePhotos, ...userPhotos];
         setAllPhotos(combined);
 
-        if (userPhotos.length > 0) {
-            setRecentPhoto(userPhotos[userPhotos.length - 1].src);
-        } else {
-            setRecentPhoto(storageUrl(`gems/gallery/gallery_1.webp`));
-        }
+        // Extract the 5 most recent photos (Newest user photos are at the end of the array)
+        const recentItems = [...combined].reverse().slice(0, 5);
+        setRecentFive(recentItems);
+        setCurrentIndex(0);
     };
 
     useEffect(() => {
@@ -67,6 +67,22 @@ export default function Gallery() {
         setSelectedPhotoId(null);
         loadPhotos();
     };
+
+    // Carousel Navigation Logic
+    const handlePrev = () => {
+        if (recentFive.length === 0) return;
+        setCurrentIndex((prev) => (prev - 1 + recentFive.length) % recentFive.length);
+    };
+
+    const handleNext = () => {
+        if (recentFive.length === 0) return;
+        setCurrentIndex((prev) => (prev + 1) % recentFive.length);
+    };
+
+    // Calculate which elements are currently left, center, and right in the deck
+    const centerPhoto = recentFive[currentIndex];
+    const leftPhoto = recentFive[(currentIndex + 1) % recentFive.length];
+    const rightPhoto = recentFive[(currentIndex + 2) % recentFive.length];
 
     return (
         <div>
@@ -82,10 +98,39 @@ export default function Gallery() {
                 <h2>Photos taken</h2>
             </div>
             <p className={styles.secondary_title}>Most recent photos</p>
+            
+            {/* STACK CARDS LAYOUT CONTAINER */}
             <div className={styles.recent_photos}>
-                <img src={galleryArrow} alt="previous" className={styles.prev_arrow}/>
-                <img src={recentPhoto} alt="image" className={styles.current_photo}/>
-                <img src={galleryArrow} alt="next" />
+                <img 
+                    src={galleryArrow} 
+                    alt="previous" 
+                    className={`${styles.prev_arrow} ${styles.nav_arrow}`} 
+                    onClick={handlePrev}
+                />
+                
+                <div className={styles.stack_wrapper}>
+                    {/* 3rd Most Recent (Right background card) */}
+                    {rightPhoto && recentFive.length >= 3 && (
+                        <img src={rightPhoto.src} alt="Next background stack" className={`${styles.stacked_photo} ${styles.photo_right}`} />
+                    )}
+                    
+                    {/* 2nd Most Recent (Left background card) */}
+                    {leftPhoto && recentFive.length >= 2 && (
+                        <img src={leftPhoto.src} alt="Previous background stack" className={`${styles.stacked_photo} ${styles.photo_left}`} />
+                    )}
+                    
+                    {/* Active Front Center Card */}
+                    {centerPhoto && (
+                        <img src={centerPhoto.src} alt="Current focused item" className={styles.current_photo} />
+                    )}
+                </div>
+                
+                <img 
+                    src={galleryArrow} 
+                    alt="next" 
+                    className={styles.nav_arrow} 
+                    onClick={handleNext}
+                />
             </div>
 
             <div className={styles.light_orange}>
