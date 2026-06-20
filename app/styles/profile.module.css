@@ -102,11 +102,7 @@
     width: 100vw;
 }
 
-.aboutyou_ContainerTop {
-    display: block;
-    width: auto;
-    margin-bottom: -1rem;
-}
+
 
 .aboutyou_container {
     margin: 1rem 1rem 0 1rem;
@@ -114,7 +110,7 @@
   
   .aboutyou_ContainerTop {
     display: block;
-    width: auto;
+    width: 100vw;
     margin-bottom: -1rem;
   }
   
