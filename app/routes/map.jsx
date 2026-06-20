@@ -44,15 +44,20 @@ function getOffset(gem) {
 
 
 export default function Map() {
+  const [currentLens, setCurrentLens] = useState("ann");
   const [selected, setSelected] = useState(null);
   const [types, setTypes] = useState([]);
   const [activeTypes, setActiveTypes] = useState([]);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const userMarkerRef = useRef(null); 
+  const userMarkerRef = useRef(null);
 
-  const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
+  useEffect(() => {
+    const lens = localStorage.getItem("selectedLens") || "ann";
+    setCurrentLens(lens);
+  }, []);
+
   const designer = designers[currentLens] || designers.ann;
 
   function toggleType(type) {
