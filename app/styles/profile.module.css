@@ -346,7 +346,6 @@
     display: flex; 
     flex-direction: row;
     justify-content: space-between;
-    gap: 1rem;
     margin: 1.25rem; 
     align-items: center;
 }
