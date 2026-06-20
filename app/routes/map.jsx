@@ -14,8 +14,7 @@ import closeIcon from '../assets/close_button.svg';
 import calendarIcon from '../assets/calendar_icon.svg';
 import whiteArrow from '../assets/white_arrow.svg';
 
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+
 
 export function meta() {
   return [{ title: "Map" }];
@@ -75,6 +74,10 @@ export default function Map() {
     let watchId = null;
 
     async function init() {
+
+      const L = (await import("leaflet")).default;
+      await import("leaflet/dist/leaflet.css");
+
       const dbDesignerName = lensToDbMapping[currentLens] || "Ann D";
 
       const { data, error } = await supabase
