@@ -10,6 +10,7 @@
     "geocode": "node --experimental-vm-modules geocode.js"
   },
   "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
     "@react-router/node": "7.16.0",
     "@react-router/serve": "7.16.0",
     "@supabase/supabase-js": "^2.107.0",
