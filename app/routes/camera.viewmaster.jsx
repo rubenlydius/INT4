@@ -6,6 +6,22 @@ import styles from '../styles/camera.viewmaster.module.css'
 import mapHeader from '../assets/map_header.svg'
 import simpleOrangeArrow from '../assets/simple_orange_arrow.svg'
 import whiteArrow from '../assets/white_arrow.svg'
+import containerTop from '../assets/hintDropdownTop.svg'
+import containerBottom from '../assets/hintDropdownBottom.svg'
+import aboutyouContainerTop from '../assets/aboutyou_container_top.svg'
+import stickerSeparator from '../assets/sticker_separator.svg'
+
+const STICKERS = [
+    storageUrl('gems/stickers/gem39-sticker.avif'),
+    storageUrl('gems/stickers/gem19-sticker.avif'),
+    storageUrl('gems/stickers/gem60-sticker.avif'),
+    storageUrl('gems/stickers/gem6-sticker.avif'),
+    storageUrl('gems/stickers/gem50-sticker.avif'),
+    storageUrl('gems/stickers/gem34-sticker.avif'),
+    storageUrl('gems/stickers/gem52-sticker.avif'),
+    storageUrl('gems/stickers/gem53-sticker.avif'),
+    storageUrl('gems/stickers/gem59-sticker.avif'),
+]
 
 export function meta() {
     return [{ title: "Make your ViewMaster" }]
@@ -13,11 +29,59 @@ export function meta() {
 
 const STATIC_PHOTO_COUNT = 12
 const REQUIRED_COUNT = 14
+const SLOT_COUNT = 14
+const DISC_PX = 300
+const SLOT_RADIUS = 105
+const SLOT_W = 34
+const SLOT_H = 48
+
+const DISC_COLORS = [
+    { label: 'Black',  value: '#1E1E1E' },
+    { label: 'Sand',   value: '#D2D2BE' },
+    { label: 'Blue',   value: '#5497FF' },
+    { label: 'Lime',   value: '#D2FF4B' },
+    { label: 'Orange', value: '#FF691E' },
+    { label: 'Green',  value: '#00B569' },
+    { label: 'White',  value: '#FBFBFB' },
+    { label: 'Pink',   value: '#FF81DC' },
+]
+
+function slotStyle(index) {
+    const angle = (index * 2 * Math.PI / SLOT_COUNT) - Math.PI / 2
+    const x = DISC_PX / 2 + SLOT_RADIUS * Math.cos(angle)
+    const y = DISC_PX / 2 + SLOT_RADIUS * Math.sin(angle)
+    const deg = index * 360 / SLOT_COUNT
+    return {
+        left: x,
+        top: y,
+        transform: `translate(-50%, -50%) rotate(${deg}deg)`,
+    }
+}
+
+const TICK_RADIUS = 130
+
+function tickStyle(index) {
+    // offset by half a slot angle so ticks fall between photos
+    const angle = ((index + 0.5) * 2 * Math.PI / SLOT_COUNT) - Math.PI / 2
+    const x = DISC_PX / 2 + TICK_RADIUS * Math.cos(angle)
+    const y = DISC_PX / 2 + TICK_RADIUS * Math.sin(angle)
+    const deg = (index + 0.5) * 360 / SLOT_COUNT
+    return {
+        left: x,
+        top: y,
+        transform: `translate(-50%, -50%) rotate(${deg}deg)`,
+    }
+}
 
 export default function CameraViewmaster() {
     const navigate = useNavigate()
+
+    const [step, setStep] = useState(1)
     const [allPhotos, setAllPhotos] = useState([])
     const [selectedIds, setSelectedIds] = useState([])
+    const [selectedColor, setSelectedColor] = useState(DISC_COLORS[0].value)
+    const [placedStickers, setPlacedStickers] = useState([])
+    const [colorScroll, setColorScroll] = useState(0)
 
     useEffect(() => {
         const basePhotos = Array.from({ length: STATIC_PHOTO_COUNT }, (_, i) => ({
@@ -43,6 +107,7 @@ export default function CameraViewmaster() {
         setAllPhotos([...basePhotos, ...userPhotos])
     }, [])
 
+
     function toggleSelect(id) {
         setSelectedIds(prev => {
             if (prev.includes(id)) return prev.filter(s => s !== id)
@@ -52,11 +117,17 @@ export default function CameraViewmaster() {
     }
 
     const canContinue = selectedIds.length === REQUIRED_COUNT
+    const selectedPhotos = allPhotos.filter(p => selectedIds.includes(p.id))
 
     return (
         <div className={styles.page}>
+            {/* Header */}
             <div className={styles.header}>
-                <button className={styles.back_btn} onClick={() => navigate('/camera/gallery')}>
+                <button
+                    type="button"
+                    className={styles.back_btn}
+                    onClick={() => step === 1 ? navigate('/camera/gallery') : setStep(1)}
+                >
                     <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
                 </button>
                 <h1 className={styles.header_title}>Viewmaster Studio</h1>
@@ -65,58 +136,190 @@ export default function CameraViewmaster() {
 
             <img src={mapHeader} alt="" className={styles.header_pattern} />
 
-            <div className={styles.content}>
-                <h2 className={styles.page_title}>Make your ViewMaster</h2>
-                <p className={styles.page_sub}>
-                    Select {REQUIRED_COUNT} photos
-                    {selectedIds.length > 0 && (
-                        <span className={styles.count_badge}> · {selectedIds.length}/{REQUIRED_COUNT}</span>
-                    )}
-                </p>
+            {/* ── Step 1: Photo selection ── */}
+            {step === 1 && (
+                <div className={styles.content}>
+                    <h2 className={styles.page_title}>Make your ViewMaster</h2>
+                    <p className={styles.page_sub}>
+                        Select {REQUIRED_COUNT} photos
+                        {selectedIds.length > 0 && (
+                            <span className={styles.count_badge}> · {selectedIds.length}/{REQUIRED_COUNT}</span>
+                        )}
+                    </p>
 
-                <div className={styles.grid}>
-                    {allPhotos.map(photo => {
-                        const isSelected = selectedIds.includes(photo.id)
-                        return (
-                            <button
-                                key={photo.id}
-                                className={`${styles.cell} ${isSelected ? styles.cell_selected : ''}`}
-                                onClick={() => toggleSelect(photo.id)}
-                            >
-                                <img src={photo.src} alt={photo.alt} className={styles.photo} />
-                                <div className={styles.overlay}>
-                                    {isSelected ? (
-                                        <svg className={styles.check_icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <circle cx="12" cy="12" r="11" fill="white" />
-                                            <path d="M6 12.5L10 16.5L18 8" stroke="#F07832" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                                        </svg>
-                                    ) : (
-                                        <svg className={styles.plus_icon} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                                        </svg>
-                                    )}
-                                </div>
-                            </button>
-                        )
-                    })}
+                    <div className={styles.grid}>
+                        {allPhotos.map(photo => {
+                            const isSelected = selectedIds.includes(photo.id)
+                            return (
+                                <button
+                                    key={photo.id}
+                                    type="button"
+                                    className={`${styles.cell} ${isSelected ? styles.cell_selected : ''}`}
+                                    onClick={() => toggleSelect(photo.id)}
+                                >
+                                    <img src={photo.src} alt={photo.alt} className={styles.photo} />
+                                    <div className={styles.overlay}>
+                                        {isSelected ? (
+                                            <svg className={styles.check_icon} viewBox="0 0 24 24" fill="none">
+                                                <circle cx="12" cy="12" r="11" fill="white" />
+                                                <path d="M6 12.5L10 16.5L18 8" stroke="#F07832" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                            </svg>
+                                        ) : (
+                                            <svg className={styles.plus_icon} viewBox="0 0 24 24" fill="none">
+                                                <path d="M12 5V19M5 12H19" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                                            </svg>
+                                        )}
+                                    </div>
+                                </button>
+                            )
+                        })}
+                    </div>
                 </div>
-            </div>
+            )}
 
-            <div className={styles.floating_btn_wrap}>
-                <button
-                    className={`${styles.next_btn} ${!canContinue ? styles.next_btn_disabled : ''}`}
-                    disabled={!canContinue}
-                    onClick={() => canContinue && navigate('/camera/viewmaster/preview')}
-                >
-                    Next Step
-                    <img
-                        src={canContinue ? whiteArrow : simpleOrangeArrow}
-                        alt=""
-                        className={styles.next_arrow}
-                        style={!canContinue ? { transform: 'scaleX(1)' } : undefined}
-                    />
-                </button>
-            </div>
+            {/* ── Step 2: Style disc ── */}
+            {step === 2 && (
+                <div className={styles.content}>
+                    <h2 className={styles.page_title}>Style your ViewMaster</h2>
+                    <p className={styles.page_sub}>
+                        Combine your photos, patterns, and collected stickers into a personalized Antwerp souvenir.
+                    </p>
+
+                    {/* Disc */}
+                    <div className={styles.disc_wrap}>
+                        <div className={styles.disc} style={{ backgroundColor: selectedColor }}>
+                            {selectedPhotos.slice(0, SLOT_COUNT).map((photo, i) => (
+                                <div key={photo.id} className={styles.slot} style={slotStyle(i)}>
+                                    <img src={photo.src} alt="" className={styles.slot_img} />
+                                </div>
+                            ))}
+                            {Array.from({ length: 7 }).map((_, i) => (
+                                <div key={`tick-${i}`} className={styles.tick} style={tickStyle(i * 2)} />
+                            ))}
+                            <div className={styles.disc_center} />
+                            <div className={styles.disc_arrow_indicator}>↑</div>
+                            {placedStickers.map((url, i) => (
+                                <img
+                                    key={i}
+                                    src={url}
+                                    alt=""
+                                    className={styles.placed_sticker}
+                                    style={{ transform: `translate(calc(-50% + ${(i % 3 - 1) * 45}px), calc(-50% + ${Math.floor(i / 3) * 45 - 20}px))` }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Color picker — gallery-style container */}
+                    <div className={styles.color_container}>
+                        <img src={containerTop} alt="" className={styles.container_edge} />
+                        <div className={styles.color_container_body}>
+                            <h3 className={styles.section_title}>Pick a disc color</h3>
+                            <div className={styles.color_scroll_wrap}>
+                                <div
+                                    className={styles.color_row}
+                                    onScroll={e => {
+                                        const el = e.currentTarget
+                                        setColorScroll(el.scrollLeft / (el.scrollWidth - el.clientWidth) || 0)
+                                    }}
+                                >
+                                    {DISC_COLORS.map(c => (
+                                        <button
+                                            key={c.value}
+                                            type="button"
+                                            className={`${styles.color_swatch} ${selectedColor === c.value ? styles.color_swatch_active : ''}`}
+                                            style={{ backgroundColor: c.value }}
+                                            onClick={() => setSelectedColor(c.value)}
+                                            aria-label={c.label}
+                                        >
+                                            {selectedColor === c.value && (
+                                                <svg viewBox="0 0 24 24" fill="none" className={styles.swatch_check}>
+                                                    <path d="M5 12.5L9.5 17L19 7" stroke={['#FBFBFB','#D2FF4B','#D2D2BE'].includes(c.value) ? '#1E1E1E' : 'white'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className={styles.scroll_track}>
+                                <div className={styles.scroll_thumb} style={{ left: `${colorScroll * 60}%` }} />
+                            </div>
+                        </div>
+                        <img src={containerBottom} alt="" className={styles.container_edge} />
+                    </div>
+
+                    {/* Sticker picker — aboutyou-style container */}
+                    <div className={styles.sticker_container}>
+                        <img src={aboutyouContainerTop} alt="" className={styles.sticker_container_top} />
+                        <div className={styles.sticker_container_body}>
+                            <h3 className={styles.section_title}>Place your stickers</h3>
+                            <p className={styles.sticker_sub}>Select up to 6 stickers</p>
+                            <img src={stickerSeparator} alt="" className={styles.sticker_sep} />
+                            <div className={styles.sticker_row}>
+                                {STICKERS.map((url) => {
+                                    const isSelected = placedStickers.includes(url)
+                                    const isDisabled = !isSelected && placedStickers.length >= 6
+                                    return (
+                                    <button
+                                        key={url}
+                                        type="button"
+                                        className={`${styles.sticker_btn} ${isSelected ? styles.sticker_btn_active : ''} ${isDisabled ? styles.sticker_btn_disabled : ''}`}
+                                        onClick={() => setPlacedStickers(prev => {
+                                            if (prev.includes(url)) return prev.filter(s => s !== url)
+                                            if (prev.length >= 6) return prev
+                                            return [...prev, url]
+                                        })}
+                                    >
+                                        <img src={url} alt="" className={styles.sticker_thumb} />
+                                        {isSelected && (
+                                            <div className={styles.sticker_check}>
+                                                <svg viewBox="0 0 24 24" fill="none">
+                                                    <circle cx="12" cy="12" r="11" fill="#F07832" />
+                                                    <path d="M6 12.5L10 16.5L18 8" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                                                </svg>
+                                            </div>
+                                        )}
+                                    </button>
+                                    )
+                                })}
+                            </div>
+                            <img src={stickerSeparator} alt="" className={styles.sticker_sep} />
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Bottom action ── */}
+            {step === 1 && (
+                <div className={styles.floating_btn_wrap}>
+                    <button
+                        type="button"
+                        className={`${styles.next_btn} ${!canContinue ? styles.next_btn_disabled : ''}`}
+                        disabled={!canContinue}
+                        onClick={() => setStep(2)}
+                    >
+                        Next Step
+                        <img
+                            src={canContinue ? whiteArrow : simpleOrangeArrow}
+                            alt=""
+                            className={styles.next_arrow}
+                        />
+                    </button>
+                </div>
+            )}
+
+            {step === 2 && (
+                <div className={styles.bottom_row}>
+                    <button type="button" className={styles.prev_btn} onClick={() => setStep(1)}>
+                        <img src={simpleOrangeArrow} alt="" className={styles.prev_arrow} />
+                        Previous
+                    </button>
+                    <button type="button" className={styles.share_btn}>
+                        Share
+                        <img src={whiteArrow} alt="" className={styles.share_arrow} />
+                    </button>
+                </div>
+            )}
         </div>
     )
 }
