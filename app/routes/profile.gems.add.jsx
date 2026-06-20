@@ -13,6 +13,8 @@ import photosStackedIcon from '../assets/photos_stacked_icon.svg'
 import walkingIcon from '../assets/walking_icon.svg'
 import greenDivider from '../assets/green_devider_add_gem.svg'
 import cornerDecoration from '../assets/corrner_decoration_add_gem.svg'
+import closeButton from '../assets/close_button.svg'
+import gemCreatedIllustration from '../assets/gem_created.svg'
 import instagramIcon from '../assets/instagram_icon.svg'
 import pinterestIcon from '../assets/pinterest_icon.svg'
 import behanceIcon from '../assets/behance_icon.svg'
@@ -437,11 +439,37 @@ export default function AddGem() {
     else setStep(s => s - 1)
   }
 
-  function handleContinue() {
+  async function handleContinue() {
     if (step === 1 && canContinueStep1) setStep(2)
     if (step === 2 && canContinueStep2) setStep(3)
     if (step === 3 && canContinueStep3) setStep(4)
-    if (step === 4) navigate(`/profile/${id}/gems`)
+    if (step === 4) {
+      const profile = profiles[id] || profiles.ona
+      const { error } = await supabase.from('Gems').insert({
+        location_name: locationName,
+        address,
+        lat: coords?.lat ?? null,
+        lng: coords?.lng ?? null,
+        radius,
+        type: selectedType,
+        description,
+        a6_link: a6Link,
+        connection_to: connectionTo,
+        gem_name: gemName,
+        abstract: textHint,
+        creator: profile.name,
+        image_url: profile.avatar,
+        about_creator: profile.bio?.full ?? '',
+        creator_field: profile.keywords?.[1] ?? '',
+        verified: false,
+        a6_fav: false,
+      })
+      if (error) {
+        console.error('Supabase insert error:', error.message)
+        return
+      }
+      setStep(5)
+    }
   }
 
   const canContinue = step === 1 ? canContinueStep1 : step === 2 ? canContinueStep2 : step === 3 ? canContinueStep3 : true
@@ -450,13 +478,19 @@ export default function AddGem() {
     <div className={styles.page}>
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
-        <div className={styles.header_row}>
-          <button className={styles.back_btn} onClick={handleBack}>
-            <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
+        {step === 5 ? (
+          <button className={styles.close_btn} onClick={() => navigate(`/profile/${id}/gems`)}>
+            <img src={closeButton} alt="close" />
           </button>
-          <h1 className={styles.title}>{STEP_TITLES[step - 1]}</h1>
-          <div />
-        </div>
+        ) : (
+          <div className={styles.header_row}>
+            <button className={styles.back_btn} onClick={handleBack}>
+              <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
+            </button>
+            <h1 className={styles.title}>{STEP_TITLES[step - 1]}</h1>
+            <div />
+          </div>
+        )}
       </div>
 
       <div className={styles.content}>
@@ -905,21 +939,45 @@ export default function AddGem() {
           )
         })()}
 
-        {/* Step dots + continue */}
-        <div className={styles.steps}>
-          {Array.from({ length: TOTAL_STEPS }, (_, i) => (
-            i + 1 === step
-              ? <img key={i} src={xIcon} alt="" className={styles.step_active} />
-              : <span key={i} className={styles.step} />
-          ))}
-        </div>
+        {step === 5 && (
+          <div className={styles.success_content}>
+            <h2 className={styles.success_title}>Gem Created!</h2>
+            <p className={styles.success_sub}>Your gem is ready to be discovered.</p>
+            <img src={gemCreatedIllustration} alt="" className={styles.success_illustration} />
+            <button
+              className={styles.continue_btn}
+              onClick={() => { setStep(1); navigate(`/profile/${id}/gems/add`) }}
+            >
+              Add another gem
+            </button>
+            <button
+              className={styles.secondary_btn}
+              onClick={() => navigate(`/profile/${id}/gems`)}
+            >
+              Back to profile
+            </button>
+          </div>
+        )}
 
-        <button
-          className={`${styles.continue_btn} ${!canContinue ? styles.continue_disabled : ''}`}
-          onClick={handleContinue}
-        >
-          {step === 4 ? 'Submit Gem' : 'Continue'}
-        </button>
+        {/* Step dots + continue */}
+        {step < 5 && (
+          <>
+            <div className={styles.steps}>
+              {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+                i + 1 === step
+                  ? <img key={i} src={xIcon} alt="" className={styles.step_active} />
+                  : <span key={i} className={styles.step} />
+              ))}
+            </div>
+
+            <button
+              className={`${styles.continue_btn} ${!canContinue ? styles.continue_disabled : ''}`}
+              onClick={handleContinue}
+            >
+              {step === 4 ? 'Submit Gem' : 'Continue'}
+            </button>
+          </>
+        )}
 
       </div>
 
