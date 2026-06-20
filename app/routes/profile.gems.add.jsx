@@ -58,6 +58,86 @@ function shortAddress(displayName) {
   return displayName.split(',').slice(0, 3).join(',').trim()
 }
 
+// Wraps the browser Image constructor in a promise so we can await it
+function loadImage(src) {
+  return new Promise((res, rej) => {
+    const img = new Image()
+    img.onload = () => res(img)
+    img.onerror = rej
+    img.src = src
+  })
+}
+
+// Takes a PNG blob (ideally with transparent background) and adds a white
+// sticker border around the subject.
+//
+// How the white border works:
+//   1. We draw the image 32 times on a "mask" canvas, each time shifted
+//      slightly outward in a different direction (like clock positions).
+//      This creates a blurred silhouette that is slightly larger than the original.
+//   2. We loop through every pixel of that mask. Any pixel with meaningful
+//      opacity (alpha > 50) gets forced to solid white. Pixels below the
+//      threshold (ghost artifacts left by background removal) get zeroed out.
+//   3. We do the same cleanup on the original image so those ghost pixels
+//      don't appear in the final result either.
+//   4. We draw the white mask first, then the cleaned original on top.
+//      The result: a white ring around the sticker look.
+async function makeSticker(blob, outlineWidth = 28) {
+  const url = URL.createObjectURL(blob)
+  const img = await loadImage(url)
+  URL.revokeObjectURL(url)
+
+  const pad = outlineWidth
+  const w = img.naturalWidth + pad * 2
+  const h = img.naturalHeight + pad * 2
+
+  // Step 1: draw silhouette at 32 angles to build the outline shape
+  const maskCanvas = document.createElement('canvas')
+  maskCanvas.width = w
+  maskCanvas.height = h
+  const maskCtx = maskCanvas.getContext('2d')
+  const steps = 32
+  for (let i = 0; i < steps; i++) {
+    const angle = (i / steps) * Math.PI * 2
+    maskCtx.drawImage(img, pad + Math.cos(angle) * pad, pad + Math.sin(angle) * pad)
+  }
+
+  // Step 2: paint the entire silhouette white, drop near-transparent ghost pixels
+  const imageData = maskCtx.getImageData(0, 0, w, h)
+  const d = imageData.data
+  for (let i = 0; i < d.length; i += 4) {
+    if (d[i + 3] > 50) {
+      d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = 255
+    } else {
+      d[i + 3] = 0
+    }
+  }
+  maskCtx.putImageData(imageData, 0, 0)
+
+  // Step 3: clean the same ghost pixels from the source image
+  const srcCanvas = document.createElement('canvas')
+  srcCanvas.width = img.naturalWidth
+  srcCanvas.height = img.naturalHeight
+  const srcCtx = srcCanvas.getContext('2d')
+  srcCtx.drawImage(img, 0, 0)
+  const srcData = srcCtx.getImageData(0, 0, img.naturalWidth, img.naturalHeight)
+  const sd = srcData.data
+  for (let i = 0; i < sd.length; i += 4) {
+    if (sd[i + 3] <= 50) sd[i + 3] = 0
+  }
+  srcCtx.putImageData(srcData, 0, 0)
+
+  // Step 4: white mask underneath, real image on top = sticker with white border
+  const canvas = document.createElement('canvas')
+  canvas.width = w
+  canvas.height = h
+  const ctx = canvas.getContext('2d')
+  ctx.drawImage(maskCanvas, 0, 0)
+  ctx.drawImage(srcCanvas, pad, pad)
+
+  return new Promise(res => canvas.toBlob(res, 'image/png'))
+}
+
 export default function AddGem() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -78,17 +158,30 @@ export default function AddGem() {
   const [types, setTypes] = useState([])
   const [sticker, setSticker] = useState(null)
   const [stickerPreview, setStickerPreview] = useState(null)
+  const [stickerLoading, setStickerLoading] = useState(false)
+  const [stickerEditing, setStickerEditing] = useState(false)
+  const [pendingBlob, setPendingBlob] = useState(null)
+  const [eraserSize, setEraserSize] = useState(20)
   const [description, setDescription] = useState('')
   const [a6Link, setA6Link] = useState('')
   const [connectionTo, setConnectionTo] = useState('')
   const [isDesignerOpen, setIsDesignerOpen] = useState(false)
 
   const stickerInputRef = useRef(null)
+  const canvasEditorRef = useRef(null)
+  const isErasingRef = useRef(false)
+  const lastPosRef = useRef(null)
+  const stickerPreviewUrlRef = useRef(null)
 
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const circleRef = useRef(null)
   const debounceRef = useRef(null)
+
+  // Revoke the sticker preview blob URL when the component unmounts to free memory
+  useEffect(() => {
+    return () => { if (stickerPreviewUrlRef.current) URL.revokeObjectURL(stickerPreviewUrlRef.current) }
+  }, [])
 
   useEffect(() => {
     async function loadTypes() {
@@ -172,6 +265,131 @@ export default function AddGem() {
   const canContinueStep1 = locationName.trim() && address.trim() && geocoded
   const canContinueStep2 = selectedType && sticker && description.trim() && a6Link
 
+  // Full sticker flow:
+  // 1. User picks a photo → background removal runs (ML model in browser, no server)
+  // 2. Result (PNG with transparent background) opens in the eraser editor
+  // 3. User paints over any leftover artifacts → tap Done
+  // 4. makeSticker() adds the white border → preview shows in the box
+  async function handleStickerChange(file) {
+    if (!file) return
+    setStickerLoading(true)
+    try {
+      // Dynamic import so the heavy WASM library only loads when the user
+      // actually picks a photo — not on every page load
+      const { removeBackground } = await import('@imgly/background-removal')
+      const noBg = await removeBackground(file)
+      setStickerLoading(false)
+      openEditor(noBg)
+    } catch {
+      // If background removal fails, open the original so user can erase manually
+      setStickerLoading(false)
+      openEditor(file)
+    }
+  }
+
+  function openEditor(blob) {
+    setPendingBlob(blob)
+    setStickerEditing(true)
+  }
+
+  // useEffect is needed here instead of requestAnimationFrame because
+  // setStickerEditing(true) schedules a React re-render — the canvas doesn't
+  // exist in the DOM yet at the moment openEditor() runs. useEffect fires
+  // AFTER React has committed the overlay to the DOM, so canvasEditorRef.current
+  // is guaranteed to be set when drawBlobOnCanvas runs. This was the reason
+  // it worked on desktop (faster) but not on mobile (slower render).
+  useEffect(() => {
+    if (!stickerEditing || !pendingBlob || !canvasEditorRef.current) return
+    async function draw() { await drawBlobOnCanvas(pendingBlob) }
+    draw()
+  }, [stickerEditing, pendingBlob])
+
+  // Scales the image to fit the canvas and draws it centered
+  async function drawBlobOnCanvas(blob) {
+    const canvas = canvasEditorRef.current
+    if (!canvas) return
+    const ctx = canvas.getContext('2d')
+    const url = URL.createObjectURL(blob)
+    const img = await loadImage(url)
+    URL.revokeObjectURL(url)
+    const scale = Math.min(canvas.width / img.naturalWidth, canvas.height / img.naturalHeight)
+    const sw = Math.round(img.naturalWidth * scale)
+    const sh = Math.round(img.naturalHeight * scale)
+    const sx = Math.round((canvas.width - sw) / 2)
+    const sy = Math.round((canvas.height - sh) / 2)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.drawImage(img, sx, sy, sw, sh)
+  }
+
+  // Converts a pointer/touch event position to canvas pixel coordinates.
+  // The canvas is 600×700 internally but displayed at a different size on
+  // screen, so scale the coordinates to match the internal resolution.
+  function getCanvasPos(e) {
+    const canvas = canvasEditorRef.current
+    const rect = canvas.getBoundingClientRect()
+    const clientX = e.clientX ?? e.touches?.[0]?.clientX
+    const clientY = e.clientY ?? e.touches?.[0]?.clientY
+    return {
+      x: (clientX - rect.left) * (canvas.width / rect.width),
+      y: (clientY - rect.top) * (canvas.height / rect.height),
+    }
+  }
+
+  // Erases pixels at the given position using 'destination-out' composite mode.
+  // destination-out = wherever you draw, existing pixels become transparent.
+  // We also draw a line from the last position so fast finger movements
+  // don't leave gaps between erased circles.
+  function eraseAt(pos) {
+    const canvas = canvasEditorRef.current
+    const ctx = canvas.getContext('2d')
+    ctx.globalCompositeOperation = 'destination-out'
+    ctx.beginPath()
+    if (lastPosRef.current) {
+      ctx.lineWidth = eraserSize * 2
+      ctx.lineCap = 'round'
+      ctx.moveTo(lastPosRef.current.x, lastPosRef.current.y)
+      ctx.lineTo(pos.x, pos.y)
+      ctx.stroke()
+    }
+    ctx.arc(pos.x, pos.y, eraserSize, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.globalCompositeOperation = 'source-over'
+    lastPosRef.current = pos
+  }
+
+  function handleCanvasPointerDown(e) {
+    e.preventDefault()
+    isErasingRef.current = true
+    lastPosRef.current = null
+    eraseAt(getCanvasPos(e))
+  }
+
+  function handleCanvasPointerMove(e) {
+    e.preventDefault()
+    if (!isErasingRef.current) return
+    eraseAt(getCanvasPos(e))
+  }
+
+  function handleCanvasPointerUp() {
+    isErasingRef.current = false
+    lastPosRef.current = null
+  }
+
+  // Captures the edited canvas as a PNG blob, runs makeSticker() to add
+  // the white border, then saves the result as the gem's sticker image
+  async function handleStickerDone() {
+    const canvas = canvasEditorRef.current
+    const blob = await new Promise(res => canvas.toBlob(res, 'image/png'))
+    const stickerBlob = await makeSticker(blob)
+    // Revoke the old preview URL before creating a new one to avoid memory leaks
+    if (stickerPreviewUrlRef.current) URL.revokeObjectURL(stickerPreviewUrlRef.current)
+    stickerPreviewUrlRef.current = URL.createObjectURL(stickerBlob)
+    setSticker(stickerBlob)
+    setStickerPreview(stickerPreviewUrlRef.current)
+    setStickerEditing(false)
+    setPendingBlob(null)
+  }
+
   function handleBack() {
     if (step === 1) navigate(`/profile/${id}/gems`)
     else setStep(s => s - 1)
@@ -199,7 +417,7 @@ export default function AddGem() {
 
       <div className={styles.content}>
 
-        {/* ── Step 1: Location ── */}
+        {/* Step 1: Location */}
         {step === 1 && (
           <>
             <div className={styles.field}>
@@ -284,7 +502,7 @@ export default function AddGem() {
           </>
         )}
 
-        {/* ── Step 2: The gem ── */}
+        {/* Step 2: The gem */}
         {step === 2 && (
           <>
             {/* Type */}
@@ -319,11 +537,13 @@ export default function AddGem() {
                 </p>
                 <button
                   className={styles.sticker_box}
-                  onClick={() => stickerInputRef.current?.click()}
+                  onClick={() => !stickerLoading && stickerInputRef.current?.click()}
                   type="button"
                   aria-label="Add a sticker image"
                 >
-                  {stickerPreview ? (
+                  {stickerLoading ? (
+                    <p className={styles.sticker_loading}>Processing…</p>
+                  ) : stickerPreview ? (
                     <img src={stickerPreview} alt="sticker preview" className={styles.sticker_preview} />
                   ) : (
                     <div className={styles.sticker_icon_wrap}>
@@ -346,12 +566,7 @@ export default function AddGem() {
                   name="image_url"
                   accept="image/*"
                   className={styles.sticker_input}
-                  onChange={e => {
-                    const file = e.target.files?.[0]
-                    if (!file) return
-                    setSticker(file)
-                    setStickerPreview(URL.createObjectURL(file))
-                  }}
+                  onChange={e => handleStickerChange(e.target.files?.[0])}
                 />
               </div>
             </div>
@@ -440,7 +655,7 @@ export default function AddGem() {
           </>
         )}
 
-        {/* ── Step dots + continue ── */}
+        {/* Step dots + continue */}
         <div className={styles.steps}>
           {Array.from({ length: TOTAL_STEPS }, (_, i) => (
             i + 1 === step
@@ -457,6 +672,61 @@ export default function AddGem() {
         </button>
 
       </div>
+
+      {/* Sticker editor overlay */}
+      {stickerEditing && (
+        <div className={styles.editor_overlay}>
+          <div className={styles.editor_header}>
+            <button
+              className={styles.editor_cancel}
+              onClick={() => { setStickerEditing(false); setPendingBlob(null) }}
+              type="button"
+            >
+              Cancel
+            </button>
+            <p className={styles.editor_title}>Erase background</p>
+            <button
+              className={styles.editor_done}
+              onClick={handleStickerDone}
+              type="button"
+            >
+              Done
+            </button>
+          </div>
+
+          <div className={styles.editor_canvas_wrap}>
+            <canvas
+              ref={canvasEditorRef}
+              width={600}
+              height={700}
+              className={styles.editor_canvas}
+              onPointerDown={handleCanvasPointerDown}
+              onPointerMove={handleCanvasPointerMove}
+              onPointerUp={handleCanvasPointerUp}
+              onPointerLeave={handleCanvasPointerUp}
+            />
+          </div>
+
+          <div className={styles.editor_footer}>
+            <p className={styles.editor_hint}>Draw over anything you want to remove</p>
+            <div className={styles.eraser_row}>
+              <div
+                className={styles.eraser_preview}
+                style={{ width: Math.max(8, eraserSize), height: Math.max(8, eraserSize) }}
+              />
+              <input
+                type="range"
+                min={8}
+                max={60}
+                value={eraserSize}
+                className={styles.slider}
+                style={{ '--p': `${((eraserSize - 8) / 52) * 100}%` }}
+                onChange={e => setEraserSize(Number(e.target.value))}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
