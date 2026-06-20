@@ -33,6 +33,8 @@ jobs:
 
       - name: Build your React Router site
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
 
       - name: Upload production artifact
         uses: actions/upload-pages-artifact@v3
