@@ -73,7 +73,8 @@ export default function Map() {
         .select("*")
         .not("lat", "is", null)
         .not("lng", "is", null)
-        .eq("a6_link", dbDesignerName);
+        .eq("a6_link", dbDesignerName)
+        .eq("verified", true);
 
       if (error) return console.error(error.message);
       if (mapRef.current._leaflet_id) return;

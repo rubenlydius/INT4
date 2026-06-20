@@ -26,6 +26,30 @@ export function meta() {
 
 const ANTWERP = { lat: 51.2194, lng: 4.4025 }
 const TOTAL_STEPS = 4
+const CLOUDINARY_CLOUD = 'dckmhtdop'
+const CLOUDINARY_PRESET = 'gem_int4'
+
+async function compressImage(blob, maxWidth = 1600, quality = 0.82) {
+  const bitmap = await createImageBitmap(blob)
+  const scale = Math.min(1, maxWidth / bitmap.width)
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.round(bitmap.width * scale)
+  canvas.height = Math.round(bitmap.height * scale)
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height)
+  return new Promise(res => canvas.toBlob(res, 'image/webp', quality))
+}
+
+async function uploadToCloudinary(blob) {
+  const form = new FormData()
+  form.append('file', blob)
+  form.append('upload_preset', CLOUDINARY_PRESET)
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, {
+    method: 'POST',
+    body: form,
+  })
+  const data = await res.json()
+  return data.secure_url ?? null
+}
 const STEP_TITLES = ['Location', 'The gem', 'The Hints', 'Gem Description']
 
 const DESIGNERS = [
@@ -153,6 +177,7 @@ export default function AddGem() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
+  const [submitting, setSubmitting] = useState(false)
 
   // Step 1
   const [locationName, setLocationName] = useState('')
@@ -188,6 +213,7 @@ export default function AddGem() {
   const mapInstanceRef = useRef(null)
   const circleRef = useRef(null)
   const debounceRef = useRef(null)
+  const dropdownBlurRef = useRef(null)
 
   // Step 3
   const [gemName, setGemName] = useState('')
@@ -203,6 +229,7 @@ export default function AddGem() {
     return () => {
       if (stickerPreviewUrlRef.current) URL.revokeObjectURL(stickerPreviewUrlRef.current)
       hintPreviewUrlsRef.current.forEach(url => URL.revokeObjectURL(url))
+      clearTimeout(dropdownBlurRef.current)
     }
   }, [])
 
@@ -323,8 +350,7 @@ export default function AddGem() {
   // it worked on desktop (faster) but not on mobile (slower render).
   useEffect(() => {
     if (!stickerEditing || !pendingBlob || !canvasEditorRef.current) return
-    async function draw() { await drawBlobOnCanvas(pendingBlob) }
-    draw()
+    drawBlobOnCanvas(pendingBlob)
   }, [stickerEditing, pendingBlob])
 
   // Scales the image to fit the canvas and draws it centered
@@ -444,7 +470,17 @@ export default function AddGem() {
     if (step === 2 && canContinueStep2) setStep(3)
     if (step === 3 && canContinueStep3) setStep(4)
     if (step === 4) {
+      setSubmitting(true)
       const profile = profiles[id] || profiles.ona
+
+      const stickerUrl = sticker ? await uploadToCloudinary(sticker) : null
+      const hintUrls = await Promise.all(
+        hintPhotos.map(async f => {
+          const compressed = await compressImage(f)
+          return uploadToCloudinary(compressed)
+        })
+      )
+
       const { error } = await supabase.from('Gems').insert({
         location_name: locationName,
         address,
@@ -461,9 +497,14 @@ export default function AddGem() {
         image_url: profile.avatar,
         about_creator: profile.bio?.full ?? '',
         creator_field: profile.keywords?.[1] ?? '',
+        sticker_url: stickerUrl,
+        hint_url_1: hintUrls[0] ?? null,
+        hint_url_2: hintUrls[1] ?? null,
+        hint_url_3: hintUrls[2] ?? null,
         verified: false,
         a6_fav: false,
       })
+      setSubmitting(false)
       if (error) {
         console.error('Supabase insert error:', error.message)
         return
@@ -539,9 +580,9 @@ export default function AddGem() {
                 </div>
                 {suggestions.length > 0 && (
                   <ul className={styles.suggestions}>
-                    {suggestions.map((s, i) => (
+                    {suggestions.map((s) => (
                       <li
-                        key={i}
+                        key={s.place_id}
                         className={styles.suggestion}
                         onMouseDown={e => e.preventDefault()}
                         onClick={() => selectSuggestion(s)}
@@ -675,7 +716,7 @@ export default function AddGem() {
                 <button
                   className={styles.dropdown_btn}
                   onClick={() => setIsDesignerOpen(v => !v)}
-                  onBlur={() => setTimeout(() => setIsDesignerOpen(false), 150)}
+                  onBlur={() => { dropdownBlurRef.current = setTimeout(() => setIsDesignerOpen(false), 150) }}
                   type="button"
                 >
                   <span className={styles.dropdown_value}>
@@ -971,10 +1012,11 @@ export default function AddGem() {
             </div>
 
             <button
-              className={`${styles.continue_btn} ${!canContinue ? styles.continue_disabled : ''}`}
+              className={`${styles.continue_btn} ${!canContinue || submitting ? styles.continue_disabled : ''}`}
               onClick={handleContinue}
+              disabled={submitting}
             >
-              {step === 4 ? 'Submit Gem' : 'Continue'}
+              {submitting ? 'Uploading...' : step === 4 ? 'Submit Gem' : 'Continue'}
             </button>
           </>
         )}
