@@ -10,6 +10,11 @@ import containerTop from '../assets/hintDropdownTop.svg'
 import containerBottom from '../assets/hintDropdownBottom.svg'
 import aboutyouContainerTop from '../assets/aboutyou_container_top.svg'
 import stickerSeparator from '../assets/sticker_separator.svg'
+import closeButton from '../assets/close_button.svg'
+import pinterestIcon from '../assets/pinterest_icon.svg'
+import instagramIcon from '../assets/instagram_icon.svg'
+import discBackground from '../assets/viewmaster_disc_background.svg'
+import antwerpPixels from '../assets/antwerp_pixels.svg'
 
 const STICKERS = [
     storageUrl('gems/stickers/gem39-sticker.avif'),
@@ -82,6 +87,7 @@ export default function CameraViewmaster() {
     const [selectedColor, setSelectedColor] = useState(DISC_COLORS[0].value)
     const [placedStickers, setPlacedStickers] = useState([])
     const [colorScroll, setColorScroll] = useState(0)
+    const [showShare, setShowShare] = useState(false)
 
     useEffect(() => {
         const basePhotos = Array.from({ length: STATIC_PHOTO_COUNT }, (_, i) => ({
@@ -140,7 +146,7 @@ export default function CameraViewmaster() {
             {step === 1 && (
                 <div className={styles.content}>
                     <h2 className={styles.page_title}>Make your ViewMaster</h2>
-                    <p className={styles.page_sub}>
+                    <p className={styles.page_sub_muted}>
                         Select {REQUIRED_COUNT} photos
                         {selectedIds.length > 0 && (
                             <span className={styles.count_badge}> · {selectedIds.length}/{REQUIRED_COUNT}</span>
@@ -314,10 +320,81 @@ export default function CameraViewmaster() {
                         <img src={simpleOrangeArrow} alt="" className={styles.prev_arrow} />
                         Previous
                     </button>
-                    <button type="button" className={styles.share_btn}>
+                    <button type="button" className={styles.share_btn} onClick={() => setShowShare(true)}>
                         Share
                         <img src={whiteArrow} alt="" className={styles.share_arrow} />
                     </button>
+                </div>
+            )}
+            {/* ── Share modal ── */}
+            {showShare && (
+                <div className={styles.modal_overlay} onClick={() => setShowShare(false)}>
+                    <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                        <button type="button" className={styles.modal_close} onClick={() => setShowShare(false)}>
+                            <img src={closeButton} alt="Close" className={styles.modal_close_img} />
+                        </button>
+
+                        <h2 className={styles.modal_title}>Share your ViewMaster</h2>
+                        <p className={styles.modal_sub}>Share your digital disc or download it to your camera roll.</p>
+
+                        <div className={styles.modal_disc_section}>
+                            <img src={antwerpPixels} alt="" className={styles.modal_antwerp_bg} />
+                            <div className={styles.modal_disc_wrap}>
+                                <img src={discBackground} alt="" className={styles.modal_disc_bg} />
+                                <div className={styles.modal_disc} style={{ backgroundColor: selectedColor }}>
+                                    {selectedPhotos.slice(0, SLOT_COUNT).map((photo, i) => (
+                                        <div key={photo.id} className={styles.slot} style={slotStyle(i)}>
+                                            <img src={photo.src} alt="" className={styles.slot_img} />
+                                        </div>
+                                    ))}
+                                    {Array.from({ length: 7 }).map((_, i) => (
+                                        <div key={`tick-${i}`} className={styles.tick} style={tickStyle(i * 2)} />
+                                    ))}
+                                    <div className={styles.disc_center} />
+                                    {placedStickers.map((url, i) => (
+                                        <img
+                                            key={i}
+                                            src={url}
+                                            alt=""
+                                            className={styles.placed_sticker}
+                                            style={{ transform: `translate(calc(-50% + ${(i % 3 - 1) * 45}px), calc(-50% + ${Math.floor(i / 3) * 45 - 20}px))` }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className={styles.modal_actions}>
+                            <button
+                                type="button"
+                                className={styles.modal_share_btn}
+                                onClick={() => navigator.share?.({ title: 'My ViewMaster', text: 'Check out my ViewMaster disc!' })}
+                            >
+                                <svg viewBox="0 0 24 24" fill="none" className={styles.modal_share_icon}>
+                                    <path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M12 3v12M8 7l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                                Share
+                            </button>
+
+                            <button type="button" className={styles.modal_social_btn} aria-label="Pinterest">
+                                <img src={pinterestIcon} alt="Pinterest" className={styles.modal_social_icon} />
+                            </button>
+                            <button type="button" className={`${styles.modal_social_btn} ${styles.modal_social_instagram}`} aria-label="Instagram">
+                                <img src={instagramIcon} alt="Instagram" className={styles.modal_social_icon} />
+                            </button>
+                            <button type="button" className={`${styles.modal_social_btn} ${styles.modal_social_tiktok}`} aria-label="TikTok">
+                                <svg viewBox="0 0 24 24" fill="currentColor" className={styles.modal_social_icon_svg}>
+                                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z"/>
+                                </svg>
+                            </button>
+                            <button type="button" className={`${styles.modal_social_btn} ${styles.modal_social_download}`} aria-label="Download">
+                                <svg viewBox="0 0 24 24" fill="none" className={styles.modal_social_icon_svg}>
+                                    <path d="M12 3v13M7 11l5 5 5-5M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
             )}
         </div>
