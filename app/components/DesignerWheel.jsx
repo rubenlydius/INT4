@@ -25,11 +25,43 @@ function indexAtTop(angle) {
   return ((Math.round(raw) % COUNT) + COUNT) % COUNT;
 }
 
-export default function DesignerWheel({ activeKey, onSelect, viewmasterSrc, wheelSrc }) {
+/**
+ * DesignerWheel
+ * Renders the viewmaster disc (static) with the designer sprite ring (draggable/clickable)
+ * layered on top. Fixed to the viewport bottom. Acts as the primary navigation
+ * for the lens page.
+ *
+ * IMPORTANT: rendered via a portal directly into document.body. `position: fixed`
+ * only positions relative to the viewport if NO ancestor has a transform, filter,
+ * perspective, contain, or will-change:transform set — any of those makes that
+ * ancestor the containing block instead, and "fixed" silently behaves like
+ * "absolute" relative to it (looks exactly like "stuck to the bottom of the
+ * page" / scrolls away). Portaling to document.body sidesteps that entirely,
+ * regardless of what the app shell/router/page-transition wrapper does upstream.
+ *
+ * Collapse behavior: any click/tap on the lens page content (outside this
+ * component) collapses the wheel down out of the way. Clicking the wheel
+ * again while collapsed brings it back up without changing the selection;
+ * clicking it while expanded navigates as normal.
+ *
+ * Props:
+ *  - activeKey: current designer key (e.g. "dries"), controlled from the route
+ *  - onSelect: (key) => void, called when the wheel settles on a new designer
+ *  - viewmasterSrc, wheelSrc: image sources
+ */
+export default function DesignerWheel({ activeKey, onSelect, viewmasterSrc, wheelSrc, introMode = false }) {
   const wheelRef = useRef(null);
   const trackRef = useRef(null);
 
   const [mounted, setMounted] = useState(false);
+  // intro: start off-screen, slide up after mount
+  const [introHidden, setIntroHidden] = useState(introMode);
+  useEffect(() => {
+    if (!introMode) return;
+    // start rising at 600ms so it's already moving as the overlay fades at 700ms
+    const t = setTimeout(() => setIntroHidden(false), 600);
+    return () => clearTimeout(t);
+  }, [introMode]);
 
 
   // Angle lives in a ref for the drag loop (avoids re-render thrash);
@@ -239,7 +271,7 @@ useEffect(() => {
   }
 
   const wheel = (
-    <div className={`${styles.wheelStage} ${collapsed ? styles.collapsed : ""}`}>
+    <div className={`${styles.wheelStage} ${collapsed ? styles.collapsed : ""} ${introHidden ? styles.wheelStageIntro : ""}`}>
       {/* Handlers moved to the track container */}
       <div 
         className={styles.track} 

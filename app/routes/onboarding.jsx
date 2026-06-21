@@ -16,7 +16,7 @@ import flashIcon from '../assets/flash.svg'
 import flipCamera from '../assets/flip_camera_onbording.svg'
 import cameraClickButton from '../assets/camera_click_button.svg'
 import gallerySquare from '../assets/galery_square.svg'
-import stickersCamera from '../assets/stickers_camera_onbording.png'
+const stickersCamera = storageUrl('gems/onboarding/stickers_camera_onboarding.webp')
 import stickerOnboarding from '../assets/sticker_onbording.svg'
 import viewmasterDiscBg from '../assets/viewmaster_disc_background.svg'
 import cameraIconOnboarding from '../assets/camera_icon_onbording.svg'
