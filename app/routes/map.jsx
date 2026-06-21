@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useMapFocus } from '../lib/MapContext';
 import { Link } from "react-router";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
@@ -54,11 +55,24 @@ export default function Map() {
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
   const userMarkerRef = useRef(null);
+  // DESKTOP — pendingGemId is set when user clicks a gem on the desktop map,
+  // so we can open the right popup once the mobile map markers are loaded
+  const { pendingGemId, setPendingGemId } = useMapFocus();
 
   useEffect(() => {
     const lens = localStorage.getItem("selectedLens") || "ann";
     setCurrentLens(lens);
   }, []);
+
+  // DESKTOP — opens the gem popup in the phone frame when arriving from a desktop map click
+  useEffect(() => {
+    if (!pendingGemId) return
+    const found = markersRef.current.find(({ gem }) => gem.id === pendingGemId)
+    if (found) {
+      setSelected(found.gem)
+      setPendingGemId(null)
+    }
+  }, [pendingGemId]);
 
   const designer = designers[currentLens] || designers.ann;
 
@@ -169,6 +183,15 @@ export default function Map() {
         markersRef.current.push({ marker, gem });
         marker.addTo(map);
       });
+
+      // if a gem was clicked on the desktop map before markers loaded, open it now
+      if (pendingGemId) {
+        const found = markersRef.current.find(({ gem }) => gem.id === pendingGemId)
+        if (found) {
+          setSelected(found.gem)
+          setPendingGemId(null)
+        }
+      }
     }
 
     init();

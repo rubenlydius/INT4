@@ -21,28 +21,24 @@ export default function Lens() {
   const designer = designers[id] || designers.ann
   const { setActiveLens } = useMapFocus()
 
-  useEffect(() => {
-    setActiveLens(id || 'ann')
-  }, [id])
-
   const allowedIndices = [0, 2, 3];
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [direction, setDirection] = useState('next'); 
+  const [direction, setDirection] = useState('next');
 
   useEffect(() => {
     setCurrentIdx(0);
     setDirection('next');
     if (id) {
       localStorage.setItem('selectedLens', id);
+      setActiveLens(id); // DESKTOP — tells DesktopMap which designer's gems to show
     }
-
     allowedIndices.forEach((idx) => {
       if (designer.images[idx]) {
         const img = new Image();
         img.src = designer.images[idx];
       }
     });
-  }, [id, designer]);
+  }, [id, designer, setActiveLens]);
 
   const handlePrev = () => {
     setDirection('prev');

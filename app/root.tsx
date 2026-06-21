@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import {
   isRouteErrorResponse,
   Links,
-  NavLink,
   Meta,
   Outlet,
   Scripts,
@@ -70,16 +69,25 @@ export default function App() {
 
   return (
     <MapProvider>
+      {/* DESKTOP ONLY, top navigation bar with logo + nav links (hidden on mobile via CSS) */}
       <DesktopNav />
+
+      {/* DESKTOP ONLY, full-screen background map (hidden on mobile via CSS) */}
       <div className="map_panel">
         <DesktopMap />
       </div>
+
+      {/* Phone frame, used on both mobile (full screen) and desktop (390px panel on left) */}
       <div className="app_panel">
         <div className="app_content">
           <Outlet />
         </div>
+        {/* Mobile bottom navbar, hidden on desktop via CSS, replaced by DesktopNav */}
         <Navbar />
       </div>
+
+      {/* DESKTOP ONLY, portal target for DesignerWheel so it renders inside the phone frame
+          boundary instead of escaping to document.body (which would cover the whole screen) */}
       <div className="wheel_portal" data-wheel-portal="true" />
     </MapProvider>
   );

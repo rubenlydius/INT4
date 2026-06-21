@@ -275,6 +275,9 @@ useEffect(() => {
   );
 
   if (!mounted) return null;
+
+  // DESKTOP — portal into .wheel_portal (overlays the phone frame) so the wheel
+  // stays clipped inside the 390px frame instead of covering the whole screen.
   const portalTarget =
     window.innerWidth >= 768
       ? (document.querySelector('[data-wheel-portal]') || document.body)

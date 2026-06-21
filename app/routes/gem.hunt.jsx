@@ -64,10 +64,11 @@ export default function GemDetail() {
 
       if (error) return console.error(error.message);
       setGem(data);
+      // DESKTOP — pan the background map to this gem and draw its search radius circle
       if (data.lat && data.lng) setMapFocus({ lat: data.lat, lng: data.lng, radius: data.radius ?? 250 })
     }
     fetchGem();
-  }, [gemId]);
+  }, [gemId, setMapFocus]);
 
   useEffect(() => {
     if (!gem || !mapRef.current) return;

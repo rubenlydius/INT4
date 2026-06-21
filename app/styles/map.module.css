@@ -124,11 +124,13 @@
     box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
 }
 
+/* DESKTOP ONLY fix popup and map header inside the 390px phone frame */
 @media (min-width: 768px) {
   .popup {
     width: calc(390px - 2rem);
     left: 1rem;
     transform: none;
+    bottom: 1.5rem;
   }
   .mapHeader {
     width: 100%;

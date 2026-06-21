@@ -1,15 +1,7 @@
+/* Desktop only — hidden on mobile via .nav { display: none } */
 import { NavLink, useLocation } from 'react-router'
 import { useState, useEffect } from 'react'
 import styles from './desktopnav.module.css'
-
-import lensB from '../assets/lens_iconB.svg'
-import mapB from '../assets/map_iconB.svg'
-import cameraB from '../assets/camera_iconB.svg'
-import profileB from '../assets/profile_iconB.svg'
-import lensW from '../assets/lens_iconW.svg'
-import mapW from '../assets/map_iconW.svg'
-import cameraW from '../assets/camera_iconW.svg'
-import profileW from '../assets/profile_iconW.svg'
 
 export default function DesktopNav() {
   const location = useLocation()
@@ -29,10 +21,10 @@ export default function DesktopNav() {
   }, [])
 
   const items = [
-    { to: lensHref,    label: 'Lens',    iconB: lensB,    iconW: lensW,    match: '/lens' },
-    { to: '/map',      label: 'Map',     iconB: mapB,     iconW: mapW,     match: '/map' },
-    { to: '/camera',   label: 'Camera',  iconB: cameraB,  iconW: cameraW,  match: '/camera' },
-    { to: profileHref, label: 'Profile', iconB: profileB, iconW: profileW, match: '/profile' },
+    { to: lensHref,    label: 'Lens',    match: '/lens' },
+    { to: '/map',      label: 'Map',     match: '/map' },
+    { to: '/camera',   label: 'Camera',  match: '/camera' },
+    { to: profileHref, label: 'Profile', match: '/profile' },
   ]
 
   return (
@@ -47,7 +39,6 @@ export default function DesktopNav() {
               to={item.to}
               className={isActive ? `${styles.link} ${styles.active}` : styles.link}
             >
-              <img src={isActive ? item.iconW : item.iconB} alt="" className={styles.icon} />
               {item.label}
             </NavLink>
           )

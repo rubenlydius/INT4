@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router'
 import { useMapFocus } from '../lib/MapContext'
 import { supabase } from '../lib/supabase'
 import sixGem from '../assets/a6_gem.svg'
@@ -34,7 +35,8 @@ function getOffset(gem) {
 }
 
 export default function DesktopMap() {
-  const { mapFocus, activeLens } = useMapFocus()
+  const { mapFocus, activeLens, setPendingGemId } = useMapFocus()
+  const navigate = useNavigate()
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
   const initializedRef = useRef(false)
@@ -62,6 +64,7 @@ export default function DesktopMap() {
     return marker
   }
 
+  // All closed-over values (refs, setPendingGemId, navigate) are stable so stale closure is not a risk here.
   function applyLensFilter(lensKey) {
     const map = mapInstanceRef.current
     const L = LRef.current
@@ -78,6 +81,10 @@ export default function DesktopMap() {
       .filter(gem => gem.a6_link === dbName)
       .forEach(gem => {
         const marker = buildMarker(L, gem)
+        marker.on('click', () => {
+          setPendingGemId(gem.id)
+          navigate('/map')
+        })
         marker.addTo(map)
         markersRef.current.push({ marker, gem })
       })

@@ -124,9 +124,8 @@
     pointer-events: none;
   }
 
+/* DESKTOP ONLY */
 @media (min-width: 768px) {
-  /* Inside .wheel_portal (390px wide), replace vw units with fixed px values.
-     180% of 390px = 702px — same ratio as 180vw on a 390px mobile screen. */
   .wheelStage {
     height: 702px;
     bottom: -390px;

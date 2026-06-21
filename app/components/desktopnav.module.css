@@ -48,8 +48,4 @@
     background-color: var(--color-orange);
     color: var(--color-white);
   }
-
-  .icon {
-    display: none;
-  }
 }

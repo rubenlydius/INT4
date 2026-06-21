@@ -41,6 +41,7 @@
     color: var(--color-white);
   }
 
+/* DESKTOP ONLY — hide mobile bottom nav; navigation is handled by DesktopNav in the top bar */
 @media (min-width: 768px) {
   .bottomNav {
     display: none;

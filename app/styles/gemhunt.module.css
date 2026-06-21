@@ -280,11 +280,13 @@
     padding-top: 0.5rem;
   }
 
+/* DESKTOP ONLY */
 @media (min-width: 768px) {
   .popup {
     width: calc(390px - 2rem);
     left: 1rem;
     transform: none;
+    bottom: 1.5rem; 
   }
   .block1transition {
     width: 100%;
