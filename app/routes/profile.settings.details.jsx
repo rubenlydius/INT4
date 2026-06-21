@@ -28,7 +28,7 @@ export default function ProfileSettingsDetails() {
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
         <div className="top">
-          <button className={styles.back_btn} onClick={() => navigate(`/profile/${id}/settings`)}>
+          <button type="button" className={styles.back_btn} onClick={() => navigate(`/profile/${id}/settings`)}>
             <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
           </button>
           <h1>Settings</h1>
