@@ -100,8 +100,14 @@ export default function SignUp() {
           <div className={styles.footer}>
             <button
               className={`${styles.signUpBtn} ${!selected ? styles.signUpBtnDisabled : ''}`}
-              onClick={() => selected && setStep(1)}
-            >Sign Up</button>
+              onClick={() => {
+                if (selected) {
+                  localStorage.setItem('userType', selected)
+                  window.dispatchEvent(new Event('userTypeChanged'))
+                  setStep(1)
+                }
+              }}
+              >Sign Up</button>
           </div>
         </>
       )}
