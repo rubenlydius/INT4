@@ -19,6 +19,9 @@ import instagramIcon from '../assets/instagram_icon.svg'
 import pinterestIcon from '../assets/pinterest_icon.svg'
 import behanceIcon from '../assets/behance_icon.svg'
 import { profiles } from '../lib/profiles'
+import { storageUrl } from '../lib/storage'
+
+const ONA_AVATAR = storageUrl('gems/creators/ona.avif')
 
 export function meta() {
   return [{ title: "Add a Gem" }]
@@ -494,7 +497,7 @@ export default function AddGem() {
         gem_name: gemName,
         abstract: textHint,
         creator: profile.name,
-        image_url: profile.avatar,
+        image_url: ONA_AVATAR,
         about_creator: profile.bio?.full ?? '',
         creator_field: profile.keywords?.[1] ?? '',
         sticker_url: stickerUrl,
@@ -520,12 +523,12 @@ export default function AddGem() {
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
         {step === 5 ? (
-          <button className={styles.close_btn} onClick={() => navigate(`/profile/${id}/gems`)}>
+          <button type="button" className={styles.close_btn} onClick={() => navigate(`/profile/${id}/gems`)}>
             <img src={closeButton} alt="close" />
           </button>
         ) : (
           <div className={styles.header_row}>
-            <button className={styles.back_btn} onClick={handleBack}>
+            <button type="button" className={styles.back_btn} onClick={handleBack}>
               <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
             </button>
             <h1 className={styles.title}>{STEP_TITLES[step - 1]}</h1>
@@ -954,7 +957,7 @@ export default function AddGem() {
                 <h2 className={styles.review_section_title}>About You</h2>
                 <div className={styles.review_about_card}>
                   <div className={styles.review_about_header}>
-                    <img src={profile.avatar} alt={profile.name} className={styles.review_about_avatar} />
+                    <img src={ONA_AVATAR} alt={profile.name} className={styles.review_about_avatar} />
                     <div className={styles.review_about_name_wrap}>
                       <p className={styles.review_about_name}>{profile.name}</p>
                       {profile.keywords?.[1] && (
