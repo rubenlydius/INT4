@@ -215,7 +215,7 @@ export default function GemDetail() {
             <p className={styles.popupText}>Revealing the location will end this hunt and you won't unlock the collectible sticker for this gem.</p>
             <div className={styles.popupButtons}>
               <button className={styles.revealHunt} onClick={() => setShowRevealPopup(false)}>Keep exploring</button>
-              <Link to={`/gem/detail/${gem.id}`}>
+              <Link to={`/gem/detail/${gem.id}`} state={{ revealed: true }}>
                 <button className={styles.foundHunt}>
                   Reveal location
                 </button>
