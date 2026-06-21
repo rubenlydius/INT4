@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { storageUrl } from '../lib/storage'
 import styles from '../styles/camera.viewmaster.module.css'
@@ -11,8 +11,8 @@ import containerBottom from '../assets/hintDropdownBottom.svg'
 import aboutyouContainerTop from '../assets/aboutyou_container_top.svg'
 import stickerSeparator from '../assets/sticker_separator.svg'
 import closeButton from '../assets/close_button.svg'
-import pinterestIcon from '../assets/pinterest_icon.svg'
-import instagramIcon from '../assets/instagram_icon.svg'
+import shareIcon from '../assets/share_icon.svg'
+import saveIcon from '../assets/share_icon_onbording.svg'
 import discBackground from '../assets/viewmaster_disc_background.svg'
 import antwerpPixels from '../assets/antwerp_pixels.svg'
 
@@ -82,6 +82,7 @@ export default function CameraViewmaster() {
     const navigate = useNavigate()
     const location = useLocation()
     const profileId = location.state?.profileId || 'ona'
+    const videoRef = useRef(null)
 
     const [step, setStep] = useState(1)
     const [allPhotos, setAllPhotos] = useState([])
@@ -90,6 +91,7 @@ export default function CameraViewmaster() {
     const [placedStickers, setPlacedStickers] = useState([])
     const [colorScroll, setColorScroll] = useState(0)
     const [showShare, setShowShare] = useState(false)
+    const [shareTab, setShareTab] = useState('photo')
 
     useEffect(() => {
         const basePhotos = Array.from({ length: STATIC_PHOTO_COUNT }, (_, i) => ({
@@ -327,6 +329,7 @@ export default function CameraViewmaster() {
                         const saved = JSON.parse(localStorage.getItem(key) || '[]')
                         saved.unshift({ id: Date.now(), color: selectedColor, photoIds: selectedIds, stickers: placedStickers })
                         localStorage.setItem(key, JSON.stringify(saved))
+                        setShareTab('photo')
                         setShowShare(true)
                     }}>
                         Share
@@ -343,62 +346,96 @@ export default function CameraViewmaster() {
                         </button>
 
                         <h2 className={styles.modal_title}>Share your ViewMaster</h2>
-                        <p className={styles.modal_sub}>Share your digital disc or download it to your camera roll.</p>
+                        <p className={styles.modal_sub}>Share your digital disc or the reel video.</p>
 
-                        <div className={styles.modal_disc_section}>
-                            <img src={antwerpPixels} alt="" className={styles.modal_antwerp_bg} />
-                            <div className={styles.modal_disc_wrap}>
-                                <img src={discBackground} alt="" className={styles.modal_disc_bg} />
-                                <div className={styles.modal_disc} style={{ backgroundColor: selectedColor }}>
-                                    {selectedPhotos.slice(0, SLOT_COUNT).map((photo, i) => (
-                                        <div key={photo.id} className={styles.slot} style={slotStyle(i)}>
-                                            <img src={photo.src} alt="" className={styles.slot_img} />
-                                        </div>
-                                    ))}
-                                    {Array.from({ length: 7 }).map((_, i) => (
-                                        <div key={`tick-${i}`} className={styles.tick} style={tickStyle(i * 2)} />
-                                    ))}
-                                    <div className={styles.disc_center} />
-                                    {placedStickers.map((url, i) => (
-                                        <img
-                                            key={url}
-                                            src={url}
-                                            alt=""
-                                            className={styles.placed_sticker}
-                                            style={{ transform: `translate(calc(-50% + ${(i % 3 - 1) * 45}px), calc(-50% + ${Math.floor(i / 3) * 45 - 20}px))` }}
-                                        />
-                                    ))}
+                        <div className={styles.modal_tabs}>
+                            <button
+                                type="button"
+                                className={`${styles.modal_tab} ${shareTab === 'photo' ? styles.modal_tab_active : ''}`}
+                                onClick={() => setShareTab('photo')}
+                            >
+                                Photo
+                            </button>
+                            <button
+                                type="button"
+                                className={`${styles.modal_tab} ${shareTab === 'video' ? styles.modal_tab_active : ''}`}
+                                onClick={() => setShareTab('video')}
+                            >
+                                Video
+                            </button>
+                        </div>
+
+                        {shareTab === 'photo' ? (
+                            <div className={styles.modal_disc_section}>
+                                <img src={antwerpPixels} alt="" className={styles.modal_antwerp_bg} />
+                                <div className={styles.modal_disc_wrap}>
+                                    <img src={discBackground} alt="" className={styles.modal_disc_bg} />
+                                    <div className={styles.modal_disc} style={{ backgroundColor: selectedColor }}>
+                                        {selectedPhotos.slice(0, SLOT_COUNT).map((photo, i) => (
+                                            <div key={photo.id} className={styles.slot} style={slotStyle(i)}>
+                                                <img src={photo.src} alt="" className={styles.slot_img} />
+                                            </div>
+                                        ))}
+                                        {Array.from({ length: 7 }).map((_, i) => (
+                                            <div key={`tick-${i}`} className={styles.tick} style={tickStyle(i * 2)} />
+                                        ))}
+                                        <div className={styles.disc_center} />
+                                        {placedStickers.map((url, i) => (
+                                            <img
+                                                key={url}
+                                                src={url}
+                                                alt=""
+                                                className={styles.placed_sticker}
+                                                style={{ transform: `translate(calc(-50% + ${(i % 3 - 1) * 45}px), calc(-50% + ${Math.floor(i / 3) * 45 - 20}px))` }}
+                                            />
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        ) : (
+                            <div className={styles.modal_video_section}>
+                                <video
+                                    ref={videoRef}
+                                    className={styles.modal_video}
+                                    src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/video/viewmaster-reel1.mp4"
+                                    autoPlay
+                                    loop
+                                    muted
+                                    playsInline
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.modal_video_fullscreen_btn}
+                                    onClick={() => {
+                                        const v = videoRef.current
+                                        if (!v) return
+                                        if (v.requestFullscreen) v.requestFullscreen()
+                                        else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen()
+                                    }}
+                                >
+                                    <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+                                        <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                    Full screen
+                                </button>
+                            </div>
+                        )}
 
                         <div className={styles.modal_actions}>
                             <button
                                 type="button"
-                                className={styles.modal_share_btn}
+                                className={styles.modal_action_btn}
                                 onClick={() => navigator.share?.({ title: 'My ViewMaster', text: 'Check out my ViewMaster disc!' })}
                             >
-                                <svg viewBox="0 0 24 24" fill="none" className={styles.modal_share_icon}>
-                                    <path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M12 3v12M8 7l4-4 4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
+                                <img src={shareIcon} alt="" className={styles.modal_action_icon} />
                                 Share
                             </button>
-
-                            <button type="button" className={styles.modal_social_btn} aria-label="Pinterest">
-                                <img src={pinterestIcon} alt="Pinterest" className={styles.modal_social_icon} />
-                            </button>
-                            <button type="button" className={`${styles.modal_social_btn} ${styles.modal_social_instagram}`} aria-label="Instagram">
-                                <img src={instagramIcon} alt="Instagram" className={styles.modal_social_icon} />
-                            </button>
-                            <button type="button" className={`${styles.modal_social_btn} ${styles.modal_social_tiktok}`} aria-label="TikTok">
-                                <svg viewBox="0 0 24 24" fill="currentColor" className={styles.modal_social_icon_svg}>
-                                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.16 8.16 0 004.77 1.52V6.76a4.85 4.85 0 01-1-.07z"/>
-                                </svg>
-                            </button>
-                            <button type="button" className={`${styles.modal_social_btn} ${styles.modal_social_download}`} aria-label="Download">
-                                <svg viewBox="0 0 24 24" fill="none" className={styles.modal_social_icon_svg}>
-                                    <path d="M12 3v13M7 11l5 5 5-5M4 20h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                                </svg>
+                            <button
+                                type="button"
+                                className={styles.modal_action_btn}
+                            >
+                                <img src={saveIcon} alt="" className={styles.modal_action_icon} />
+                                Save
                             </button>
                         </div>
 

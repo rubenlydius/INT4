@@ -92,6 +92,7 @@
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.625rem;
+    padding-bottom: 7rem;
 }
 
 .cell {
@@ -234,7 +235,7 @@
     position: absolute;
     width: 7px;
     height: 14px;
-    background: white;
+    background: var(--color-white);
 }
 
 .disc_center {
@@ -242,7 +243,7 @@
     width: 26px;
     height: 26px;
     border-radius: 50%;
-    background: white;
+    background: var(--color-white);
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -265,7 +266,7 @@
 /* Gallery images */
 .color_container {
     margin-bottom: 1rem;
-    filter: drop-shadow(0px 1px 4px rgba(0, 0, 0, 0.15));
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.15));
 }
 
 .container_edge {
@@ -277,7 +278,7 @@
 }
 
 .color_container_body {
-    background: white;
+    background: var(--color-white);
     padding: 0.75rem 1rem;
     display: flex;
     flex-direction: column;
@@ -359,7 +360,7 @@
 }
 
 .sticker_container_body {
-    background-color: #ffffff;
+    background-color: var(--color-white);
     border-radius: 0 0 1rem 1rem;
     padding: 1.25rem 0 0 0;
     display: flex;
@@ -550,6 +551,69 @@
     margin-bottom: 1.5rem;
 }
 
+.modal_tabs {
+    display: flex;
+    gap: 0.375rem;
+    background: #fde8d8;
+    border-radius: 2rem;
+    padding: 0.25rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+}
+
+.modal_tab {
+    flex: 1;
+    padding: 0.5rem 1rem;
+    border: none;
+    background: none;
+    border-radius: 2rem;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: #b05a2a;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.modal_tab_active {
+    background: var(--color-orange);
+    color: var(--color-white);
+    font-weight: 600;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.15);
+}
+
+.modal_video_section {
+    width: 100%;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+.modal_video {
+    width: 100%;
+    display: block;
+    border-radius: 1rem;
+    max-height: 40svh;
+    object-fit: cover;
+}
+
+.modal_video_fullscreen_btn {
+    position: absolute;
+    bottom: 0.625rem;
+    right: 0.625rem;
+    background: rgba(0, 0, 0, 0.5);
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.375rem 0.625rem;
+    color: white;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
 .modal_disc_wrap {
     position: relative;
     width: 240px;
@@ -578,10 +642,12 @@
     transform-origin: top left;
 }
 
-.modal_share_btn {
+.modal_action_btn {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    gap: 0.5rem;
+    flex: 1;
     background-color: var(--color-black);
     color: var(--color-white);
     font-family: var(--font-body);
@@ -591,53 +657,12 @@
     border-radius: 999px;
     padding: 0.75rem 1.25rem;
     cursor: pointer;
-    flex: 1;
-    justify-content: center;
 }
 
-.modal_share_icon {
-    width: 1.1rem;
-    height: 1.1rem;
-}
-
-.modal_social_btn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 0;
-    overflow: hidden;
-    background: #E60023;
-}
-
-.modal_social_icon {
-    width: 26px;
-    height: 26px;
-    object-fit: contain;
+.modal_action_icon {
+    width: 1.2rem;
+    height: 1.2rem;
     filter: brightness(0) invert(1);
-}
-
-.modal_social_icon_svg {
-    width: 22px;
-    height: 22px;
-    color: white;
-}
-
-.modal_social_instagram {
-    background: #C13584;
-}
-
-.modal_social_tiktok {
-    background: #010101;
-}
-
-.modal_social_download {
-    background: var(--color-orange);
 }
 
 .modal_actions {
