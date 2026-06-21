@@ -1,6 +1,5 @@
 .gallery_title{
     padding: 1rem 1rem 0 1rem; 
-
 }
 
 .secondary_title{
@@ -18,25 +17,61 @@
     margin: 0 0 -4rem 0;
 }
 
-.current_photo{
+.current_photo {
     width: 15rem;
     height: 15rem;
     object-fit: cover;
     border-radius: 20px;
-    
+    position: relative;
+    z-index: 1; 
 }
 
-.gallery_transition{
+.stack_wrapper {
+    position: relative;
+    width: 15rem;
+    height: 15rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.stacked_photo {
+    position: absolute;
+    width: 15rem;
+    height: 15rem;
+    object-fit: cover;
+    border-radius: 20px;
+    opacity: 0.50;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 1;
+}
+
+.photo_left {
+    transform: translateX(-4.5rem) translateY(0.5rem) scale(0.92) rotate(-8deg);
+}
+
+.photo_right {
+    transform: translateX(4.5rem) translateY(0.5rem) scale(0.92) rotate(8deg);
+}
+
+.nav_arrow {
+    position: relative;
+    z-index: 10; 
+    cursor: pointer;
+}
+
+.prev_arrow{
+    transform: rotate(180deg);
+}
+
+.gallery_transition {
     width: 100vw;
+    position: relative;
+    z-index: 2; 
 }
 
 .light_orange{
     background-color: var(--color-orange-50);
-}
-
-.prev_arrow{
-
-    transform: rotate(180deg);
 }
 
 .allphotos_p{
@@ -123,7 +158,6 @@
     flex-direction: row;
     gap: 1rem;
     align-items: end;
-
 }
 
 .all_photos_img_wrapper {

@@ -54,29 +54,34 @@ export default function Lens() {
 
 
 
-
-    // --- TEMPORARY DIAGNOSTIC LOGS ---
-  useEffect(() => {
-    console.log("=== 🛠️ PRODUCTION DIAGNOSTIC REPORT ===");
+  // NOTE: This has nothing to do with the lens.jsx page. 
+  // I was struggling for 8+ hours to figure out what was wrong with the map.jsx page and why this was causing issues when trying to deploy the project on github. 
+  // These logs finally made me realise it was the VITE_SUPABASE_ANON_KEY that was not being read properly by github. 
+  //   // --- TEMPORARY DIAGNOSTIC LOGS ---
+  // useEffect(() => {
+  //   console.log("=== 🛠️ PRODUCTION DIAGNOSTIC REPORT ===");
     
-    // 1. Check what Vite thinks the base path is
-    console.log("Vite Base URL:", import.meta.env.BASE_URL);
-    console.log("Current Pathname:", window.location.pathname);
+  //   // 1. Check what Vite thinks the base path is
+  //   console.log("Vite Base URL:", import.meta.env.BASE_URL);
+  //   console.log("Current Pathname:", window.location.pathname);
 
-    // 2. Check if your Env Variables actually exist in the production build
-    // (Replace these with the exact names you use inside your lib/supabase file)
-    console.log("Supabase URL Defined?:", !!import.meta.env.VITE_SUPABASE_URL);
-    console.log("Supabase Key Defined?:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+  //   // 2. Check if your Env Variables actually exist in the production build
+  //   // (Replace these with the exact names you use inside your lib/supabase file)
+  //   console.log("Supabase URL Defined?:", !!import.meta.env.VITE_SUPABASE_URL);
+  //   console.log("Supabase Key Defined?:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
     
-    // 3. Test if importing Leaflet from a working page causes a 404 asset crash
-    console.log("Testing Leaflet chunk delivery...");
-    import("leaflet")
-      .then(() => console.log("✅ Leaflet chunk loaded perfectly on this page!"))
-      .catch((err) => console.error("❌ Leaflet chunk FAILED to load:", err));
+  //   // 3. Test if importing Leaflet from a working page causes a 404 asset crash
+  //   console.log("Testing Leaflet chunk delivery...");
+  //   import("leaflet")
+  //     .then(() => console.log("✅ Leaflet chunk loaded perfectly on this page!"))
+  //     .catch((err) => console.error("❌ Leaflet chunk FAILED to load:", err));
       
-    console.log("=======================================");
-  }, []);
-  // --- END DIAGNOSTIC LOGS ---
+  //   console.log("=======================================");
+  // }, []);
+  // // --- END DIAGNOSTIC LOGS --- 
+
+
+  
 
   return (
     <div className={styles.lensContainer}>

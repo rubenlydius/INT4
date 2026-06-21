@@ -135,9 +135,9 @@ export default function GemDetail() {
 
   if (!gem) return <div>Loading...</div>;
 
-  const hintImages = [1, 2, 3].map(
-    (n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`)
-  );
+  const hintImages = gem.id > 300
+  ? [gem.hint_url_1, gem.hint_url_2, gem.hint_url_3]
+  : [1, 2, 3].map((n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`));
 
   return (
     <div className={styles.gemHunt}>
@@ -215,7 +215,7 @@ export default function GemDetail() {
             <p className={styles.popupText}>Revealing the location will end this hunt and you won't unlock the collectible sticker for this gem.</p>
             <div className={styles.popupButtons}>
               <button className={styles.revealHunt} onClick={() => setShowRevealPopup(false)}>Keep exploring</button>
-              <Link to={`/gem/detail/${gem.id}`}>
+              <Link to={`/gem/detail/${gem.id}`} state={{ revealed: true }}>
                 <button className={styles.foundHunt}>
                   Reveal location
                 </button>

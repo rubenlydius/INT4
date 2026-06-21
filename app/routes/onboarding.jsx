@@ -59,7 +59,7 @@ export default function Onboarding() {
   }, [step])
 
   function handleSkip() {
-    navigate('/lens/ann')
+    navigate('/signup')
   }
 
   function handleContinue() {

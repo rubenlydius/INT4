@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from 'react-router'
-import styles from '../styles/profile.stickers.module.css'
 import { profiles } from '../lib/profiles'
 import { storageUrl } from '../lib/storage'
+import styles from '../styles/profile.stickers.module.css'
 
 import simpleOrangeArrow from '../assets/simple_orange_arrow.svg'
 import topPattern from '../assets/profile_details_top_pattern.svg'

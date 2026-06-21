@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router";
-import { useEffect, useRef } from 'react';
+import { Link } from "react-router";
+import { useEffect, useRef, useState } from 'react';
 import styles from '../styles/camera.module.css';
 
 import cameraTop from '../assets/camera_top.svg';
@@ -15,74 +15,94 @@ export default function Camera() {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const requestRef = useRef(null);
+    const streamRef = useRef(null);
+    const facingModeRef = useRef("environment");
+
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [isFlashing, setIsFlashing] = useState(false);
+    const [isFrontCamera, setIsFrontCamera] = useState(false);
+
+    const startCamera = async (facingMode) => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (requestRef.current) {
+            cancelAnimationFrame(requestRef.current);
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 1280, height: 720, facingMode: { ideal: facingMode } },
+                audio: false
+            });
+
+            streamRef.current = stream;
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                await videoRef.current.play();
+
+                if (canvasRef.current) {
+                    canvasRef.current.width = videoRef.current.videoWidth;
+                    canvasRef.current.height = videoRef.current.videoHeight;
+                    renderLoop();
+                }
+            }
+        } catch (err) {
+            console.error('Camera Initialization Error:', err);
+        }
+    };
+
+    function renderLoop() {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        if (video && canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+
+        requestRef.current = requestAnimationFrame(renderLoop);
+    }
 
     useEffect(() => {
-        let localStream = null;
-
-        async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 1280, height: 720, facingMode: { ideal: "environment" } },
-                    audio: false
-                });
-
-                localStream = stream;
-
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                    await videoRef.current.play();
-
-                    if (canvasRef.current) {
-                        canvasRef.current.width = videoRef.current.videoWidth;
-                        canvasRef.current.height = videoRef.current.videoHeight;
-                        renderLoop();
-                    }
-                }
-            } catch (err) {
-                console.error('Camera Initialization Error:', err);
-            }
-        }
-
-        function renderLoop() {
-            const video = videoRef.current;
-            const canvas = canvasRef.current;
-            
-            if (video && canvas) {
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            }
-            
-            requestRef.current = requestAnimationFrame(renderLoop);
-        }
-
-        initCamera();
+        startCamera(facingModeRef.current);
 
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
     }, []);
+
+    const handleFlipCamera = () => {
+        const next = facingModeRef.current === "environment" ? "user" : "environment";
+        facingModeRef.current = next;
+        setIsFrontCamera(next === "user");
+        startCamera(next);
+    };
 
     const captureFrame = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        setIsCapturing(true);
+        setTimeout(() => setIsCapturing(false), 150);
+
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 300);
+
         const base64Image = canvas.toDataURL('image/jpeg', 0.4);
-        
-        // 1. Grab all existing photo index numbers
+
         const numericIds = Object.keys(localStorage)
             .filter(k => k.startsWith('gem_photo_'))
             .map(k => parseInt(k.replace('gem_photo_', ''), 10))
             .filter(num => !isNaN(num));
-            
-        // 2. Find the absolute highest number used so far, or default to 0 if empty
+
         const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
-        
-        // 3. Always increment past the highest structural ID so deletions never cause a collision
         const nextIndex = maxId + 1;
-        
+
         try {
             localStorage.setItem(`gem_photo_${nextIndex}`, base64Image);
         } catch (e) {
@@ -95,15 +115,22 @@ export default function Camera() {
             <img src={cameraTop} alt="styling element" className={styles.cameraTop} />
 
             <div className={styles.cameraContainer}>
-                <video 
-                    ref={videoRef} 
-                    autoPlay 
-                    playsInline 
-                    muted 
-                    style={{ display: 'none' }} 
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{ display: 'none' }}
                 />
 
-                <canvas ref={canvasRef} className={styles.outputCanvas} />
+                <canvas
+                    ref={canvasRef}
+                    className={styles.outputCanvas}
+                    style={{ transform: isFrontCamera ? 'scaleX(-1)' : 'scaleX(1)' }}
+                />
+
+                {/* Flash overlay */}
+                <div className={`${styles.flashOverlay} ${isFlashing ? styles.flashActive : ''}`} />
 
                 <div className={styles.topControls}>
                     <button className={styles.controlBtn}>
@@ -113,21 +140,21 @@ export default function Camera() {
 
                 <div className={styles.bottomControls}>
                     <Link to={`/camera/gallery`}>
-                        <img 
-                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp" 
-                            alt="gallery" 
+                        <img
+                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp"
+                            alt="gallery"
                             className={styles.gallery}
                         />
                     </Link>
 
-                    <button 
-                        className={`${styles.controlBtn} ${styles.captureBtn}`} 
+                    <button
+                        className={`${styles.controlBtn} ${styles.captureBtn} ${isCapturing ? styles.capturePressed : ''}`}
                         onClick={captureFrame}
                     >
                         <img src={captureButton} alt="Capture Gem" />
                     </button>
 
-                    <button className={styles.controlBtn}>
+                    <button className={styles.controlBtn} onClick={handleFlipCamera}>
                         <img src={flipCamera} alt="Flip Camera Feed" />
                     </button>
                 </div>
