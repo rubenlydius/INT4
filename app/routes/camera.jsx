@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useEffect, useRef, useState } from 'react';
 import styles from '../styles/camera.module.css';
 
@@ -17,6 +17,10 @@ export default function Camera() {
     const requestRef = useRef(null);
     const streamRef = useRef(null);
     const facingModeRef = useRef("environment");
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const fromGemHunt = location.state?.fromGemHunt === true;
 
     const [isCapturing, setIsCapturing] = useState(false);
     const [isFlashing, setIsFlashing] = useState(false);
@@ -86,25 +90,28 @@ export default function Camera() {
     const captureFrame = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-
+    
         setIsCapturing(true);
         setTimeout(() => setIsCapturing(false), 150);
-
+    
         setIsFlashing(true);
         setTimeout(() => setIsFlashing(false), 300);
-
+    
         const base64Image = canvas.toDataURL('image/jpeg', 0.4);
-
+    
         const numericIds = Object.keys(localStorage)
             .filter(k => k.startsWith('gem_photo_'))
             .map(k => parseInt(k.replace('gem_photo_', ''), 10))
             .filter(num => !isNaN(num));
-
+    
         const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
         const nextIndex = maxId + 1;
-
+    
         try {
             localStorage.setItem(`gem_photo_${nextIndex}`, base64Image);
+            if (fromGemHunt) {
+                setTimeout(() => navigate('/camera/preview'), 350); 
+            }
         } catch (e) {
             console.error("Storage limit reached:", e);
         }

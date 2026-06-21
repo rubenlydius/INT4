@@ -11,101 +11,170 @@
 }
 
 .cameraContainer {
-position: relative;
-margin: 0 1rem;
-border-radius: 1.5rem;
-overflow: hidden;
-aspect-ratio: 3 / 4;
-background-color: #1a1a1a;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-height: 80vh;
+  position: relative;
+  margin: 0 1rem;
+  border-radius: 1.5rem;
+  overflow: hidden;
+  aspect-ratio: 3 / 4;
+  background-color: #1a1a1a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  height: 80vh;
 }
 
 .outputCanvas {
-width: 100%;
-height: 100%;
-object-fit: cover;
-display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 
 .topControls {
-position: absolute;
-top: 1.25rem;
-left: 1.25rem;
-right: 1.25rem;
-display: flex;
-justify-content: flex-end;
-z-index: 10;
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 10;
 }
 
 .bottomControls {
-position: absolute;
-bottom: 1.5rem;
-left: 1.25rem;
-right: 1.25rem;
-display: flex;
-align-items: center;
-justify-content: space-between;
-z-index: 10;
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.25rem;
+  right: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
 }
 
 
 .controlBtn {
-background: transparent;
-border: none;
-cursor: pointer;
-padding: 0;
-display: flex;
-align-items: center;
-justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .controlBtn img {
-width: 3.5rem;
-height: auto;
+  width: 3.5rem;
+  height: auto;
 }
 
 .captureBtn img {
-width: 5rem;
-transition: transform 0.1s ease-out;
+  width: 5rem;
+  transition: transform 0.1s ease-out;
 }
 
 .capturePressed img {
-transform: scale(0.82);
-transition: transform 0.08s ease-in;
+  transform: scale(0.82);
+  transition: transform 0.08s ease-in;
 }
 
-/* Flash overlay */
 .flashOverlay {
-position: absolute;
-inset: 0;
-background: white;
-opacity: 0;
-pointer-events: none;
-z-index: 20;
-border-radius: inherit;
+  position: absolute;
+  inset: 0;
+  background: white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 20;
+  border-radius: inherit;
 }
 
 .flashActive {
-animation: cameraFlash 0.3s ease-out forwards;
+  animation: cameraFlash 0.3s ease-out forwards;
 }
 
 @keyframes cameraFlash {
-0%   { opacity: 0.55; }
-100% { opacity: 0; }
+  0%   { opacity: 0.55; }
+  100% { opacity: 0; }
 }
 
 
 .gallery {
-width: 3.5rem;
-height: 3.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
 }
 
 
 .title {
-text-align: center;
-font-size: 1.5rem;
-margin-top: 1.5rem;
-color: var(--color-black, #000000);
+  text-align: center;
+  font-size: 1.5rem;
+  margin-top: 1.5rem;
+  color: var(--color-black, #000000);
+}
+
+
+
+.previewContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: calc(100dvh - 60px);
+  padding: 16px 24px 40px;
+  box-sizing: border-box;
+}
+
+.previewPhoto {
+  width: 100%;
+  flex: 1;
+  object-fit: cover;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.previewPlaceholder {
+  width: 100%;
+  flex: 1;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.previewButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.previewSeeDetails {
+  width: 15rem;
+  padding: 14px 28px;
+  background-color: var(--color-orange);  
+  color: var(--color-white);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: center;
+
+  display: flex; 
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.previewSeeDetails img {
+  width: 1.25rem;
+  height: auto;
+  margin-top: 0.125rem
+}
+
+.previewRetake {
+  width: 15rem;
+  padding: 14px 28px;
+  background-color: var(--color-orange-100);  
+  color: var(--color-orange);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: center;
+  margin-bottom: 5rem;
 }
