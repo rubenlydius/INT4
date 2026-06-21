@@ -106,7 +106,7 @@
     position: absolute;
     inset: 0;
     border-radius: 0.5rem;
-    background: rgba(0, 77, 45, 0.6);
+    background: rgba(0, 77, 45, 0.85);
     backdrop-filter: blur(6px) brightness(1.15);
     -webkit-backdrop-filter: blur(6px) brightness(1.15);
     display: flex;
