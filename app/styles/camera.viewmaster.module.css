@@ -569,7 +569,7 @@
     border-radius: 2rem;
     font-family: var(--font-body);
     font-size: 1rem;
-    color: #b05a2a;
+    color: var(--color-black);
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
 }

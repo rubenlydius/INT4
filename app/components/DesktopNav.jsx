@@ -22,7 +22,7 @@ export default function DesktopNav() {
 
   const items = [
     { to: lensHref,    label: 'Lens',    match: '/lens' },
-    { to: '/map',      label: 'Map',     match: '/map' },
+    { to: '/map',      label: 'Map',     match: ['/map', '/gem'] },
     { to: '/camera',   label: 'Camera',  match: '/camera' },
     { to: profileHref, label: 'Profile', match: '/profile' },
   ]
@@ -32,7 +32,8 @@ export default function DesktopNav() {
       <img src="/logo.svg" alt="INT4" className={styles.logo} />
       <div className={styles.links}>
         {items.map((item) => {
-          const isActive = location.pathname.startsWith(item.match)
+          const matches = Array.isArray(item.match) ? item.match : [item.match]
+          const isActive = matches.some(m => location.pathname.startsWith(m))
           return (
             <NavLink
               key={item.label}
