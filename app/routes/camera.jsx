@@ -20,6 +20,7 @@ export default function Camera() {
 
     const [isCapturing, setIsCapturing] = useState(false);
     const [isFlashing, setIsFlashing] = useState(false);
+    const [isFrontCamera, setIsFrontCamera] = useState(false);
 
     const startCamera = async (facingMode) => {
         if (streamRef.current) {
@@ -76,19 +77,19 @@ export default function Camera() {
     }, []);
 
     const handleFlipCamera = () => {
-        facingModeRef.current = facingModeRef.current === "environment" ? "user" : "environment";
-        startCamera(facingModeRef.current);
+        const next = facingModeRef.current === "environment" ? "user" : "environment";
+        facingModeRef.current = next;
+        setIsFrontCamera(next === "user");
+        startCamera(next);
     };
 
     const captureFrame = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
-        // Trigger button shrink animation
         setIsCapturing(true);
         setTimeout(() => setIsCapturing(false), 150);
 
-        // Trigger feed flash overlay
         setIsFlashing(true);
         setTimeout(() => setIsFlashing(false), 300);
 
@@ -122,7 +123,11 @@ export default function Camera() {
                     style={{ display: 'none' }}
                 />
 
-                <canvas ref={canvasRef} className={styles.outputCanvas} />
+                <canvas
+                    ref={canvasRef}
+                    className={styles.outputCanvas}
+                    style={{ transform: isFrontCamera ? 'scaleX(-1)' : 'scaleX(1)' }}
+                />
 
                 {/* Flash overlay */}
                 <div className={`${styles.flashOverlay} ${isFlashing ? styles.flashActive : ''}`} />
