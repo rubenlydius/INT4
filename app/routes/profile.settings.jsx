@@ -24,7 +24,9 @@ export default function ProfileSettings() {
   const navigate = useNavigate()
   const profile = profiles[id] || profiles.ona
 
-  const [profileMode, setProfileMode] = useState(profile.type === 'owner' ? 'local' : 'visitor')
+  const [profileMode, setProfileMode] = useState(
+    localStorage.getItem('userType') || (profile.type === 'owner' ? 'local' : 'visitor')
+  )
   const [notificationsOn, setNotificationsOn] = useState(false)
   const [showVerifyPopup, setShowVerifyPopup] = useState(false)
 
@@ -34,7 +36,10 @@ export default function ProfileSettings() {
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
         <div className="top">
-          <button className={styles.back_btn} onClick={() => navigate(`/profile/${id}`)}>
+          <button className={styles.back_btn} onClick={() => {
+            const userType = localStorage.getItem('userType')
+            navigate(userType === 'visitor' ? '/profile/tom' : '/profile/ona')
+          }}>
             <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
           </button>
           <h1>Settings</h1>
@@ -70,11 +75,21 @@ export default function ProfileSettings() {
             <div className={styles.mode_toggle}>
               <button
                 className={profileMode === 'visitor' ? styles.mode_active : styles.mode_inactive}
-                onClick={() => setProfileMode('visitor')}
+                onClick={() => {
+                  setProfileMode('visitor')
+                  localStorage.setItem('userType', 'visitor')
+                  window.dispatchEvent(new Event('userTypeChanged'))
+                }}
               >Visitor</button>
+
               <button
                 className={profileMode === 'local' ? styles.mode_active : styles.mode_inactive}
-                onClick={() => { setProfileMode('local'); setShowVerifyPopup(true) }}
+                onClick={() => {
+                  setProfileMode('local')
+                  localStorage.setItem('userType', 'local')
+                  window.dispatchEvent(new Event('userTypeChanged'))
+                  setShowVerifyPopup(true)
+                }}
               >Local</button>
             </div>
           </div>
