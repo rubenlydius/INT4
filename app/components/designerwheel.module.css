@@ -12,6 +12,12 @@
   peeking above the viewport edge as a tap target to bring it back up.
 */
 
+/* intro animation — wheel starts fully below screen, slides up on first mount */
+.wheelStageIntro {
+  transform: translateY(100%) !important;
+  transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
 .wheelStage {
   position: fixed;
   bottom: -25rem;

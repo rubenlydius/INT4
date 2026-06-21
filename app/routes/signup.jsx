@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import styles from '../styles/signup.module.css'
 import topPattern from '../assets/sign_up_top_pattern.svg'
-import visitorDisc from '../assets/visitior_disc_onbording.png'
-import localDisc from '../assets/local_disc_onbording.png'
+import { storageUrl } from '../lib/storage'
+const visitorDisc = storageUrl('gems/onboarding/visitior_disc_onboarding.webp')
+const localDisc = storageUrl('gems/onboarding/local_disc_onboarding.webp')
 import iconOnboarding from '../assets/icon_onbroding.svg'
 import visitorArrow from '../assets/visitor_arrow_onbording.svg'
 import localArrow from '../assets/local_arrow_onbording.svg'
@@ -176,14 +177,14 @@ export default function SignUp() {
 
             <button
               className={`${styles.signUpBtn} ${!isValid ? styles.signUpBtnDisabled : ''}`}
-              onClick={() => isValid && navigate('/lens/ann')}
+              onClick={() => isValid && navigate('/lens/ann', { state: { fromSignup: true } })}
             >
               Sign Up <img src={whiteArrow} alt="" className={styles.arrow} />
             </button>
 
             <p className={styles.loginText}>
               Already have an account?{' '}
-              <span className={styles.loginLink} onClick={() => navigate('/lens/ann')}>Log in</span>
+              <span className={styles.loginLink} onClick={() => navigate('/lens/ann', { state: { fromSignup: true } })}>Log in</span>
             </p>
 
             <div className={styles.orDivider}>
@@ -192,12 +193,12 @@ export default function SignUp() {
               <img src={linePattern} alt="" className={`${styles.orLine} ${styles.orLineFlip}`} />
             </div>
 
-            <button className={styles.socialBtn} type="button" onClick={() => navigate('/lens/ann')}>
+            <button className={styles.socialBtn} type="button" onClick={() => navigate('/lens/ann', { state: { fromSignup: true } })}>
               <img src={googleIcon} alt="" className={styles.socialIcon} />
               Sign in with Google
             </button>
 
-            <button className={styles.socialBtn} type="button" onClick={() => navigate('/lens/ann')}>
+            <button className={styles.socialBtn} type="button" onClick={() => navigate('/lens/ann', { state: { fromSignup: true } })}>
               <img src={appleIcon} alt="" className={styles.socialIcon} />
               Sign in with Apple
             </button>

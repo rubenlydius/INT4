@@ -49,11 +49,19 @@ function indexAtTop(angle) {
  *  - onSelect: (key) => void, called when the wheel settles on a new designer
  *  - viewmasterSrc, wheelSrc: image sources
  */
-export default function DesignerWheel({ activeKey, onSelect, viewmasterSrc, wheelSrc }) {
+export default function DesignerWheel({ activeKey, onSelect, viewmasterSrc, wheelSrc, introMode = false }) {
   const wheelRef = useRef(null);
   const trackRef = useRef(null);
 
   const [mounted, setMounted] = useState(false);
+  // intro: start off-screen, slide up after mount
+  const [introHidden, setIntroHidden] = useState(introMode);
+  useEffect(() => {
+    if (!introMode) return;
+    // start rising at 600ms so it's already moving as the overlay fades at 700ms
+    const t = setTimeout(() => setIntroHidden(false), 600);
+    return () => clearTimeout(t);
+  }, [introMode]);
 
 
   // Angle lives in a ref for the drag loop (avoids re-render thrash);
@@ -263,7 +271,7 @@ useEffect(() => {
   }
 
   const wheel = (
-    <div className={`${styles.wheelStage} ${collapsed ? styles.collapsed : ""}`}>
+    <div className={`${styles.wheelStage} ${collapsed ? styles.collapsed : ""} ${introHidden ? styles.wheelStageIntro : ""}`}>
       {/* Handlers moved to the track container */}
       <div 
         className={styles.track} 
