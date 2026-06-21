@@ -29,7 +29,7 @@ export default function DesktopNav() {
 
   return (
     <nav className={styles.nav}>
-      <img src="/logo.svg" alt="INT4" className={styles.logo} />
+      <img src={`${import.meta.env.BASE_URL}logo.svg`} alt="INT4" className={styles.logo} />
       <div className={styles.links}>
         {items.map((item) => {
           const matches = Array.isArray(item.match) ? item.match : [item.match]
