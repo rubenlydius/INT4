@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router'
 import { storageUrl } from '../lib/storage'
+import { resolvePhotoUrl } from '../components/MiniDisc'
 import styles from '../styles/camera.viewmaster.module.css'
 
 import mapHeader from '../assets/map_header.svg'
@@ -15,6 +16,8 @@ import shareIcon from '../assets/share_icon.svg'
 import saveIcon from '../assets/share_icon_onbording.svg'
 import discBackground from '../assets/viewmaster_disc_background.svg'
 import antwerpPixels from '../assets/antwerp_pixels.svg'
+
+const VIDEO_URL = 'https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/video/viewmaster-reel1.mp4'
 
 const STICKERS = [
     storageUrl('gems/stickers/gem39-sticker.avif'),
@@ -93,6 +96,135 @@ export default function CameraViewmaster() {
     const [showShare, setShowShare] = useState(false)
     const [shareTab, setShareTab] = useState('photo')
 
+    function handleShare() {
+        if (!navigator.share) {
+            alert('Sharing is not supported in this browser.')
+            return
+        }
+        const data = shareTab === 'video'
+            ? { title: 'My ViewMaster Reel', url: VIDEO_URL }
+            : { title: 'My ViewMaster', text: 'Check out my ViewMaster disc I made in Antwerp!' }
+        navigator.share(data).catch(err => {
+            if (err.name !== 'AbortError') alert('Could not share. Make sure the app is opened over HTTPS.')
+        })
+    }
+
+    async function captureDisc() {
+        const SCALE = Math.max(window.devicePixelRatio || 1, 3)
+        const SLOT_R = 8
+
+        const canvas = document.createElement('canvas')
+        canvas.width = DISC_PX * SCALE
+        canvas.height = DISC_PX * SCALE
+        const ctx = canvas.getContext('2d')
+        ctx.scale(SCALE, SCALE)
+
+        async function loadImage(url) {
+            const resp = await fetch(url, { mode: 'cors', cache: 'no-cache' })
+            const blob = await resp.blob()
+            const objectUrl = URL.createObjectURL(blob)
+            return new Promise((resolve, reject) => {
+                const img = new Image()
+                img.onload = () => { URL.revokeObjectURL(objectUrl); resolve(img) }
+                img.onerror = () => { URL.revokeObjectURL(objectUrl); reject() }
+                img.src = objectUrl
+            })
+        }
+
+        // Clip everything to disc circle
+        ctx.beginPath()
+        ctx.arc(DISC_PX / 2, DISC_PX / 2, DISC_PX / 2, 0, Math.PI * 2)
+        ctx.clip()
+        ctx.fillStyle = selectedColor
+        ctx.fillRect(0, 0, DISC_PX, DISC_PX)
+
+        // Photo slots
+        for (let i = 0; i < Math.min(selectedIds.length, SLOT_COUNT); i++) {
+            const url = resolvePhotoUrl(selectedIds[i])
+            const angle = (i * 2 * Math.PI / SLOT_COUNT) - Math.PI / 2
+            const cx = DISC_PX / 2 + SLOT_RADIUS * Math.cos(angle)
+            const cy = DISC_PX / 2 + SLOT_RADIUS * Math.sin(angle)
+            const deg = (i * 360 / SLOT_COUNT) * Math.PI / 180
+
+            ctx.save()
+            ctx.translate(cx, cy)
+            ctx.rotate(deg)
+            ctx.beginPath()
+            ctx.moveTo(-SLOT_W / 2 + SLOT_R, -SLOT_H / 2)
+            ctx.lineTo(SLOT_W / 2 - SLOT_R, -SLOT_H / 2)
+            ctx.arcTo(SLOT_W / 2, -SLOT_H / 2, SLOT_W / 2, -SLOT_H / 2 + SLOT_R, SLOT_R)
+            ctx.lineTo(SLOT_W / 2, SLOT_H / 2 - SLOT_R)
+            ctx.arcTo(SLOT_W / 2, SLOT_H / 2, SLOT_W / 2 - SLOT_R, SLOT_H / 2, SLOT_R)
+            ctx.lineTo(-SLOT_W / 2 + SLOT_R, SLOT_H / 2)
+            ctx.arcTo(-SLOT_W / 2, SLOT_H / 2, -SLOT_W / 2, SLOT_H / 2 - SLOT_R, SLOT_R)
+            ctx.lineTo(-SLOT_W / 2, -SLOT_H / 2 + SLOT_R)
+            ctx.arcTo(-SLOT_W / 2, -SLOT_H / 2, -SLOT_W / 2 + SLOT_R, -SLOT_H / 2, SLOT_R)
+            ctx.closePath()
+            ctx.clip()
+            try {
+                const img = await loadImage(url)
+                const scale = Math.max(SLOT_W / img.naturalWidth, SLOT_H / img.naturalHeight)
+                ctx.drawImage(img, -img.naturalWidth * scale / 2, -img.naturalHeight * scale / 2, img.naturalWidth * scale, img.naturalHeight * scale)
+            } catch {
+                ctx.fillStyle = 'rgba(0,0,0,0.15)'
+                ctx.fillRect(-SLOT_W / 2, -SLOT_H / 2, SLOT_W, SLOT_H)
+            }
+            ctx.restore()
+        }
+
+        // Tick marks
+        for (let i = 0; i < 7; i++) {
+            const angle = ((i * 2 + 0.5) * 2 * Math.PI / SLOT_COUNT) - Math.PI / 2
+            const cx = DISC_PX / 2 + TICK_RADIUS * Math.cos(angle)
+            const cy = DISC_PX / 2 + TICK_RADIUS * Math.sin(angle)
+            const deg = ((i * 2 + 0.5) * 360 / SLOT_COUNT) * Math.PI / 180
+            ctx.save()
+            ctx.translate(cx, cy)
+            ctx.rotate(deg)
+            ctx.fillStyle = '#ffffff'
+            ctx.fillRect(-3.5, -7, 7, 14)
+            ctx.restore()
+        }
+
+        // Stickers
+        for (let i = 0; i < placedStickers.length; i++) {
+            const offsetX = (i % 3 - 1) * 45
+            const offsetY = Math.floor(i / 3) * 45 - 20
+            try {
+                const img = await loadImage(placedStickers[i])
+                ctx.drawImage(img, DISC_PX / 2 - 35 + offsetX, DISC_PX / 2 - 35 + offsetY, 70, 70)
+            } catch {}
+        }
+
+        // Center hole
+        ctx.beginPath()
+        ctx.arc(DISC_PX / 2, DISC_PX / 2, 13, 0, Math.PI * 2)
+        ctx.fillStyle = '#ffffff'
+        ctx.fill()
+
+        return canvas.toDataURL('image/png')
+    }
+
+    async function handleSave() {
+        if (shareTab === 'video') {
+            const a = document.createElement('a')
+            a.href = VIDEO_URL
+            a.target = '_blank'
+            a.rel = 'noopener noreferrer'
+            a.click()
+            return
+        }
+        try {
+            const dataUrl = await captureDisc()
+            const a = document.createElement('a')
+            a.href = dataUrl
+            a.download = 'viewmaster.png'
+            a.click()
+        } catch {
+            alert('Could not export the disc. Please try again.')
+        }
+    }
+
     useEffect(() => {
         const basePhotos = Array.from({ length: STATIC_PHOTO_COUNT }, (_, i) => ({
             id: `static-${i}`,
@@ -123,6 +255,14 @@ export default function CameraViewmaster() {
             if (prev.includes(id)) return prev.filter(s => s !== id)
             if (prev.length >= REQUIRED_COUNT) return prev
             return [...prev, id]
+        })
+    }
+
+    function toggleSticker(url) {
+        setPlacedStickers(prev => {
+            if (prev.includes(url)) return prev.filter(s => s !== url)
+            if (prev.length >= 6) return prev
+            return [...prev, url]
         })
     }
 
@@ -274,11 +414,7 @@ export default function CameraViewmaster() {
                                         key={url}
                                         type="button"
                                         className={`${styles.sticker_btn} ${isSelected ? styles.sticker_btn_active : ''} ${isDisabled ? styles.sticker_btn_disabled : ''}`}
-                                        onClick={() => setPlacedStickers(prev => {
-                                            if (prev.includes(url)) return prev.filter(s => s !== url)
-                                            if (prev.length >= 6) return prev
-                                            return [...prev, url]
-                                        })}
+                                        onClick={() => toggleSticker(url)}
                                     >
                                         <img src={url} alt="" className={styles.sticker_thumb} />
                                         {isSelected && (
@@ -397,7 +533,7 @@ export default function CameraViewmaster() {
                                 <video
                                     ref={videoRef}
                                     className={styles.modal_video}
-                                    src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/video/viewmaster-reel1.mp4"
+                                    src={VIDEO_URL}
                                     autoPlay
                                     loop
                                     muted
@@ -425,7 +561,7 @@ export default function CameraViewmaster() {
                             <button
                                 type="button"
                                 className={styles.modal_action_btn}
-                                onClick={() => navigator.share?.({ title: 'My ViewMaster', text: 'Check out my ViewMaster disc!' })}
+                                onClick={handleShare}
                             >
                                 <img src={shareIcon} alt="" className={styles.modal_action_icon} />
                                 Share
@@ -433,6 +569,7 @@ export default function CameraViewmaster() {
                             <button
                                 type="button"
                                 className={styles.modal_action_btn}
+                                onClick={handleSave}
                             >
                                 <img src={saveIcon} alt="" className={styles.modal_action_icon} />
                                 Save

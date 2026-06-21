@@ -286,6 +286,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    aspect-ratio: 1;
 }
 
 .plus_viewmaster_button{
