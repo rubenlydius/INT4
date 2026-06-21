@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router'
+import { useNavigate, useLocation } from 'react-router'
 import { storageUrl } from '../lib/storage'
 import styles from '../styles/camera.viewmaster.module.css'
 
@@ -80,6 +80,8 @@ function tickStyle(index) {
 
 export default function CameraViewmaster() {
     const navigate = useNavigate()
+    const location = useLocation()
+    const profileId = location.state?.profileId || 'ona'
 
     const [step, setStep] = useState(1)
     const [allPhotos, setAllPhotos] = useState([])
@@ -321,9 +323,10 @@ export default function CameraViewmaster() {
                         Previous
                     </button>
                     <button type="button" className={styles.share_btn} onClick={() => {
-                        const saved = JSON.parse(localStorage.getItem('created_viewmasters') || '[]')
+                        const key = `created_viewmasters_${profileId}`
+                        const saved = JSON.parse(localStorage.getItem(key) || '[]')
                         saved.unshift({ id: Date.now(), color: selectedColor, photoIds: selectedIds, stickers: placedStickers })
-                        localStorage.setItem('created_viewmasters', JSON.stringify(saved))
+                        localStorage.setItem(key, JSON.stringify(saved))
                         setShowShare(true)
                     }}>
                         Share
