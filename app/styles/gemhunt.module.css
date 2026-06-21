@@ -280,6 +280,19 @@
     padding-top: 0.5rem;
   }
 
+@media (min-width: 768px) {
+  .popup {
+    width: calc(390px - 2rem);
+    left: 1rem;
+    transform: none;
+  }
+  .block1transition {
+    width: 100%;
+    margin-left: 0;
+    transform: none;
+  }
+}
+
 .gemFoundFlex {
     display: flex;
     align-items: center;

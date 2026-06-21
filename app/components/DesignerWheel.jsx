@@ -274,8 +274,10 @@ useEffect(() => {
     </div>
   );
 
-  // Portal straight into document.body so `position: fixed` is guaranteed to
-  // resolve against the real viewport, no matter what the page/app shell does.
   if (!mounted) return null;
-    return createPortal(wheel, document.body);
+  const portalTarget =
+    window.innerWidth >= 768
+      ? (document.querySelector('[data-wheel-portal]') || document.body)
+      : document.body;
+  return createPortal(wheel, portalTarget);
 }

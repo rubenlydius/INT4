@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
+import { useMapFocus } from '../lib/MapContext';
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage';
@@ -31,6 +32,7 @@ export function meta() {
 export default function GemDetail() {
   const { gemId } = useParams();
   const [gem, setGem] = useState(null);
+  const { setMapFocus } = useMapFocus();
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
@@ -62,6 +64,7 @@ export default function GemDetail() {
 
       if (error) return console.error(error.message);
       setGem(data);
+      if (data.lat && data.lng) setMapFocus({ lat: data.lat, lng: data.lng, radius: data.radius ?? 250 })
     }
     fetchGem();
   }, [gemId]);

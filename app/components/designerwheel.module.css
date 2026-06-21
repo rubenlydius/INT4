@@ -124,6 +124,28 @@
     pointer-events: none;
   }
 
+@media (min-width: 768px) {
+  /* Inside .wheel_portal (390px wide), replace vw units with fixed px values.
+     180% of 390px = 702px — same ratio as 180vw on a 390px mobile screen. */
+  .wheelStage {
+    height: 702px;
+    bottom: -390px;
+  }
+  .wheelStage.collapsed {
+    transform: translateY(144px);
+  }
+  .track,
+  .viewmaster {
+    width: 702px;
+    height: 702px;
+  }
+  .designerWheel {
+    --wheel-padding: 3rem;
+    width: calc(702px - (var(--wheel-padding) * 2));
+    height: calc(702px - (var(--wheel-padding) * 2));
+  }
+}
+
 @media (min-width: 300px) and (max-width: 600px) {
   .wheelStage {
     height: 180vw;

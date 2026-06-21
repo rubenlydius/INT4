@@ -1,5 +1,6 @@
 import { useParams, Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
+import { useMapFocus } from '../lib/MapContext';
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage'
@@ -20,6 +21,7 @@ export function meta() {
 export default function GemDetail() {
   const { gemId } = useParams();
   const [gem, setGem] = useState(null);
+  const { setMapFocus } = useMapFocus();
 
   const location = useLocation();
   const isRevealed = location.state?.revealed || false;
@@ -37,8 +39,9 @@ export default function GemDetail() {
       
       if (error) return console.error(error.message);
       setGem(data);
+      if (data.lat && data.lng) setMapFocus({ lat: data.lat, lng: data.lng, radius: data.radius ?? 250 })
     }
-    
+
     fetchGem();
   }, [gemId]);
   

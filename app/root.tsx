@@ -14,6 +14,9 @@ import {
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 import Navbar from './components/navbar';
+import { MapProvider } from './lib/MapContext';
+import DesktopMap from './components/DesktopMap';
+import DesktopNav from './components/DesktopNav';
 
 
 export const links: Route.LinksFunction = () => [
@@ -66,10 +69,19 @@ export default function App() {
   }, [location.pathname, navigate]);
 
   return (
-    <>
-      <Outlet />
-      <Navbar />
-    </>
+    <MapProvider>
+      <DesktopNav />
+      <div className="map_panel">
+        <DesktopMap />
+      </div>
+      <div className="app_panel">
+        <div className="app_content">
+          <Outlet />
+        </div>
+        <Navbar />
+      </div>
+      <div className="wheel_portal" data-wheel-portal="true" />
+    </MapProvider>
   );
 }
 

@@ -1,0 +1,28 @@
+.wrap {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: var(--color-green-900);
+  }
+
+  .pill {
+    padding: 0.4rem 1rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--color-green);
+    background: transparent;
+    color: var(--color-white);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .active {
+    background: var(--color-green);
+    color: var(--color-white);
+  }
+}
