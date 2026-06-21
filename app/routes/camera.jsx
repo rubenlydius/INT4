@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router";
-import { useEffect, useRef } from 'react';
+import { Link } from "react-router";
+import { useEffect, useRef, useState } from 'react';
 import styles from '../styles/camera.module.css';
 
 import cameraTop from '../assets/camera_top.svg';
@@ -18,8 +18,10 @@ export default function Camera() {
     const streamRef = useRef(null);
     const facingModeRef = useRef("environment");
 
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [isFlashing, setIsFlashing] = useState(false);
+
     const startCamera = async (facingMode) => {
-        // Stop any existing stream first
         if (streamRef.current) {
             streamRef.current.getTracks().forEach(track => track.stop());
         }
@@ -82,20 +84,24 @@ export default function Camera() {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
+        // Trigger button shrink animation
+        setIsCapturing(true);
+        setTimeout(() => setIsCapturing(false), 150);
+
+        // Trigger feed flash overlay
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 300);
+
         const base64Image = canvas.toDataURL('image/jpeg', 0.4);
-        
-        // 1. Grab all existing photo index numbers
+
         const numericIds = Object.keys(localStorage)
             .filter(k => k.startsWith('gem_photo_'))
             .map(k => parseInt(k.replace('gem_photo_', ''), 10))
             .filter(num => !isNaN(num));
-            
-        // 2. Find the absolute highest number used so far, or default to 0 if empty
+
         const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
-        
-        // 3. Always increment past the highest structural ID so deletions never cause a collision
         const nextIndex = maxId + 1;
-        
+
         try {
             localStorage.setItem(`gem_photo_${nextIndex}`, base64Image);
         } catch (e) {
@@ -108,15 +114,18 @@ export default function Camera() {
             <img src={cameraTop} alt="styling element" className={styles.cameraTop} />
 
             <div className={styles.cameraContainer}>
-                <video 
-                    ref={videoRef} 
-                    autoPlay 
-                    playsInline 
-                    muted 
-                    style={{ display: 'none' }} 
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{ display: 'none' }}
                 />
 
                 <canvas ref={canvasRef} className={styles.outputCanvas} />
+
+                {/* Flash overlay */}
+                <div className={`${styles.flashOverlay} ${isFlashing ? styles.flashActive : ''}`} />
 
                 <div className={styles.topControls}>
                     <button className={styles.controlBtn}>
@@ -126,15 +135,15 @@ export default function Camera() {
 
                 <div className={styles.bottomControls}>
                     <Link to={`/camera/gallery`}>
-                        <img 
-                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp" 
-                            alt="gallery" 
+                        <img
+                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp"
+                            alt="gallery"
                             className={styles.gallery}
                         />
                     </Link>
 
-                    <button 
-                        className={`${styles.controlBtn} ${styles.captureBtn}`} 
+                    <button
+                        className={`${styles.controlBtn} ${styles.captureBtn} ${isCapturing ? styles.capturePressed : ''}`}
                         onClick={captureFrame}
                     >
                         <img src={captureButton} alt="Capture Gem" />
