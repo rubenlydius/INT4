@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router'
+import { profiles } from '../lib/profiles'
 import styles from '../styles/profile.stickers.module.css'
-import { storageUrl } from '../lib/storage'
 
 import simpleOrangeArrow from '../assets/simple_orange_arrow.svg'
 import topPattern from '../assets/profile_details_top_pattern.svg'
@@ -10,21 +10,11 @@ export function meta() {
   return [{ title: "Sticker Collection" }]
 }
 
-const STICKERS = [
-  storageUrl('gems/stickers/gem39-sticker.avif'),
-  storageUrl('gems/stickers/gem19-sticker.avif'),
-  storageUrl('gems/stickers/gem60-sticker.avif'),
-  storageUrl('gems/stickers/gem6-sticker.avif'),
-  storageUrl('gems/stickers/gem50-sticker.avif'),
-  storageUrl('gems/stickers/gem34-sticker.avif'),
-  storageUrl('gems/stickers/gem52-sticker.avif'),
-  storageUrl('gems/stickers/gem53-sticker.avif'),
-  storageUrl('gems/stickers/gem59-sticker.avif'),
-]
-
 export default function ProfileStickers() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const profile = profiles[id] || profiles.ona
+  const stickers = profile.stickers
 
   return (
     <div className={styles.page}>
@@ -41,7 +31,7 @@ export default function ProfileStickers() {
       <div className={styles.content}>
         <div className={styles.summary_card}>
           <div className={styles.summary_text}>
-            <p className={styles.summary_count}>{STICKERS.length} Collected<br />stickers</p>
+            <p className={styles.summary_count}>{stickers.length} Collected<br />stickers</p>
             <p className={styles.summary_sub}>Keep exploring to find more!</p>
           </div>
           <div className={styles.summary_img_wrap}>
@@ -50,8 +40,8 @@ export default function ProfileStickers() {
         </div>
 
         <div className={styles.grid}>
-          {STICKERS.map((sticker, i) => (
-            <img key={i} src={sticker} alt={`sticker ${i + 1}`} className={styles.sticker} />
+          {stickers.map((sticker, i) => (
+            <img key={sticker} src={sticker} alt={`sticker ${i + 1}`} className={styles.sticker} />
           ))}
         </div>
       </div>
