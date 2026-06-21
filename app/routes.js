@@ -6,6 +6,7 @@ export default [
   route("/gem/:gemId", "routes/gem.hunt.jsx"),
   route("/gem/detail/:gemId", "routes/gem.detail.jsx"),
   route("/camera", "routes/camera.jsx"),
+  route("/camera/preview", "routes/camera.preview.jsx"),
   route("/camera/gallery", "routes/camera.gallery.jsx"),
   route("/camera/viewmaster", "routes/camera.viewmaster.jsx"),
   route("/profile/:id", "routes/profile.jsx"),

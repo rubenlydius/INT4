@@ -141,7 +141,6 @@ export default function GemDetail() {
 
   return (
     <div className={styles.gemHunt}>
-      {/* ... keeping top layout structural code intact ... */}
       <div className={styles.top}>
         <Link to="/map">
           <img src={orangeArrow} alt="return" /> 
@@ -183,7 +182,6 @@ export default function GemDetail() {
       
       <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} infoNodeText="3 hints available"/>
       
-      {/* UPDATE HOT & COLD DROPDOWN WITH GEOLOCATION PROPERTIES */}
       <Dropdown 
         title="Hot & Cold" 
         content={gem.hint_2} 
@@ -204,7 +202,6 @@ export default function GemDetail() {
         </button>
       </div>
 
-      {/* ... keeping popup blocks completely identical ... */}
       {showRevealPopup && (
           <div className={styles.popupOverlay} onClick={() => setShowRevealPopup(false)}>
             <div className={styles.popup} onClick={e => e.stopPropagation()}>
@@ -250,7 +247,11 @@ export default function GemDetail() {
                   <Link to={`/gem/detail/${gem.id}`}>
                     <button className={styles.revealHunt}>Skip to Gem Details</button>
                   </Link>
-                  <Link to={`/camera`}>
+                  <Link 
+                    to={`/camera`} 
+                    state={{ fromGemHunt: true }}
+                    onClick={() => sessionStorage.setItem('currentGemId', gem.id)}
+                  >
                     <button className={styles.foundHunt}>Capture the Moment</button>
                   </Link>
                 </div>
