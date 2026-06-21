@@ -17,6 +17,8 @@ import Navbar from './components/navbar';
 
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", type: "image/svg+xml", href: "/logo.svg" },
+
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -52,12 +54,13 @@ export default function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // React Router automatically accounts for the "/INT4/" basename.
-    // Both locally and in production, the true root domain path matches exactly "/"
-    if (location.pathname === "/") {
+    const userType = localStorage.getItem("userType");
+    const isAuthRoute = location.pathname === "/onboarding" || location.pathname === "/signup";
+  
+    if (!userType && !isAuthRoute) {
+      navigate("/onboarding", { replace: true });
+    } else if (location.pathname === "/" && userType) {
       const savedLens = localStorage.getItem("selectedLens") || "ann";
-      
-      // replace: true ensures the user doesn't get trapped when clicking the browser back button
       navigate(`/lens/${savedLens}`, { replace: true });
     }
   }, [location.pathname, navigate]);

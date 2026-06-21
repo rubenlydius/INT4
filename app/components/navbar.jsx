@@ -14,17 +14,27 @@ import profileW from '../assets/profile_iconW.svg';
 export default function Navbar() {
   const location = useLocation();
   const [lensHref, setLensHref] = useState("/lens/ann");
+  const [profileHref, setProfileHref] = useState("/profile/ona");
 
   useEffect(() => {
-    const lens = localStorage.getItem('selectedLens') || 'ann';
-    setLensHref(`/lens/${lens}`);
+    function updateHrefs() {
+      const lens = localStorage.getItem('selectedLens') || 'ann';
+      setLensHref(`/lens/${lens}`);
+  
+      const userType = localStorage.getItem('userType');
+      setProfileHref(userType === 'visitor' ? '/profile/tom' : '/profile/ona');
+    }
+  
+    updateHrefs();
+    window.addEventListener('userTypeChanged', updateHrefs);
+    return () => window.removeEventListener('userTypeChanged', updateHrefs);
   }, []);
 
   const items = [
-    { to: lensHref, label: "Lens", iconB: lensB, iconW: lensW, match: "/lens" },
-    { to: "/map", label: "Map", iconB: mapB, iconW: mapW, match: "/map" },
-    { to: "/camera", label: "Camera", iconB: cameraB, iconW: cameraW, match: "/camera" },
-    { to: "/profile/ona", label: "Profile", iconB: profileB, iconW: profileW, match: "/profile" },
+    { to: lensHref,    label: "Lens",    iconB: lensB,    iconW: lensW,    match: "/lens" },
+    { to: "/map",      label: "Map",     iconB: mapB,     iconW: mapW,     match: "/map" },
+    { to: "/camera",   label: "Camera",  iconB: cameraB,  iconW: cameraW,  match: "/camera" },
+    { to: profileHref, label: "Profile", iconB: profileB, iconW: profileW, match: "/profile" },
   ];
 
   return (
@@ -33,7 +43,7 @@ export default function Navbar() {
         const isActive = location.pathname.startsWith(item.match);
         return (
           <NavLink
-            key={item.to}
+            key={item.label}
             to={item.to}
             className={isActive ? `${styles.navItem} ${styles.active}` : styles.navItem}
           >
