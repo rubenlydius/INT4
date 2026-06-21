@@ -124,6 +124,27 @@
     pointer-events: none;
   }
 
+/* DESKTOP ONLY */
+@media (min-width: 768px) {
+  .wheelStage {
+    height: 702px;
+    bottom: -390px;
+  }
+  .wheelStage.collapsed {
+    transform: translateY(144px);
+  }
+  .track,
+  .viewmaster {
+    width: 702px;
+    height: 702px;
+  }
+  .designerWheel {
+    --wheel-padding: 3rem;
+    width: calc(702px - (var(--wheel-padding) * 2));
+    height: calc(702px - (var(--wheel-padding) * 2));
+  }
+}
+
 @media (min-width: 300px) and (max-width: 600px) {
   .wheelStage {
     height: 180vw;

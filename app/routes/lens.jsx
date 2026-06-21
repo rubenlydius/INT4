@@ -9,6 +9,7 @@ import workPattern from '../assets/work_pattern.svg'
 import antwerpPattern from '../assets/antwerp_pattern.svg'
 import designerViemaster from '../assets/a6_viewmaster.svg'
 import DesignerWheel from '../components/DesignerWheel'
+import { useMapFocus } from '../lib/MapContext'
 
 export function meta() {
   return [{ title: "Lens" }];
@@ -18,25 +19,26 @@ export default function Lens() {
   const { id } = useParams()
   const navigate = useNavigate()
   const designer = designers[id] || designers.ann
+  const { setActiveLens } = useMapFocus()
 
   const allowedIndices = [0, 2, 3];
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [direction, setDirection] = useState('next'); 
+  const [direction, setDirection] = useState('next');
 
   useEffect(() => {
     setCurrentIdx(0);
     setDirection('next');
     if (id) {
       localStorage.setItem('selectedLens', id);
+      setActiveLens(id); // DESKTOP — tells DesktopMap which designer's gems to show
     }
-
     allowedIndices.forEach((idx) => {
       if (designer.images[idx]) {
         const img = new Image();
         img.src = designer.images[idx];
       }
     });
-  }, [id, designer]);
+  }, [id, designer, setActiveLens]);
 
   const handlePrev = () => {
     setDirection('prev');
@@ -143,7 +145,7 @@ export default function Lens() {
         viewmasterSrc={designerViemaster}
         wheelSrc={storageUrl('gems/designers/a6_designers.webp')}
       />
-      <div className={styles.lens_bottom_padding}></div>
+<div className={styles.lens_bottom_padding}></div>
     </div>
   )
 }
