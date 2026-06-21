@@ -67,28 +67,30 @@ export default function App() {
     }
   }, [location.pathname, navigate]);
 
+  const isAuthRoute = location.pathname === "/onboarding" || location.pathname === "/signup";
+
   return (
     <MapProvider>
-      {/* DESKTOP ONLY, top navigation bar with logo + nav links (hidden on mobile via CSS) */}
-      <DesktopNav />
+      {/* DESKTOP ONLY, hidden on auth routes (onboarding/signup are always full screen) */}
+      {!isAuthRoute && <DesktopNav />}
+      {!isAuthRoute && (
+        <div className="map_panel">
+          <DesktopMap />
+        </div>
+      )}
 
-      {/* DESKTOP ONLY, full-screen background map (hidden on mobile via CSS) */}
-      <div className="map_panel">
-        <DesktopMap />
-      </div>
-
-      {/* Phone frame, used on both mobile (full screen) and desktop (390px panel on left) */}
-      <div className="app_panel">
+      {/* Phone frame — full screen on mobile and on auth routes, 390px panel on desktop */}
+      <div className={isAuthRoute ? "app_panel app_panel_auth" : "app_panel"}>
         <div className="app_content">
           <Outlet />
         </div>
         {/* Mobile bottom navbar, hidden on desktop via CSS, replaced by DesktopNav */}
-        <Navbar />
+        {!isAuthRoute && <Navbar />}
       </div>
 
       {/* DESKTOP ONLY, portal target for DesignerWheel so it renders inside the phone frame
           boundary instead of escaping to document.body (which would cover the whole screen) */}
-      <div className="wheel_portal" data-wheel-portal="true" />
+      {!isAuthRoute && <div className="wheel_portal" data-wheel-portal="true" />}
     </MapProvider>
   );
 }
