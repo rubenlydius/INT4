@@ -15,6 +15,7 @@ import notificationsIcon from '../assets/notifications_icon.svg'
 import logOutIcon from '../assets/log_out_icon.svg'
 import binIcon from '../assets/bin_icon.svg'
 import languageIcon from '../assets/language_icon.svg'
+import refreshIcon from '../assets/refresh_icon_orange.svg'
 
 export function meta() {
   return [{ title: "Settings" }]
@@ -143,7 +144,19 @@ export default function ProfileSettings() {
         </div>
 
         <h2 className={styles.section_label}>Account</h2>
+
         <div className={styles.card}>
+                  
+        <div className={styles.row} onClick={() => navigate('/onboarding')}>
+          <div className={styles.icon_wrap}>
+            <img src={refreshIcon} alt="refresh icon" className={styles.icon} />
+          </div>
+          <p className={styles.row_title}>Restart onboarding</p>
+          <img src={greyHalfArrow} alt="" className={styles.row_arrow} />
+        </div>
+
+        <div className={styles.divider} />
+
           <div className={styles.row}>
             <div className={styles.icon_wrap}>
               <img src={logOutIcon} alt="" className={styles.icon} />
