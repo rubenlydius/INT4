@@ -17,7 +17,7 @@ import Navbar from './components/navbar';
 
 
 export const links: Route.LinksFunction = () => [
-  { rel: "icon", type: "image/svg+xml", href: "/logo.svg" },
+  { rel: "icon", type: "image/svg+xml", href: "./logo.svg" },
 
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
