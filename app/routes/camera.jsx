@@ -15,55 +15,68 @@ export default function Camera() {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const requestRef = useRef(null);
+    const streamRef = useRef(null);
+    const facingModeRef = useRef("environment");
+
+    const startCamera = async (facingMode) => {
+        // Stop any existing stream first
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (requestRef.current) {
+            cancelAnimationFrame(requestRef.current);
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 1280, height: 720, facingMode: { ideal: facingMode } },
+                audio: false
+            });
+
+            streamRef.current = stream;
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                await videoRef.current.play();
+
+                if (canvasRef.current) {
+                    canvasRef.current.width = videoRef.current.videoWidth;
+                    canvasRef.current.height = videoRef.current.videoHeight;
+                    renderLoop();
+                }
+            }
+        } catch (err) {
+            console.error('Camera Initialization Error:', err);
+        }
+    };
+
+    function renderLoop() {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        if (video && canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+
+        requestRef.current = requestAnimationFrame(renderLoop);
+    }
 
     useEffect(() => {
-        let localStream = null;
-
-        async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 1280, height: 720, facingMode: { ideal: "environment" } },
-                    audio: false
-                });
-
-                localStream = stream;
-
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                    await videoRef.current.play();
-
-                    if (canvasRef.current) {
-                        canvasRef.current.width = videoRef.current.videoWidth;
-                        canvasRef.current.height = videoRef.current.videoHeight;
-                        renderLoop();
-                    }
-                }
-            } catch (err) {
-                console.error('Camera Initialization Error:', err);
-            }
-        }
-
-        function renderLoop() {
-            const video = videoRef.current;
-            const canvas = canvasRef.current;
-            
-            if (video && canvas) {
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            }
-            
-            requestRef.current = requestAnimationFrame(renderLoop);
-        }
-
-        initCamera();
+        startCamera(facingModeRef.current);
 
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
     }, []);
+
+    const handleFlipCamera = () => {
+        facingModeRef.current = facingModeRef.current === "environment" ? "user" : "environment";
+        startCamera(facingModeRef.current);
+    };
 
     const captureFrame = () => {
         const canvas = canvasRef.current;
@@ -127,7 +140,7 @@ export default function Camera() {
                         <img src={captureButton} alt="Capture Gem" />
                     </button>
 
-                    <button className={styles.controlBtn}>
+                    <button className={styles.controlBtn} onClick={handleFlipCamera}>
                         <img src={flipCamera} alt="Flip Camera Feed" />
                     </button>
                 </div>
