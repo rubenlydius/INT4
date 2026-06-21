@@ -320,7 +320,12 @@ export default function CameraViewmaster() {
                         <img src={simpleOrangeArrow} alt="" className={styles.prev_arrow} />
                         Previous
                     </button>
-                    <button type="button" className={styles.share_btn} onClick={() => setShowShare(true)}>
+                    <button type="button" className={styles.share_btn} onClick={() => {
+                        const saved = JSON.parse(localStorage.getItem('created_viewmasters') || '[]')
+                        saved.unshift({ id: Date.now(), color: selectedColor, photoIds: selectedIds, stickers: placedStickers })
+                        localStorage.setItem('created_viewmasters', JSON.stringify(saved))
+                        setShowShare(true)
+                    }}>
                         Share
                         <img src={whiteArrow} alt="" className={styles.share_arrow} />
                     </button>
