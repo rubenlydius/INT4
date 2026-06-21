@@ -135,9 +135,9 @@ export default function GemDetail() {
 
   if (!gem) return <div>Loading...</div>;
 
-  const hintImages = [1, 2, 3].map(
-    (n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`)
-  );
+  const hintImages = gem.id > 300
+  ? [gem.hint_url_1, gem.hint_url_2, gem.hint_url_3]
+  : [1, 2, 3].map((n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`));
 
   return (
     <div className={styles.gemHunt}>

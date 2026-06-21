@@ -44,7 +44,9 @@ export default function GemDetail() {
   
   if (!gem) return <div>Loading...</div>;
   
-  const detailImage = storageUrl(`/gems/locations/gem${gem.id}-hint3.avif`);
+  const detailImage = gem.id > 300
+  ? gem.hint_url_3
+  : storageUrl(`/gems/locations/gem${gem.id}-hint3.avif`);
 
 
 
@@ -58,7 +60,7 @@ export default function GemDetail() {
 
       </div>
       <div className={styles.orange}>
-      <img src={storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker} style={{ opacity: isRevealed ? 0.35 : 1 }}/>
+      <img src={gem.id > 300 ? gem.sticker_url : storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker} style={{ opacity: isRevealed ? 0.35 : 1 }}/>
         <img src={detailImage} alt={gem.gem_name} className={styles.detailPageImage}/>
       </div>
       <img src={detailTop} alt="transition" className={styles.detaiTransition}/>
