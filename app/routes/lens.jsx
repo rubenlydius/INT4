@@ -10,6 +10,7 @@ import antwerpPattern from '../assets/antwerp_pattern.svg'
 import designerViemaster from '../assets/a6_viewmaster.svg'
 import { createPortal } from 'react-dom' // needed to render the intro overlay on top of everything
 import DesignerWheel from '../components/DesignerWheel'
+import { useMapFocus } from '../lib/MapContext'
 
 export function meta() {
   return [{ title: "Lens" }];
@@ -31,25 +32,26 @@ export default function Lens() {
   }, [introMode])
 
   const designer = designers[id] || designers.ann
+  const { setActiveLens } = useMapFocus()
 
   const allowedIndices = [0, 2, 3];
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [direction, setDirection] = useState('next'); 
+  const [direction, setDirection] = useState('next');
 
   useEffect(() => {
     setCurrentIdx(0);
     setDirection('next');
     if (id) {
       localStorage.setItem('selectedLens', id);
+      setActiveLens(id); // DESKTOP — tells DesktopMap which designer's gems to show
     }
-
     allowedIndices.forEach((idx) => {
       if (designer.images[idx]) {
         const img = new Image();
         img.src = designer.images[idx];
       }
     });
-  }, [id, designer]);
+  }, [id, designer, setActiveLens]);
 
   const handlePrev = () => {
     setDirection('prev');
@@ -62,6 +64,39 @@ export default function Lens() {
   };
 
   const activeImageIndex = allowedIndices[currentIdx];
+
+
+
+
+
+  // NOTE: This has nothing to do with the lens.jsx page. 
+  // I was struggling for 8+ hours to figure out what was wrong with the map.jsx page and why this was causing issues when trying to deploy the project on github. 
+  // These logs finally made me realise it was the VITE_SUPABASE_ANON_KEY that was not being read properly by github. 
+  //   // --- TEMPORARY DIAGNOSTIC LOGS ---
+  // useEffect(() => {
+  //   console.log("=== 🛠️ PRODUCTION DIAGNOSTIC REPORT ===");
+    
+  //   // 1. Check what Vite thinks the base path is
+  //   console.log("Vite Base URL:", import.meta.env.BASE_URL);
+  //   console.log("Current Pathname:", window.location.pathname);
+
+  //   // 2. Check if your Env Variables actually exist in the production build
+  //   // (Replace these with the exact names you use inside your lib/supabase file)
+  //   console.log("Supabase URL Defined?:", !!import.meta.env.VITE_SUPABASE_URL);
+  //   console.log("Supabase Key Defined?:", !!import.meta.env.VITE_SUPABASE_ANON_KEY);
+    
+  //   // 3. Test if importing Leaflet from a working page causes a 404 asset crash
+  //   console.log("Testing Leaflet chunk delivery...");
+  //   import("leaflet")
+  //     .then(() => console.log("✅ Leaflet chunk loaded perfectly on this page!"))
+  //     .catch((err) => console.error("❌ Leaflet chunk FAILED to load:", err));
+      
+  //   console.log("=======================================");
+  // }, []);
+  // // --- END DIAGNOSTIC LOGS --- 
+
+
+  
 
   return (
     <div className={styles.lensContainer}>
@@ -164,6 +199,7 @@ export default function Lens() {
         </div>,
         document.body
       )}
+<div className={styles.lens_bottom_padding}></div>
     </div>
   )
 }

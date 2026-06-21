@@ -1,0 +1,165 @@
+.page {
+    background-color: var(--color-white);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 6rem;
+}
+
+.header_area {
+    position: relative;
+    height: 159px;
+    padding-top: 58px;
+}
+
+.top_pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.back_btn {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-orange-200);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0px 1px 4.6px 0px rgba(0, 0, 0, 0.07);
+}
+
+.back_arrow {
+    width: 1rem;
+    height: 1rem;
+    transform: scaleX(-1);
+}
+
+.filters {
+    display: flex;
+    overflow-x: auto;
+    gap: 0.5rem;
+    padding: 1.25rem 1rem 0.25rem 1rem;
+    scrollbar-width: none;
+}
+
+.filters::-webkit-scrollbar {
+    display: none;
+}
+
+.pill {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 2px solid var(--color-green);
+    background: transparent;
+    color: var(--color-black);
+    font-family: var(--font-body);
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.pill_active {
+    background-color: var(--color-green);
+    color: var(--color-white);
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+}
+
+.pill_x {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0.25rem;
+    object-fit: contain;
+    background-color: var(--color-white);
+    border-radius: 999px;
+    flex-shrink: 0;
+}
+
+.list {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.gem_card {
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    padding: 0.85rem 0.75rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.4rem 1rem;
+    cursor: pointer;
+}
+
+.gem_sticker {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: drop-shadow(0px 2.9px 4px rgba(0, 0, 0, 0.15));
+}
+
+.gem_info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.gem_name {
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-black);
+    line-height: 1.2;
+}
+
+.gem_creator {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.creator_avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.creator_name {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-black);
+    line-height: 1;
+}
+
+.gem_tag {
+    font-family: var(--font-body);
+    font-size: 16px;
+    background-color: var(--color-green-100);
+    color: var(--color-green-900);
+    border-radius: var(--radius-full);
+    padding: 0.3rem 0.75rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    align-self: flex-start;
+}

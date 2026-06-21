@@ -1,7 +1,8 @@
 import styles from '../styles/profile.module.css'
-import { useState } from 'react';
-import { useParams } from 'react-router'
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router'
 import { profiles } from '../lib/profiles'
+import { MiniDisc } from '../components/MiniDisc'
 
 import settingsIcon from '../assets/settings_icon.svg'
 import infoBubble from '../assets/profile_info_bubble.svg'
@@ -13,23 +14,28 @@ import plusButton from '../assets/plus_button.svg'
 import stickerSeparator from '../assets/sticker_separator.svg'
 import stickerBottom from '../assets/sticker_bottom.svg'
 
-
 export function meta() {
-    return [{ title: "Profile" }];
+    return [{ title: "Profile" }]
 }
-
 
 export default function Profile() {
     const { id } = useParams()
+    const navigate = useNavigate()
     const profile = profiles[id] || profiles.ona
 
     const isOwner = profile.type === 'owner'
 
-    const [expanded, setExpanded] = useState(false);
+    const [expanded, setExpanded] = useState(false)
+    const [createdViewmasters, setCreatedViewmasters] = useState([])
+
+    useEffect(() => {
+        const saved = JSON.parse(localStorage.getItem(`created_viewmasters_${id}`) || '[]')
+        setCreatedViewmasters(saved)
+    }, [id])
 
     return (
-        <div>
-            <div className={styles.settings_icon}>
+        <div className={styles.profile_page_wrapper}>
+            <div className={styles.settings_icon} onClick={() => navigate(`/profile/${id}/settings`)}>
                 <img src={settingsIcon} alt="settings" />
             </div>
 
@@ -38,7 +44,7 @@ export default function Profile() {
                 <h1>{profile.name}</h1>
                 <div className={styles.profile_keywords}>
                     {profile.keywords.map((kw, i) => (
-                        <span key={i} className={styles.profile_keywords}>
+                        <span key={kw} className={styles.profile_keywords}>
                             {i > 0 && <p>•</p>}
                             <p>{kw}</p>
                         </span>
@@ -68,7 +74,7 @@ export default function Profile() {
                     <div className={styles.aboutyou_content}>
                         <div className={styles.aboutyou_header}>
                             <h2 className={styles.profile_h2}>About you</h2>
-                            <div className={styles.edit_flex}>
+                            <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/about`)}>
                                 <p className={styles.orange_to_detail}>Edit</p>
                                 <img src={simpleOrangeArrow} alt="arrow" />
                             </div>
@@ -77,7 +83,7 @@ export default function Profile() {
                         <p className={styles.aboutyou_text}>
                             {expanded ? profile.bio.full : profile.bio.short}
                         </p>
-                        <button onClick={() => setExpanded(!expanded)} className={styles.readMore}>
+                        <button type="button" onClick={() => setExpanded(!expanded)} className={styles.readMore}>
                             {expanded ? "Read less" : "Read more"}
                         </button>
                     </div>
@@ -88,17 +94,17 @@ export default function Profile() {
                 <>
                     <div className={styles.gems_added_header}>
                         <h2 className={styles.profile_h2}>Gems added by you</h2>
-                        <div className={styles.edit_flex}>
+                        <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/gems`)}>
                             <p className={styles.orange_to_detail}>View all</p>
                             <img src={simpleOrangeArrow} alt="arrow" />
                         </div>
                     </div>
                     <div className={styles.profile_gems}>
-                        <div className={styles.addGem}>
+                        <div className={styles.addGem} onClick={() => navigate(`/profile/${id}/gems/add`)}>
                             <img src={plusButton} alt="add gem" />
                         </div>
-                        {profile.gemsAdded.map((gem, i) => (
-                            <img key={i} src={gem.image} alt={gem.alt} />
+                        {profile.gemsAdded.map((gem) => (
+                            <img key={gem.image} src={gem.image} alt={gem.alt} />
                         ))}
                     </div>
                 </>
@@ -106,13 +112,13 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Discovered gems</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/discovered`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
             </div>
-            {profile.discoveredGems.map((gem, i) => (
-                <div key={i} className={styles.discovered_gems_container}>
+            {profile.discoveredGems.map((gem) => (
+                <div key={gem.name} className={styles.discovered_gems_container}>
                     <div className={styles.discovered_gems_left}>
                         <img src={gem.sticker} alt="" className={styles.discovered_gem_sticker} />
                         <div className={styles.discovered_gems_text}>
@@ -131,32 +137,32 @@ export default function Profile() {
                 <h2 className={styles.profile_h2}>
                     {isOwner ? 'Your Viewmasters' : `${profile.name}'s Viewmasters`}
                 </h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/viewmasters`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
             </div>
             <div className={styles.your_viewmasters}>
-                {isOwner && (
-                    <div className={styles.plus_viewmaster}>
-                        <img src={plusButton} alt="plus button" className={styles.plus_viewmaster_button} />
-                    </div>
+                <div className={styles.plus_viewmaster} onClick={() => navigate('/camera/viewmaster', { state: { profileId: id } })}>
+                    <img src={plusButton} alt="plus button" className={styles.plus_viewmaster_button} />
+                </div>
+                {[...createdViewmasters, ...profile.viewmasters].slice(0, 3).map(vm =>
+                    typeof vm === 'string'
+                        ? <img key={vm} src={vm} alt="viewmaster disc" />
+                        : <MiniDisc key={vm.id} color={vm.color} photoIds={vm.photoIds} stickers={vm.stickers} size={79} />
                 )}
-                {profile.viewmasters.map((vm, i) => (
-                    <img key={i} src={vm} alt="viewmaster disc" />
-                ))}
             </div>
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Photos taken</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate('/camera/gallery')}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
             </div>
             <div className={styles.gallery_recents}>
-                {profile.gallery.slice(0, 3).map((img, i) => (
-                    <img key={i} src={img} alt="" />
+                {profile.gallery.slice(0, 3).map((img) => (
+                    <img key={img} src={img} alt="" />
                 ))}
                 <div className={styles.gallery_recent_last}>
                     <img src={profile.gallery[3]} alt="" />
@@ -168,20 +174,20 @@ export default function Profile() {
 
             <div className={styles.gems_added_header}>
                 <h2 className={styles.profile_h2}>Sticker collection</h2>
-                <div className={styles.edit_flex}>
+                <div className={styles.edit_flex} onClick={() => navigate(`/profile/${id}/stickers`)}>
                     <p className={styles.orange_to_detail}>View all</p>
                     <img src={simpleOrangeArrow} alt="arrow" />
                 </div>
             </div>
             <img src={stickerSeparator} alt="" className={styles.sticker_blocks} />
             <div className={styles.stickers_collected}>
-                {profile.stickers.map((sticker, i) => (
-                    <img key={i} src={sticker} alt="sticker" className={styles.profile_stickers}/>
+                {profile.stickers.map((sticker) => (
+                    <img key={sticker} src={sticker} alt="sticker" className={styles.profile_stickers} />
                 ))}
             </div>
             <img src={stickerBottom} alt="" className={styles.sticker_blocks} />
 
-            <div className={styles.spacing}></div>
+            <div className={styles.spacing} />
         </div>
-    );
+    )
 }

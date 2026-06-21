@@ -1,5 +1,5 @@
-import { useParams, Link } from "react-router";
-import { useEffect, useRef } from 'react';
+import { Link, useLocation, useNavigate } from "react-router";
+import { useEffect, useRef, useState } from 'react';
 import styles from '../styles/camera.module.css';
 
 import cameraTop from '../assets/camera_top.svg';
@@ -7,89 +7,137 @@ import captureButton from '../assets/camera_capture.svg'
 import flipCamera from '../assets/flip_camera.svg'
 import flashCamera from '../assets/camera_flash.svg'
 
-
 export function meta() {
     return [{ title: "Camera" }];
-  }
+}
 
 export default function Camera() {
     const videoRef = useRef(null);
     const canvasRef = useRef(null);
     const requestRef = useRef(null);
+    const streamRef = useRef(null);
+    const facingModeRef = useRef("environment");
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const fromGemHunt = location.state?.fromGemHunt === true;
+
+    const [isCapturing, setIsCapturing] = useState(false);
+    const [isFlashing, setIsFlashing] = useState(false);
+    const [isFrontCamera, setIsFrontCamera] = useState(false);
+
+    const startCamera = async (facingMode) => {
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+        }
+        if (requestRef.current) {
+            cancelAnimationFrame(requestRef.current);
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 1280, height: 720, facingMode: { ideal: facingMode } },
+                audio: false
+            });
+
+            streamRef.current = stream;
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
+                await videoRef.current.play();
+
+                if (canvasRef.current) {
+                    canvasRef.current.width = videoRef.current.videoWidth;
+                    canvasRef.current.height = videoRef.current.videoHeight;
+                    renderLoop();
+                }
+            }
+        } catch (err) {
+            console.error('Camera Initialization Error:', err);
+        }
+    };
+
+    function renderLoop() {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
+
+        if (video && canvas) {
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        }
+
+        requestRef.current = requestAnimationFrame(renderLoop);
+    }
 
     useEffect(() => {
-        let localStream = null;
+        startCamera(facingModeRef.current);
 
-        async function initCamera() {
-            try {
-                // Requesting standard dimensions just like your reference code
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { width: 1280, height: 720, facingMode: { ideal: "environment" } },
-                    audio: false
-                });
-
-                localStream = stream;
-
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                    await videoRef.current.play();
-
-                    // Once the video metadata loads, match the canvas drawing dimensions to it
-                    if (canvasRef.current) {
-                        canvasRef.current.width = videoRef.current.videoWidth;
-                        canvasRef.current.height = videoRef.current.videoHeight;
-                        
-                        // Start the drawing cycle
-                        renderLoop();
-                    }
-                }
-            } catch (err) {
-                console.error('Camera Initialization Error:', err);
-            }
-        }
-
-        function renderLoop() {
-            const video = videoRef.current;
-            const canvas = canvasRef.current;
-            
-            if (video && canvas) {
-                const ctx = canvas.getContext('2d');
-                // Draw the current video frame onto the canvas element
-                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            }
-            
-            // Loop it continuously
-            requestRef.current = requestAnimationFrame(renderLoop);
-        }
-
-        initCamera();
-
-        // Cleanup hardware stream and animation locks when leaving the page
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(track => track.stop());
             }
         };
     }, []);
+
+    const handleFlipCamera = () => {
+        const next = facingModeRef.current === "environment" ? "user" : "environment";
+        facingModeRef.current = next;
+        setIsFrontCamera(next === "user");
+        startCamera(next);
+    };
+
+    const captureFrame = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+    
+        setIsCapturing(true);
+        setTimeout(() => setIsCapturing(false), 150);
+    
+        setIsFlashing(true);
+        setTimeout(() => setIsFlashing(false), 300);
+    
+        const base64Image = canvas.toDataURL('image/jpeg', 0.4);
+    
+        const numericIds = Object.keys(localStorage)
+            .filter(k => k.startsWith('gem_photo_'))
+            .map(k => parseInt(k.replace('gem_photo_', ''), 10))
+            .filter(num => !isNaN(num));
+    
+        const maxId = numericIds.length > 0 ? Math.max(...numericIds) : 0;
+        const nextIndex = maxId + 1;
+    
+        try {
+            localStorage.setItem(`gem_photo_${nextIndex}`, base64Image);
+            if (fromGemHunt) {
+                setTimeout(() => navigate('/camera/preview'), 350); 
+            }
+        } catch (e) {
+            console.error("Storage limit reached:", e);
+        }
+    };
 
     return (
         <div className={styles.cameraPage}>
             <img src={cameraTop} alt="styling element" className={styles.cameraTop} />
 
-            {/* Viewport container to force styling restrictions */}
             <div className={styles.cameraContainer}>
-                
-                {/* Hidden video element mirroring your reference setup */}
-                <video 
-                    ref={videoRef} 
-                    autoplay 
-                    playsinline 
-                    muted 
-                    style={{ display: 'none' }} 
+                <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    style={{ display: 'none' }}
                 />
 
-                <canvas ref={canvasRef} className={styles.outputCanvas} />
+                <canvas
+                    ref={canvasRef}
+                    className={styles.outputCanvas}
+                    style={{ transform: isFrontCamera ? 'scaleX(-1)' : 'scaleX(1)' }}
+                />
+
+                {/* Flash overlay */}
+                <div className={`${styles.flashOverlay} ${isFlashing ? styles.flashActive : ''}`} />
 
                 <div className={styles.topControls}>
                     <button className={styles.controlBtn}>
@@ -99,24 +147,25 @@ export default function Camera() {
 
                 <div className={styles.bottomControls}>
                     <Link to={`/camera/gallery`}>
-                        <img 
-                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp" 
-                            alt="gallery" 
+                        <img
+                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp"
+                            alt="gallery"
                             className={styles.gallery}
                         />
                     </Link>
 
-                    <button className={`${styles.controlBtn} ${styles.captureBtn}`}>
+                    <button
+                        className={`${styles.controlBtn} ${styles.captureBtn} ${isCapturing ? styles.capturePressed : ''}`}
+                        onClick={captureFrame}
+                    >
                         <img src={captureButton} alt="Capture Gem" />
                     </button>
 
-                    <button className={styles.controlBtn}>
+                    <button className={styles.controlBtn} onClick={handleFlipCamera}>
                         <img src={flipCamera} alt="Flip Camera Feed" />
                     </button>
                 </div>
             </div>
-                
-
         </div>
     );
 }

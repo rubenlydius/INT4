@@ -1,16 +1,3 @@
-/*
-  The wheel is fixed to the viewport bottom (not the page bottom), so it
-  stays put while the lens content scrolls underneath it.
-
-  Sizing: the viewmaster disc is 1.8x the viewport width. The designer sprite
-  ring sits on the exact same track (same size, same rotational center) but
-  is visually shrunk via `scale()` so it reads as inset/padded relative to
-  the viewmaster, without moving its center — which keeps the drag/tap angle
-  math (centered on the track) correct.
-
-  Collapse: the whole stage translates down by 70% of its size, leaving 30%
-  peeking above the viewport edge as a tap target to bring it back up.
-*/
 
 /* intro animation — wheel starts fully below screen, slides up on first mount */
 .wheelStageIntro {
@@ -23,18 +10,17 @@
   bottom: -25rem;
   left: 0;
   width: 100%;
-  height: 180vw; /* Adjusted from 200vw to 180vw */
+  height: 180vw;
   overflow: hidden;
   display: flex;
   justify-content: center;
-  pointer-events: none; /* only the wheel image itself should capture input */
+  pointer-events: none;
   z-index: 50;
   transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateY(0);
 }
 
 .wheelStage.collapsed {
-  /* Hides 70% of the stage, leaving exactly 30% of the top visible */
   transform: translateY(21%); 
 }
 
@@ -43,9 +29,9 @@
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 180vw; /* Adjusted from 200vw to 180vw */
-  height: 180vw; /* Adjusted from 200vw to 180vw */
-  pointer-events: auto; /* Allow the track area to capture interactions */
+  width: 180vw; 
+  height: 180vw; 
+  pointer-events: auto; 
   cursor: grab;
 }
 
@@ -54,13 +40,12 @@
   position: absolute;
   top: 0;
   left: 50%;
-  width: 180vw; /* Adjusted from 200vw to 180vw */
-  height: 180vw; /* Adjusted from 200vw to 180vw */
-  /* border-radius: 50%; (Kept removed as requested) */
+  width: 180vw;
+  height: 180vw;
   user-select: none;
   -webkit-user-drag: none;
   transform-origin: 50% 50%;
-  object-fit: contain; /* Prevents images from skewing/distorting */
+  object-fit: contain;
   pointer-events: auto;
 }
 
@@ -71,22 +56,14 @@
 }
 
 .designerWheel {
-  /* rotation is applied inline (JS-driven). The visible disc is inset by a
-     fixed amount (not a percentage) so the padding reads consistently
-     regardless of viewport width. Shrinking width/height while keeping
-     left at 50% and using the same translateX(-50%) centering as
-     .viewmaster keeps both discs' centers exactly aligned — critical,
-     since the drag/tap angle math assumes that shared center. */
-  --wheel-padding: 3rem; /* Increased from 2rem to 3rem */
+  --wheel-padding: 3rem; 
   top: var(--wheel-padding);
   left: 50%;
-  width: calc(180vw - (var(--wheel-padding) * 2)); /* Adjusted base from 200vw to 180vw */
-  height: calc(180vw - (var(--wheel-padding) * 2)); /* Adjusted base from 200vw to 180vw */
+  width: calc(180vw - (var(--wheel-padding) * 2));
+  height: calc(180vw - (var(--wheel-padding) * 2));
   transform: translateX(-50%) rotate(0deg);
   z-index: 2;
-  /* cursor: grab; */
   touch-action: none;
-  /* pointer-events: auto; */
 }
 
 .designerWheel:active {
@@ -97,23 +74,6 @@
   cursor: pointer;
 }
 
-/* Small fixed marker showing the "selected" position at 12 o'clock of the disc,
-   i.e. centered at the top of the visible stage. Purely decorative/orientation. */
-/* .pointerMark {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 2px;
-  height: 14px;
-  background: var(--color-orange);
-  z-index: 3;
-  pointer-events: none;
-}
-
-.collapsed .pointerMark {
-  opacity: 0;
-} */
 
 @media (prefers-reduced-motion: reduce) {
   .wheelStage {
@@ -123,18 +83,16 @@
 
 .designerOverlayBox {
     position: absolute;
-    top: 2.5rem;               /* Placed 2rem down from the top */
+    top: 2.5rem; 
     left: 50%;
     transform: translateX(-48%);
-    width: 7.5rem;           /* Requested width */
-    height: 9rem;          /* Requested height */
-    /* border: 2px solid var(--color-green-500); */
+    width: 7.5rem;     
+    height: 9rem;        
     box-sizing: border-box;
     background-color: transparent;
-    z-index: 3;              /* Sits on top of the images */
-    pointer-events: none;    /* Critically lets wheel dragging/clicks pass straight through it */
-    border-radius: 1rem; /* Optional: makes the box circular, adjust as needed */
-    /* Flexbox automatically pins the button to the bottom center of this box */
+    z-index: 3;           
+    pointer-events: none;   
+    border-radius: 1rem;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -143,21 +101,21 @@
   }
   
   .exploreButton {
-    background-color: var(--color-green); /* Style this however matches your design system */
+    background-color: var(--color-green);
     color: var(--color-white);
     padding: 0.5rem 1rem;
     border-radius: 99px;
     font-size: 1rem;
     font-weight: 700;
-    pointer-events: auto;    /* Re-enables pointer events so the button is actually clickable */
-    margin-bottom: -1rem;   /* Small offset so it sits neatly inside the bottom stroke */
+    pointer-events: auto; 
+    margin-bottom: -1rem; 
     width: 9rem;
     text-align: center;
   }
 
   .collapsed .designerOverlayBox {
     opacity: 0;
-    pointer-events: none; /* Disables the link completely when hidden */
+    pointer-events: none;
   }
 
   .wheelBackdropCircle {
@@ -167,7 +125,54 @@
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-color: #00b56aba; /* Pure Green at 25% opacity */
-    z-index: 0; /* Sits completely behind the viewmaster image (which is z-index: 1) */
-    pointer-events: none; /* Keeps it completely non-interactive */
+    background-color: #00b56aba;
+    z-index: 0;
+    pointer-events: none;
   }
+
+/* DESKTOP ONLY */
+@media (min-width: 768px) {
+  .wheelStage {
+    height: 702px;
+    bottom: -390px;
+  }
+  .wheelStage.collapsed {
+    transform: translateY(144px);
+  }
+  .track,
+  .viewmaster {
+    width: 702px;
+    height: 702px;
+  }
+  .designerWheel {
+    --wheel-padding: 3rem;
+    width: calc(702px - (var(--wheel-padding) * 2));
+    height: calc(702px - (var(--wheel-padding) * 2));
+  }
+}
+
+@media (min-width: 300px) and (max-width: 600px) {
+  .wheelStage {
+    height: 180vw;
+    
+    /* adjust this to change up position */
+    bottom: -100vw; 
+  }
+
+  .wheelStage.collapsed {
+    /* adjust this to change collapsed position */
+    transform: translateY(37vw); 
+  }
+
+  /* Keep these exactly as they are so the circles don't warp */
+  .track,
+  .viewmaster {
+    width: 180vw;
+    height: 180vw;
+  }
+  .designerWheel {
+    --wheel-padding: 3rem;
+    width: calc(180vw - (var(--wheel-padding) * 2));
+    height: calc(180vw - (var(--wheel-padding) * 2));
+  }
+}

@@ -1,19 +1,26 @@
+import { useEffect } from "react";
 import {
   isRouteErrorResponse,
   Links,
-  NavLink,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
+  useNavigate,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./styles/app.css";
 import Navbar from './components/navbar';
+import { MapProvider } from './lib/MapContext';
+import DesktopMap from './components/DesktopMap';
+import DesktopNav from './components/DesktopNav';
 
 
 export const links: Route.LinksFunction = () => [
+  { rel: "icon", type: "image/svg+xml", href: "./logo.svg" },
+
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
@@ -45,12 +52,47 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const userType = localStorage.getItem("userType");
+    const isAuthRoute = location.pathname === "/onboarding" || location.pathname === "/signup";
+  
+    if (!userType && !isAuthRoute) {
+      navigate("/onboarding", { replace: true });
+    } else if (location.pathname === "/" && userType) {
+      const savedLens = localStorage.getItem("selectedLens") || "ann";
+      navigate(`/lens/${savedLens}`, { replace: true });
+    }
+  }, [location.pathname, navigate]);
+
+  const isAuthRoute = location.pathname === "/onboarding" || location.pathname === "/signup";
+
   return (
-    <>
-  <Outlet />
-  <Navbar />
-  </>
-  )
+    <MapProvider>
+      {/* DESKTOP ONLY, hidden on auth routes (onboarding/signup are always full screen) */}
+      {!isAuthRoute && <DesktopNav />}
+      {!isAuthRoute && (
+        <div className="map_panel">
+          <DesktopMap />
+        </div>
+      )}
+
+      {/* Phone frame — full screen on mobile and on auth routes, 390px panel on desktop */}
+      <div className={isAuthRoute ? "app_panel app_panel_auth" : "app_panel"}>
+        <div className="app_content">
+          <Outlet />
+        </div>
+        {/* Mobile bottom navbar, hidden on desktop via CSS, replaced by DesktopNav */}
+        {!isAuthRoute && <Navbar />}
+      </div>
+
+      {/* DESKTOP ONLY, portal target for DesignerWheel so it renders inside the phone frame
+          boundary instead of escaping to document.body (which would cover the whole screen) */}
+      {!isAuthRoute && <div className="wheel_portal" data-wheel-portal="true" />}
+    </MapProvider>
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

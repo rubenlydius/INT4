@@ -1,0 +1,136 @@
+.page {
+    background-color: var(--color-white);
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 6rem;
+}
+
+.header_area {
+    position: relative;
+    height: 159px;
+    padding-top: 58px;
+}
+
+.top_pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+.back_btn {
+    width: 40px;
+    height: 40px;
+    background-color: var(--color-orange-200);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0px 1px 4.6px 0px rgba(0, 0, 0, 0.07);
+}
+
+.back_arrow {
+    width: 1rem;
+    height: 1rem;
+    transform: scaleX(-1);
+}
+
+.content {
+    padding: 1.35rem 1rem 0 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.page_heading {
+    font-family: var(--font-display);
+    font-size: 1.5625rem;
+    font-weight: var(--font-weight-display);
+    text-transform: uppercase;
+    color: var(--color-black);
+    line-height: 1.1;
+}
+
+.profile_row {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.avatar_wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.avatar_edit_btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 37px;
+    height: 37px;
+    background-color: var(--color-orange);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.10);
+}
+
+.pencil_icon {
+    width: 14px;
+    height: 14px;
+    display: block;
+    object-fit: contain;
+}
+
+.field_group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.field_label {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--color-black);
+}
+
+.input {
+    width: 100%;
+    height: 45px;
+    padding: 0 16px;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-full);
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--color-black);
+    background-color: #ffffff;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
+    transition: border-color var(--transition-fast);
+}
+
+.input:focus {
+    border-color: var(--color-orange);
+}

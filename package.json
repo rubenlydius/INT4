@@ -3,13 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
+    "build": "react-router build && cp build/client/index.html build/client/404.html && touch build/client/.nojekyll",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "geocode": "node --experimental-vm-modules geocode.js"
   },
   "dependencies": {
+    "@imgly/background-removal": "^1.7.0",
     "@react-router/node": "7.16.0",
     "@react-router/serve": "7.16.0",
     "@supabase/supabase-js": "^2.107.0",
