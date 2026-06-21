@@ -58,7 +58,7 @@ export default function ProfileGems() {
           </div>
         ))}
 
-        <button className={styles.add_gem_btn}>
+        <button className={styles.add_gem_btn} onClick={() => navigate(`/profile/${id}/gems/add`)}>
           <div className={styles.add_gem_inner}>
             <div className={styles.add_gem_plus}>
               <img src={plusButton} alt="" />

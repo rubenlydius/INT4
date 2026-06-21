@@ -95,7 +95,7 @@ export default function Profile() {
                         </div>
                     </div>
                     <div className={styles.profile_gems}>
-                        <div className={styles.addGem}>
+                        <div className={styles.addGem} onClick={() => navigate(`/profile/${id}/gems/add`)}>
                             <img src={plusButton} alt="add gem" />
                         </div>
                         {profile.gemsAdded.map((gem, i) => (
@@ -139,7 +139,7 @@ export default function Profile() {
             </div>
             <div className={styles.your_viewmasters}>
                 {isOwner && (
-                    <div className={styles.plus_viewmaster}>
+                    <div className={styles.plus_viewmaster} onClick={() => navigate('/camera/viewmaster')}>
                         <img src={plusButton} alt="plus button" className={styles.plus_viewmaster_button} />
                     </div>
                 )}

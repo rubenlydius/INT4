@@ -60,7 +60,7 @@ export const profiles = {
   tom: {
     name: "Tom",
     type: "visitor",
-    keywords: ["Local"],
+    keywords: ["Visitor"],
     bio: {
       short: "",
       full: "",

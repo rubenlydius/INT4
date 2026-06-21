@@ -14,6 +14,8 @@ import closeIcon from '../assets/close_button.svg';
 import calendarIcon from '../assets/calendar_icon.svg';
 import whiteArrow from '../assets/white_arrow.svg';
 
+
+
 export function meta() {
   return [{ title: "Map" }];
 }
@@ -44,15 +46,20 @@ function getOffset(gem) {
 
 
 export default function Map() {
+  const [currentLens, setCurrentLens] = useState("ann");
   const [selected, setSelected] = useState(null);
   const [types, setTypes] = useState([]);
   const [activeTypes, setActiveTypes] = useState([]);
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersRef = useRef([]);
-  const userMarkerRef = useRef(null); 
+  const userMarkerRef = useRef(null);
 
-  const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
+  useEffect(() => {
+    const lens = localStorage.getItem("selectedLens") || "ann";
+    setCurrentLens(lens);
+  }, []);
+
   const designer = designers[currentLens] || designers.ann;
 
   function toggleType(type) {
@@ -61,8 +68,13 @@ export default function Map() {
     );
   }
 
+  // Handle Map Initialization & Lifecycle Cleanup safely
   useEffect(() => {
+    let isMounted = true;
+    let watchId = null;
+
     async function init() {
+
       const L = (await import("leaflet")).default;
       await import("leaflet/dist/leaflet.css");
 
@@ -73,10 +85,19 @@ export default function Map() {
         .select("*")
         .not("lat", "is", null)
         .not("lng", "is", null)
-        .eq("a6_link", dbDesignerName);
+        .eq("a6_link", dbDesignerName)
+        .eq("verified", true);
 
-      if (error) return console.error(error.message);
-      if (mapRef.current._leaflet_id) return;
+      if (error) {
+        console.error(error.message);
+        return;
+      }
+
+      // Guard 1: If the user navigated away while Supabase was loading, halt execution safely
+      if (!isMounted || !mapRef.current) return;
+
+      // Guard 2: If the map instance is already spun up for this mount, do not attempt to recreate it
+      if (mapInstanceRef.current) return;
 
       const uniqueTypes = [...new Set(data.map(g => g.type).filter(Boolean))];
       setTypes(uniqueTypes);
@@ -87,8 +108,11 @@ export default function Map() {
       L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
 
       if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
+        watchId = navigator.geolocation.watchPosition(
           (pos) => {
+            // Guard inside asynchronous browser geolocation tracking callback
+            if (!isMounted || !mapInstanceRef.current) return;
+
             const { latitude, longitude } = pos.coords;
             const latlng = [latitude, longitude];
       
@@ -109,6 +133,9 @@ export default function Map() {
         );
       }
 
+      // Clear out the tracking array if re-initializing due to lens change
+      markersRef.current = [];
+
       data.forEach((gem) => {
         let marker;
       
@@ -116,9 +143,7 @@ export default function Map() {
       
         if (gem.a6_fav) {
           const radiusMeters = gem.radius ?? 250;
-          
           const sizeMultiplier = 2; 
-          
           const radiusInDegrees = (radiusMeters * 0.000009) * sizeMultiplier;
         
           const latLngBounds = [
@@ -146,9 +171,27 @@ export default function Map() {
       });
     }
 
-    if (mapRef.current) init();
+    init();
+
+    // The Explicit Cleanup Routine: Dismantles everything when navigating away
+    return () => {
+      isMounted = false;
+      
+      if (watchId !== null && navigator.geolocation) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+      
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+
+      markersRef.current = [];
+      userMarkerRef.current = null;
+    };
   }, [currentLens]);
 
+  // Handle Visibility Filtering Logic
   useEffect(() => {
     if (!mapInstanceRef.current) return;
 
@@ -243,4 +286,3 @@ export default function Map() {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router";
+import { useParams, Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
@@ -20,6 +20,9 @@ export function meta() {
 export default function GemDetail() {
   const { gemId } = useParams();
   const [gem, setGem] = useState(null);
+
+  const location = useLocation();
+  const isRevealed = location.state?.revealed || false;
 
   const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
   const designer = designers[currentLens] || designers.ann;
@@ -55,7 +58,7 @@ export default function GemDetail() {
 
       </div>
       <div className={styles.orange}>
-      <img src={storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker}/>
+      <img src={storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker} style={{ opacity: isRevealed ? 0.35 : 1 }}/>
         <img src={detailImage} alt={gem.gem_name} className={styles.detailPageImage}/>
       </div>
       <img src={detailTop} alt="transition" className={styles.detaiTransition}/>

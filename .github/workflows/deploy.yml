@@ -10,7 +10,6 @@ permissions:
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment to prevent conflicts
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -35,11 +34,16 @@ jobs:
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Set up SPA routing and bypass Jekyll
+        run: |
+          cp ./build/client/index.html ./build/client/404.html
+          touch ./build/client/.nojekyll
 
       - name: Upload production artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # React Router SPA framework defaults to the 'build/client' directory
           path: './build/client'
 
   deploy:
