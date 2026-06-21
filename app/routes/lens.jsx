@@ -9,6 +9,7 @@ import workPattern from '../assets/work_pattern.svg'
 import antwerpPattern from '../assets/antwerp_pattern.svg'
 import designerViemaster from '../assets/a6_viewmaster.svg'
 import DesignerWheel from '../components/DesignerWheel'
+import { useMapFocus } from '../lib/MapContext'
 
 export function meta() {
   return [{ title: "Lens" }];
@@ -18,6 +19,11 @@ export default function Lens() {
   const { id } = useParams()
   const navigate = useNavigate()
   const designer = designers[id] || designers.ann
+  const { setActiveLens } = useMapFocus()
+
+  useEffect(() => {
+    setActiveLens(id || 'ann')
+  }, [id])
 
   const allowedIndices = [0, 2, 3];
   const [currentIdx, setCurrentIdx] = useState(0);

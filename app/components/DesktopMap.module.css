@@ -1,0 +1,29 @@
+.phoneHint {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .phoneHint {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 1000;
+    background: var(--color-white);
+    border-radius: 999px;
+    padding: 0.5rem 1rem 0.5rem 0.6rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--color-grey);
+    pointer-events: none;
+  }
+
+  .phoneHintIcon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+}
