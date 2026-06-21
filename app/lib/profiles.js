@@ -49,6 +49,11 @@ export const profiles = {
       storageUrl('gems/stickers/gem19-sticker.avif'),
       storageUrl('gems/stickers/gem60-sticker.avif'),
       storageUrl('gems/stickers/gem6-sticker.avif'),
+      storageUrl('gems/stickers/gem50-sticker.avif'),
+      storageUrl('gems/stickers/gem34-sticker.avif'),
+      storageUrl('gems/stickers/gem52-sticker.avif'),
+      storageUrl('gems/stickers/gem53-sticker.avif'),
+      storageUrl('gems/stickers/gem59-sticker.avif'),
     ],
   },
 

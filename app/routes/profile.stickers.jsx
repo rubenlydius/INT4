@@ -1,10 +1,12 @@
 import { useNavigate, useParams } from 'react-router'
 import { profiles } from '../lib/profiles'
+import { storageUrl } from '../lib/storage'
 import styles from '../styles/profile.stickers.module.css'
 
 import simpleOrangeArrow from '../assets/simple_orange_arrow.svg'
 import topPattern from '../assets/profile_details_top_pattern.svg'
-import stickerSection from '../assets/your_sticker_section.png'
+
+const stickerSection = storageUrl('gems/profile/your_sticker_section.webp')
 
 export function meta() {
   return [{ title: "Sticker Collection" }]
@@ -21,7 +23,7 @@ export default function ProfileStickers() {
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
         <div className="top">
-          <button className={styles.back_btn} onClick={() => navigate(`/profile/${id}`)}>
+          <button type="button" className={styles.back_btn} onClick={() => navigate(`/profile/${id}`)}>
             <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
           </button>
           <h1>Sticker Collection</h1>
