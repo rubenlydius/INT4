@@ -1,0 +1,770 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Antwerpen Tall';
+    src: url('fonts/AntwerpenTall-Tall.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Sun Antwerpen';
+    src: url('fonts/SunAntwerpen_300.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Sun Antwerpen';
+    src: url('fonts/SunAntwerpen_500.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Sun Antwerpen';
+    src: url('fonts/SunAntwerpen_700.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
+:root {
+    --orange: #FF691E;
+    --green: #2FDE95;
+    --black: #0A0A0A;
+    --white: #FFFFFF;
+    --font-display: 'Antwerpen Tall', 'Arial Narrow', sans-serif;
+    --font-body: 'Sun Antwerpen', 'Arial Narrow', sans-serif;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--white);
+    margin: 0;
+    padding: 0;
+}
+
+#billboard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 1080px;
+    height: 1920px;
+    overflow: hidden;
+    transform-origin: top left;
+    font-family: var(--font-body);
+    container-type: size;
+}
+
+/* LAYER SYSTEM (visibility managed by GSAP autoAlpha)  */
+.layer {
+    position: absolute;
+    inset: 0;
+}
+
+/*  SHARED BACKGROUND ZONES  */
+.bg-orange-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--orange);
+}
+
+.bg-white-mid {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background: var(--white);
+}
+
+.bg-green-bot {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--green);
+}
+
+/* CROSS-STITCH PATTERN STRIP (shared) */
+.pattern-strip {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 3.125cqh;
+    background-image: url('assets/pattern_background.png');
+    background-size: auto 3.125cqh;
+    background-repeat: repeat-x;
+    background-position: bottom;
+}
+
+/* ANTWERP PIXELS */
+.antwerp-skyline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    background-image: url('assets/antwerp_pixels.png');
+    background-size: cover;
+    background-position: center bottom;
+}
+
+/* VIEWMASTER */
+.viewmaster-img {
+    position: absolute;
+    background-image: url('assets/viewmaster_white_background.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* WHEEL */
+.wheel-wrap {
+    position: absolute;
+}
+
+.wheel-wrap img {
+    display: block;
+}
+
+/* TYPOGRAPHY  */
+.text-eyebrow {
+    font-family: var(--font-display);
+    font-size: 1.667cqh;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--white);
+    opacity: 0.85;
+}
+
+.text-hero {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    line-height: 1.46;
+    font-size: 6.406cqh;
+    color: var(--white);
+}
+
+.text-hero .highlight {
+    color: var(--black);
+    display: inline-block;
+}
+
+.text-hero .highlight-black {
+    display: inline-block;
+    color: var(--black);
+}
+
+.text-sub {
+    font-family: var(--font-body);
+    font-size: 1.458cqh;
+    font-weight: 400;
+    color: var(--black);
+    line-height: 1.5;
+}
+
+.text-sub b {
+    font-weight: 700;
+}
+
+/*  KEYWORD TAGS (shared base size) */
+.keyword-tag {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-size: 1.875cqh;
+    font-weight: 800;
+    padding: 0.521cqh 2.593cqw;
+}
+
+/* SCREEN 1 — WHAT IS HIDDEN?*/
+
+#s1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+}
+
+#s1 .bg-orange-top {
+    height: 46.875cqh;
+    z-index: 1;
+}
+
+#s1 .pattern-strip {
+    top: 43.75cqh;
+    z-index: 2;
+}
+
+#s1 .bg-green-bot {
+    top: 88.542cqh;
+    z-index: 1;
+}
+
+#s1 .antwerp-skyline {
+    top: 45.313cqh;
+    height: 54.74cqh;
+    z-index: 2;
+}
+
+#s1 .hero-text {
+    position: relative;
+    z-index: 3;
+    padding-top: 6.25cqh;
+    width: 100%;
+}
+
+#s1 .viewmaster-center {
+    position: relative;
+    z-index: 4;
+    width: 88.889cqw;
+    height: auto;
+    margin-top: -13.021cqh;
+    align-self: center;
+    margin-right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#s1 .viewmaster-center img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+#s1 .pull-to-discover {
+    position: relative;
+    z-index: 3;
+    font-family: var(--font-body);
+    font-size: 3.542cqh;
+    font-weight: 800;
+    color: var(--black);
+    padding-bottom: 4.25cqh;
+    width: 100%;
+}
+
+/* SCREEN 2 — VIEW ANTWERP */
+
+#s2 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+#s2 .s2-bg-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 47.031cqh;
+    background: var(--orange);
+    z-index: 1;
+}
+
+#s2 .s2-cross-strip {
+    position: absolute;
+    top: 47cqh;
+    left: 0;
+    right: 0;
+    height: 5.978cqh;
+    background-image: url('assets/patter_cross_stich.png');
+    background-size: 101.1cqw 5.978cqh;
+    background-repeat: repeat-x;
+    background-position: left top;
+    z-index: 3;
+}
+
+#s2 .s2-bg-bot {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 54.948cqh;
+    background-image: url('assets/antwerp_full_pattern.png');
+    background-size: cover;
+    background-position: center;
+    z-index: 2;
+}
+
+#s2 .s2-top-content {
+    position: relative;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.979cqh;
+    padding: 7.813cqh 7.407cqw 0;
+    width: 100%;
+}
+
+#s2 .s2-hero {
+    font-family: var(--font-display);
+    font-weight: 900;
+    text-transform: uppercase;
+    font-size: 3.365cqh;
+    line-height: 1.52;
+    color: var(--white);
+    text-align: center;
+    letter-spacing: -0.01em;
+}
+
+#s2 .s2-hero .word-box {
+    display: inline-block;
+    background: var(--white);
+    color: var(--black);
+    padding: 0 1.296cqw;
+    letter-spacing: 0;
+}
+
+#s2 .s2-antwerp-label {
+    font-family: var(--font-body);
+    font-size: 2.344cqh;
+    font-weight: 500;
+    color: var(--white);
+    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1.5cqw;
+}
+
+#s2 .s2-pixel-arrow {
+    height: 2.5cqh;
+    width: auto;
+    transform: rotate(-90deg);
+    filter: brightness(0) invert(1);
+}
+
+#s2 .s2-wheel {
+    position: relative;
+    z-index: 4;
+    width: 79.38cqw;
+    height: 45cqh;
+    flex-shrink: 0;
+    margin-top: 4.688cqh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#s2 .s2-wheel img {
+    width: 79.38cqw;
+    height: 45cqh;
+    display: block;
+}
+
+#s2 .s2-bottom-content {
+    position: relative;
+    z-index: 3;
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0 7.407cqw 6.125cqh;
+    width: 100%;
+}
+
+#s2 .s2-desc {
+    font-family: var(--font-body);
+    font-size: 2.865cqh;
+    font-weight: 800;
+    color: var(--black);
+    line-height: 1.2;
+    text-align: center;
+}
+
+/*  SCREEN 3 — DESIGNER + KEYWORDS */
+
+#s3 .s3-bg-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 17.292cqh;
+    background: var(--orange);
+    z-index: 1;
+}
+
+#s3 .s3-strip {
+    position: absolute;
+    top: 17.188cqh;
+    left: 0;
+    right: 0;
+    height: 5.978cqh;
+    background-image: url('assets/patter_cross_stich.png');
+    background-size: 101.1cqw 5.978cqh;
+    background-repeat: repeat-x;
+    background-position: left top;
+    z-index: 2;
+}
+
+#s3 .s3-bg-white {
+    position: absolute;
+    top: 22.969cqh;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--white);
+    z-index: 1;
+}
+
+#s3 .s3-header {
+    position: absolute;
+    top: -2cqh;
+    left: 0;
+    right: 0;
+    height: 22.969cqh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.563cqh;
+    z-index: 2;
+}
+
+#s3 .s3-content {
+    position: absolute;
+    top: 23.958cqh;
+    left: 0;
+    right: 0;
+    height: 42.708cqh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    z-index: 2;
+}
+
+#s3 .s3-phone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.926cqw 0 0;
+}
+
+#s3 .s3-phone img {
+    width: 36.693cqw;
+    height: 42.664cqh;
+    object-fit: contain;
+}
+
+#s3 .s3-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.25cqh;
+    padding: 0 3.704cqw 0 1.852cqw;
+}
+
+#s3 .s3-explore-title {
+    font-family: var(--font-display);
+    font-size: 2.24cqh;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--orange);
+    line-height: 152%;
+}
+
+#s3 .s3-explore-desc {
+    font-family: var(--font-body);
+    font-size: 1.563cqh;
+    line-height: 1.5;
+    color: var(--black);
+}
+
+#s3 .s3-qr {
+    width: 16.667cqw;
+    aspect-ratio: 1;
+    flex-shrink: 0;
+}
+
+#s3 .keyword-tag {
+    font-size: 4.531cqh;
+    padding: 1.094cqh 5cqw;
+}
+
+#kw-row {
+    position: absolute;
+    top: 67cqh;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 4cqw;
+    z-index: 4;
+}
+
+#s3 .keyword-floating {
+    position: static;
+    z-index: 4;
+}
+
+#kw0 {
+    margin-top: 7cqh;
+}
+
+
+#kw2 {
+    margin-top: 7cqh;
+}
+
+.keyword-floating {
+    opacity: 0;
+}
+
+#s3 .wheel-wrap {
+    position: absolute;
+    bottom: -3%;
+    left: calc(50% + 3px);
+    transform: translateX(-50%) translateY(50%);
+    width: 108.981cqw;
+    height: 108.981cqw;
+    z-index: 3;
+}
+
+/* both images fill the same square — outer stays still, images rotate */
+#s3 .wheel-outer,
+#s3 .wheel-images {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+
+/* S3 SECONDARY STATE (10s idle) */
+#s3-secondary {
+    position: absolute;
+    top: calc(23.958cqh - 1rem);
+    left: 0;
+    right: 0;
+    bottom: 30cqh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1.25cqh;
+    padding: 0 9.259cqw;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.s3-sec-title {
+    font-family: var(--font-display);
+    font-size: 3.021cqh;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--orange);
+    line-height: 1.2;
+    margin-bottom: 0.5cqh;
+}
+
+.s3-sec-qr svg,
+.s3-sec-qr img {
+    width: 45%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.s3-sec-pixel-arrow {
+    width: 3cqh;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+.s3-sec-scan {
+    font-family: var(--font-body);
+    font-size: 1.979cqh;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--orange);
+}
+
+
+/* S3 WHEEL CTA OVERLAY */
+#s3-wheel-cta {
+    position: absolute;
+    top: 32%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 5;
+    pointer-events: none;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5cqh;
+}
+
+.wc-question {
+    font-family: var(--font-body);
+    font-size: 1.823cqh;
+    text-transform: uppercase;
+    font-weight: 300;
+    letter-spacing: 0em;
+    color: var(--white);
+}
+
+.wc-action {
+    font-family: var(--font-display);
+    font-size: 2.813cqh;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--green);
+}
+
+/* DESIGNER HEADER SHARED */
+.designer-eyebrow {
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    font-size: 1.975cqh;
+    font-weight: 500;
+    color: var(--white);
+    padding-bottom: 0.417cqh;
+}
+
+.designer-name {
+    font-family: var(--font-display);
+    font-size: 4.271cqh;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: var(--white);
+    line-height: 0.9;
+    text-align: center;
+}
+
+/* START EXPLORING BUTTON */
+.start-btn {
+    display: inline-block;
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--font-display);
+    font-size: 1.875cqh;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.938cqh 5.556cqw;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.start-btn:hover {
+    background: #333;
+}
+
+/* ESP DEBUG PANEL*/
+#esp-panel {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.85);
+    color: #0f0;
+    font-family: monospace;
+    font-size: 14px;
+    padding: 12px 18px;
+    border: 1px solid #0f0;
+    z-index: 9999;
+    min-width: 220px;
+    display: none;
+}
+
+#esp-panel.visible {
+    display: block;
+}
+
+#esp-panel button {
+    background: #0f0;
+    color: #000;
+    border: none;
+    padding: 6px 14px;
+    font-family: monospace;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    width: 100%;
+}
+
+#esp-panel input[type="range"] {
+    width: 100%;
+    accent-color: #0f0;
+}
+
+/*  KEYBOARD HINT */
+#key-hint {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    font-family: monospace;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    opacity: 0.5;
+    z-index: 9999;
+}
+
+/* Mechanical shutters */
+#shutter-t,
+#shutter-b {
+    position: fixed;
+    left: 0;
+    right: 0;
+    height: 55%;
+    background: #0A0A0A;
+    z-index: 9990;
+    pointer-events: none;
+}
+
+#shutter-t {
+    top: 0;
+}
+
+#shutter-b {
+    bottom: 0;
+}
+
+/* Chromatic aberration overlays */
+#ca-r,
+#ca-b {
+    position: fixed;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 9989;
+    mix-blend-mode: screen;
+}
+
+#ca-r {
+    background: rgba(255, 40, 0, 0.65);
+}
+
+#ca-b {
+    background: rgba(0, 60, 255, 0.55);
+}
+
+#flash {
+    position: fixed;
+    inset: 0;
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 99999;
+}
