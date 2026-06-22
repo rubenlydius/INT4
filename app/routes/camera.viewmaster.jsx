@@ -54,6 +54,8 @@ const DISC_COLORS = [
     { label: 'Pink',   value: '#FF81DC' },
 ]
 
+// Convert slot index to x/y position on the disc ring using polar coordinates.
+// -π/2 offset starts slots at the top (12 o'clock) instead of the right (3 o'clock).
 function slotStyle(index) {
     const angle = (index * 2 * Math.PI / SLOT_COUNT) - Math.PI / 2
     const x = DISC_PX / 2 + SLOT_RADIUS * Math.cos(angle)
@@ -96,17 +98,31 @@ export default function CameraViewmaster() {
     const [showShare, setShowShare] = useState(false)
     const [shareTab, setShareTab] = useState('photo')
 
-    function handleShare() {
+    async function handleShare() {
         if (!navigator.share) {
             alert('Sharing is not supported in this browser.')
             return
         }
-        const data = shareTab === 'video'
-            ? { title: 'My ViewMaster Reel', url: VIDEO_URL }
-            : { title: 'My ViewMaster', text: 'Check out my ViewMaster disc I made in Antwerp!' }
-        navigator.share(data).catch(err => {
-            if (err.name !== 'AbortError') alert('Could not share. Make sure the app is opened over HTTPS.')
-        })
+        if (shareTab === 'video') {
+            navigator.share({ title: 'My ViewMaster Reel', url: VIDEO_URL }).catch(err => {
+                if (err.name !== 'AbortError') alert('Could not share. Make sure the app is opened over HTTPS.')
+            })
+            return
+        }
+        try {
+            const dataUrl = await captureDisc()
+            const blob = await fetch(dataUrl).then(r => r.blob())
+            const file = new File([blob], 'viewmaster.png', { type: 'image/png' })
+            // Share with image if the browser supports file sharing, otherwise fall back to text.
+            const data = navigator.canShare?.({ files: [file] })
+                ? { files: [file], title: 'My ViewMaster', text: 'Check out my ViewMaster disc I made in Antwerp!' }
+                : { title: 'My ViewMaster', text: 'Check out my ViewMaster disc I made in Antwerp!' }
+            navigator.share(data).catch(err => {
+                if (err.name !== 'AbortError') alert('Could not share. Make sure the app is opened over HTTPS.')
+            })
+        } catch {
+            alert('Could not prepare the disc for sharing. Please try again.')
+        }
     }
 
     async function captureDisc() {
@@ -119,6 +135,8 @@ export default function CameraViewmaster() {
         const ctx = canvas.getContext('2d')
         ctx.scale(SCALE, SCALE)
 
+        // Fetch via blob URL so canvas can draw cross-origin images without tainting.
+        // Direct src assignment on a cross-origin image would block canvas export.
         async function loadImage(url) {
             const resp = await fetch(url, { mode: 'cors', cache: 'no-cache' })
             const blob = await resp.blob()
@@ -163,6 +181,7 @@ export default function CameraViewmaster() {
             ctx.clip()
             try {
                 const img = await loadImage(url)
+                // Math.max = cover-fit (fills slot, may crop). Math.min would be contain-fit.
                 const scale = Math.max(SLOT_W / img.naturalWidth, SLOT_H / img.naturalHeight)
                 ctx.drawImage(img, -img.naturalWidth * scale / 2, -img.naturalHeight * scale / 2, img.naturalWidth * scale, img.naturalHeight * scale)
             } catch {
@@ -186,7 +205,8 @@ export default function CameraViewmaster() {
             ctx.restore()
         }
 
-        // Stickers
+        // Stickers laid out in a 3-column grid centered on the disc.
+        // i % 3 - 1 gives column offset (-1, 0, 1); Math.floor(i/3) gives the row.
         for (let i = 0; i < placedStickers.length; i++) {
             const offsetX = (i % 3 - 1) * 45
             const offsetY = Math.floor(i / 3) * 45 - 20
@@ -461,6 +481,8 @@ export default function CameraViewmaster() {
                         Previous
                     </button>
                     <button type="button" className={styles.share_btn} onClick={() => {
+                        // Save the new viewmaster to localStorage before opening the share modal.
+                        // unshift puts the newest disc first; Date.now() gives a unique id.
                         const key = `created_viewmasters_${profileId}`
                         const saved = JSON.parse(localStorage.getItem(key) || '[]')
                         saved.unshift({ id: Date.now(), color: selectedColor, photoIds: selectedIds, stickers: placedStickers })

@@ -707,6 +707,13 @@
     cursor: not-allowed;
 }
 
+.submit_error {
+    text-align: center;
+    color: #e53e3e;
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
 /* ── Review page (step 4) ── */
 .review_header {
     display: flex;
