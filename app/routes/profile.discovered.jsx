@@ -14,6 +14,9 @@ export function meta() {
 
 const TARGETS = { ona: 25, tom: 15 }
 
+// Pick a deterministic subset of gems for each profile.
+// Each profile gets a different "pool" (even vs odd index) so their discovered
+// lists feel personal without needing per-user DB data.
 function selectGems(allGems, profileId) {
   const target = TARGETS[profileId] ?? 15
   // ona picks even-indexed gems per type, tom picks odd-indexed
@@ -73,6 +76,7 @@ export default function ProfileDiscovered() {
       const { data, error } = await supabase
         .from('Gems')
         .select('id, gem_name, type, creator, image_url')
+        .eq('verified', true)
 
       if (error) return console.error(error.message)
 

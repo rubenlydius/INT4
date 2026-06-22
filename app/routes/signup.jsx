@@ -34,11 +34,13 @@ export default function SignUp() {
 
   function handleSelect(role) {
     setSelected(prev => prev === role ? null : role)
+    // Trigger disc spin animation for 700ms then clear so it can re-trigger on next tap.
     setSpinningDisc(role)
     setTimeout(() => setSpinningDisc(null), 700)
   }
 
   function handleBack() {
+    // Back from step 0 returns to onboarding step 3 (ViewMaster slide).
     if (step === 0) {
       navigate('/onboarding', { state: { step: 3 } })
     } else {

@@ -25,6 +25,7 @@ export default function ProfileSettings() {
   const navigate = useNavigate()
   const profile = profiles[id] || profiles.ona
 
+  // Owner profiles start as 'local'; all others (visitor profiles) start as 'visitor'.
   const [profileMode, setProfileMode] = useState(profile.type === 'owner' ? 'local' : 'visitor')
   const [notificationsOn, setNotificationsOn] = useState(false)
   const [showVerifyPopup, setShowVerifyPopup] = useState(false)
@@ -75,7 +76,7 @@ export default function ProfileSettings() {
               >Visitor</button>
               <button
                 className={profileMode === 'local' ? styles.mode_active : styles.mode_inactive}
-                onClick={() => { setProfileMode('local'); setShowVerifyPopup(true) }}
+                onClick={() => { setProfileMode('local'); setShowVerifyPopup(true) /* show email verification prompt */ }}
               >Local</button>
             </div>
           </div>
