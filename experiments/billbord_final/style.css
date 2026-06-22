@@ -334,6 +334,16 @@ body {
     font-weight: 500;
     color: var(--white);
     text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 1.5cqw;
+}
+
+#s2 .s2-pixel-arrow {
+    height: 2.5cqh;
+    width: auto;
+    transform: rotate(-90deg);
+    filter: brightness(0) invert(1);
 }
 
 #s2 .s2-wheel {
@@ -584,14 +594,6 @@ body {
     color: var(--orange);
 }
 
-.s3-sec-start {
-    font-family: var(--font-body);
-    font-size: 1.302cqh;
-    font-weight: 500;
-    color: #555;
-    letter-spacing: 0.02em;
-    margin-top: -0.4cqh;
-}
 
 /* S3 WHEEL CTA OVERLAY */
 #s3-wheel-cta {
@@ -623,7 +625,7 @@ body {
     font-size: 2.813cqh;
     font-weight: 900;
     text-transform: uppercase;
-    color: var(--orange);
+    color: var(--green);
 }
 
 /* DESIGNER HEADER SHARED */
@@ -705,6 +707,7 @@ body {
 
 /*  KEYBOARD HINT */
 #key-hint {
+    display: none;
     position: fixed;
     bottom: 20px;
     right: 20px;

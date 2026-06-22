@@ -11,7 +11,6 @@ let screen = 1, currentDesigner = 1, wheelDeg = 0, isAnimating = false;
 let TRIGGER = 2000, aboveThreshold = false, lastPull = 0;
 const COOLDOWN = 2200;
 let autoTimer = null;
-let s2IdleTween = null;
 let s3SecTimer = null;
 let wheelInnerDeg = DESIGNERS[1].angle;
 
@@ -30,8 +29,6 @@ const caR = document.querySelector('#ca-r');
 const caB = document.querySelector('#ca-b');
 const flashEl = document.querySelector('#flash');
 
-const s1Viewmaster = document.querySelector('#s1 .viewmaster-center');
-const s1HeroText = document.querySelector('#s1 .hero-text');
 const s1PullText = document.querySelector('#s1 .pull-to-discover');
 
 const s2Hero = document.querySelector('#s2 .s2-hero');
@@ -73,39 +70,6 @@ function impactFlash(intensity = 0.45) {
     );
 }
 
-function chromaticAberration() {
-    gsap.timeline()
-        .set(caR, { xPercent: 0 })
-        .set(caB, { xPercent: 0 })
-        .to([caR, caB], { opacity: 1, duration: 0.04 })
-        .to(caR, { xPercent: -5, duration: 0.06 }, '<')
-        .to(caB, { xPercent: 5, duration: 0.06 }, '<')
-        .to(caR, { xPercent: 3, opacity: 0.7, duration: 0.06 })
-        .to(caB, { xPercent: -3, opacity: 0.7, duration: 0.06 }, '<')
-        .to([caR, caB], { xPercent: 0, opacity: 0, duration: 0.28, ease: 'power3.out' });
-}
-
-function shutterSlam(onBlackout) {
-    const tl = gsap.timeline();
-    tl.to(shutterT, { yPercent: 0, duration: 0.13, ease: 'power4.in' }, 0);
-    tl.to(shutterB, { yPercent: 0, duration: 0.13, ease: 'power4.in' }, 0);
-    tl.add(() => { if (onBlackout) onBlackout(); }, 0.15);
-    tl.to(shutterT, { yPercent: -100, duration: 0.22, ease: 'power4.out' }, 0.17);
-    tl.to(shutterB, { yPercent: 100, duration: 0.22, ease: 'power4.out' }, 0.17);
-    return tl;
-}
-
-function screenShake(el) {
-    gsap.fromTo(el, { x: 0, y: 0 }, {
-        keyframes: [
-            { x: -9, y: 5, duration: 0.04 },
-            { x: 8, y: -6, duration: 0.04 },
-            { x: -5, y: 4, duration: 0.04 },
-            { x: 4, y: -3, duration: 0.04 },
-            { x: 0, y: 0, duration: 0.05 },
-        ]
-    });
-}
 
 function rouletteWheelTo(targetDeg, delta) {
     const overshoot = targetDeg + delta * 0.3;
@@ -120,9 +84,8 @@ function rouletteWheelTo(targetDeg, delta) {
 // Content helpers 
 function applyDesigner(d) {
     const des = DESIGNERS[d];
-    const nameEl = document.querySelector('#s3-name');
-    nameEl.textContent = des.name;
-    nameEl.style.fontSize = des.name.length > 20 ? '3.9cqh' : '';
+    s3NameEl.textContent = des.name;
+    s3NameEl.style.fontSize = des.name.length > 20 ? '3.9cqh' : '';
     document.querySelector('#s3-explore-title').innerHTML =
         'Explore Antwerp<br>Through ' + des.first + "'s Eyes";
     document.querySelectorAll('.s3-first-name').forEach(el => el.textContent = des.first);
@@ -132,6 +95,7 @@ function applyDesigner(d) {
 }
 
 function showKeywordsGSAP(onDone) {
+    if (screen !== 3) return;
     keywords.forEach((el, i) => {
         const tag = el.querySelector('.keyword-tag');
         const rot = parseFloat(el.style.getPropertyValue('--rot')) || 0;
@@ -153,8 +117,11 @@ function showKeywordsGSAP(onDone) {
             .to(tag, { fontSize: '70px', duration: 0.15, ease: 'power2.out' }, '<')
             .add(() => impactFlash(0.1), '-=0.3');
     });
+    // lastLands = delay of last keyword + its drop duration (0.65) + bounce steps (0.41) + settle (0.1)
     const lastLands = (keywords.length - 1) * 0.3 + 0.65 + 0.41 + 0.1;
     setTimeout(() => {
+        // Screen guard: reset may have fired while animations were still in flight.
+        if (screen !== 3) return;
         gsap.fromTo(s3Phone, { x: '-110%', autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 1.0, ease: 'expo.out' });
         gsap.fromTo(s3Info, { x: '110%', autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 1.0, ease: 'expo.out', delay: 0.12 });
         const floatAmps = [14, 10, 18];
@@ -172,6 +139,7 @@ function showKeywordsGSAP(onDone) {
 
 // S3 secondary reveal (10s idle)
 function showS3Secondary() {
+    if (screen !== 3) return;
     s3SecTimer = null;
     keywords.forEach((el, i) => {
         gsap.killTweensOf(el);
@@ -199,7 +167,6 @@ function onPullFixed() {
     isAnimating = true;
     clearTimeout(autoTimer); autoTimer = null;
     clearTimeout(s3SecTimer); s3SecTimer = null;
-    if (s2IdleTween) { s2IdleTween.kill(); s2IdleTween = null; }
 
     // S1 → S2  "ViewMaster Click" 
     if (screen === 1) {
@@ -225,16 +192,18 @@ function onPullFixed() {
         gsap.to(s2Desc, { y: 0, autoAlpha: 1, duration: 0.55, ease: 'expo.out', delay: 0.5 });
         gsap.to(s2WheelEl, { scale: 1, autoAlpha: 1, duration: 0.7, ease: 'back.out(2.2)', delay: 0.22 });
 
-        // spins in fast, decelerates gradually over 8s, then auto-advances on complete
+        // Accumulate absolute rotation so GSAP never snaps back to 0 on repeated calls.
+        // power2.out over 8s: blazing fast start that gradually decelerates to a stop.
         wheelDeg += 360 * 5;
         gsap.to(wheelImgS2, {
             rotation: wheelDeg, duration: 8, ease: 'power2.out', delay: 0.5,
             onComplete: () => {
-                isAnimating = false;
-                if (screen === 2) onPullFixed();
+                // user may have already manually pulled to S3 before the 8s ended.
+                if (screen === 2) { isAnimating = false; onPullFixed(); }
             }
         });
-        setTimeout(() => { isAnimating = false; }, 1200); // unblock manual pull after initial fast phase
+        // Allow a manual pull after the fast phase (~1.2s) without waiting the full 8s.
+        setTimeout(() => { isAnimating = false; }, 1200);
 
     // S2 → S3  "ViewMaster Click" 
     } else if (screen === 2) {
@@ -280,9 +249,13 @@ function onPullFixed() {
         gsap.to(s3WheelWrap, { y: -300, duration: 0.7, ease: 'power3.out', delay: 0.15 });
 
         setTimeout(() => {
+            if (screen !== 3) return;
             const fromAngle = DESIGNERS[currentDesigner].angle;
             currentDesigner = (currentDesigner + 1) % DESIGNERS.length;
             applyDesigner(currentDesigner);
+            // Shortest-path delta: wrap to [-180, 180] so the wheel always turns
+            // the short way round instead of spinning 300° when -10° would do.
+            // wheelInnerDeg accumulates so GSAP never jumps back to the raw angle.
             let delta = DESIGNERS[currentDesigner].angle - fromAngle;
             if (delta > 180) delta -= 360;
             if (delta < -180) delta += 360;
@@ -295,18 +268,37 @@ function onPullFixed() {
         }, 850);
 
         setTimeout(() => {
+            if (screen !== 3) return;
             gsap.to(s3WheelWrap, { y: 588.5, duration: 0.75, ease: 'power3.in' });
         }, 1850);
 
         setTimeout(() => {
+            if (screen !== 3) { isAnimating = false; return; }
             showKeywordsGSAP(() => { isAnimating = false; });
         }, 2200);
     }
 }
 
-// Keyboard controls 
+// Reset to screen 1 
+function resetToScreen1() {
+    location.reload();
+}
+
+//  Idle reset (1 minute of no interaction → back to screen 1) 
+let idleTimer = null;
+function resetIdleTimer() {
+    clearTimeout(idleTimer);
+    idleTimer = setTimeout(() => { if (screen !== 1) resetToScreen1(); }, 60000);
+}
+['keydown', 'pointerdown', 'touchstart'].forEach(ev =>
+    document.addEventListener(ev, resetIdleTimer, { passive: true })
+);
+resetIdleTimer();
+
+// Keyboard controls
 document.addEventListener('keydown', e => {
     if (e.code === 'Space') { e.preventDefault(); onPullFixed(); }
+    if (e.key === 'a' || e.key === 'A') resetToScreen1();
     if (e.key === 'e' || e.key === 'E') {
         document.querySelector('#esp-panel').classList.toggle('visible');
     }
@@ -353,6 +345,10 @@ function processSerial(raw) {
 // Boot
 applyDesigner(currentDesigner);
 
+// Scale the 1080×1920 billboard to fit any screen while keeping it centered.
+// use CSS transform (not width/height) so container query units (cqh/cqw)
+// stay anchored to the fixed 1080×1920 container — resizing the element itself
+// would break all the cq-relative values in the CSS.
 function scaleBillboard() {
     const vw = document.documentElement.clientWidth;
     const vh = document.documentElement.clientHeight;
