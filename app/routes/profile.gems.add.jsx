@@ -29,6 +29,8 @@ const TOTAL_STEPS = 4
 const CLOUDINARY_CLOUD = 'dckmhtdop'
 const CLOUDINARY_PRESET = 'gem_int4'
 
+// Shrink and re-encode to WebP before uploading — keeps file sizes small
+// without a server-side step. Math.min(1, ...) ensures we never upscale.
 async function compressImage(blob, maxWidth = 1600, quality = 0.82) {
   const bitmap = await createImageBitmap(blob)
   const scale = Math.min(1, maxWidth / bitmap.width)
@@ -39,6 +41,7 @@ async function compressImage(blob, maxWidth = 1600, quality = 0.82) {
   return new Promise(res => canvas.toBlob(res, 'image/webp', quality))
 }
 
+// Unsigned upload using a Cloudinary preset — no API key needed in the browser.
 async function uploadToCloudinary(blob) {
   const form = new FormData()
   form.append('file', blob)
@@ -178,6 +181,7 @@ export default function AddGem() {
   const navigate = useNavigate()
   const [step, setStep] = useState(1)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState(false)
 
   // Step 1
   const [locationName, setLocationName] = useState('')
@@ -287,6 +291,7 @@ export default function AddGem() {
     setSuggestions([])
     if (debounceRef.current) clearTimeout(debounceRef.current)
     if (value.trim().length < 3) return
+    // Wait 400ms after the user stops typing before hitting the geocoding API.
     debounceRef.current = setTimeout(async () => {
       const results = await fetchSuggestions(value)
       setSuggestions(results)
@@ -450,7 +455,7 @@ export default function AddGem() {
     hintPreviewUrlsRef.current = [...hintPreviewUrlsRef.current, ...newUrls]
     setHintPhotos(prev => [...prev, ...toAdd])
     setHintPreviews(prev => [...prev, ...newUrls])
-    e.target.value = ''
+    e.target.value = '' // reset so the same file can be re-selected if removed
   }
 
   function removeHintPhoto(index) {
@@ -474,6 +479,7 @@ export default function AddGem() {
       const profile = profiles[id] || profiles.ona
 
       const stickerUrl = sticker ? await uploadToCloudinary(sticker) : null
+      // Upload all hint photos in parallel to keep submit time short.
       const hintUrls = await Promise.all(
         hintPhotos.map(async f => {
           const compressed = await compressImage(f)
@@ -501,12 +507,13 @@ export default function AddGem() {
         hint_url_1: hintUrls[0] ?? null,
         hint_url_2: hintUrls[1] ?? null,
         hint_url_3: hintUrls[2] ?? null,
-        verified: false,
+        verified: false, // admin must verify before it appears on the map
         a6_fav: false,
       })
       setSubmitting(false)
       if (error) {
         console.error('Supabase insert error:', error.message)
+        setSubmitError(true)
         return
       }
       setStep(5)
@@ -584,7 +591,7 @@ export default function AddGem() {
                       <li
                         key={s.place_id}
                         className={styles.suggestion}
-                        onMouseDown={e => e.preventDefault()}
+                        onMouseDown={e => e.preventDefault()} // prevent input blur before click fires
                         onClick={() => selectSuggestion(s)}
                       >
                         {shortAddress(s.display_name)}
@@ -993,7 +1000,7 @@ export default function AddGem() {
             </button>
             <button
               className={styles.secondary_btn}
-              onClick={() => navigate(`/profile/${id}/gems`)}
+              onClick={() => navigate(`/profile/${id}`)}
             >
               Back to profile
             </button>
@@ -1018,6 +1025,9 @@ export default function AddGem() {
             >
               {submitting ? 'Uploading...' : step === 4 ? 'Submit Gem' : 'Continue'}
             </button>
+            {submitError && (
+              <p className={styles.submit_error}>Something went wrong. Please try again.</p>
+            )}
           </>
         )}
 
