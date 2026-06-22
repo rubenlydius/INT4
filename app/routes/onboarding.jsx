@@ -36,12 +36,15 @@ export default function Onboarding() {
   const [step, setStep] = useState(0)
   const [animating, setAnimating] = useState(false)
 
+  // Restore step when navigating back from signup (signup passes state: { step: 3 }).
+  // location.key changes on every navigation, so this fires on each route entry.
   useEffect(() => {
     if (location.state?.step !== undefined) {
       setStep(location.state.step)
     }
   }, [location.key])
 
+  // Hide the bottom nav bar on onboarding — restored when leaving via cleanup.
   useEffect(() => {
     const nav = document.querySelector('nav')
     if (nav) nav.style.display = 'none'

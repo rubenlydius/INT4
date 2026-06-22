@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import styles from '../styles/profile.about.module.css'
 import { profiles } from '../lib/profiles'
@@ -34,20 +34,24 @@ export default function ProfileAbout() {
   const [selectedSocials, setSelectedSocials] = useState([])
   const [links, setLinks] = useState({})
   const [showToast, setShowToast] = useState(false)
+  const toastTimer = useRef(null)
 
   useEffect(() => {
     if (profile.type !== 'owner') navigate(`/profile/${id}`)
   }, [navigate, id, profile.type])
 
+  useEffect(() => () => clearTimeout(toastTimer.current), [])
+
   if (profile.type !== 'owner') return null
 
   function handleSave() {
     setShowToast(true)
-    setTimeout(() => setShowToast(false), 2500)
+    toastTimer.current = setTimeout(() => setShowToast(false), 2500)
   }
 
   const MAX = 500
 
+  // When a social is deselected, also remove its saved link so there's no orphaned data.
   function toggleSocial(name) {
     setSelectedSocials(prev => {
       if (prev.includes(name)) {
@@ -110,6 +114,7 @@ export default function ProfileAbout() {
         <p className={styles.step_label}><span className={styles.step_num}>2.</span> Describe your passions and what inspires you.</p>
 
         <div className={styles.textarea_wrap}>
+          {/* Character cap enforced in onChange so the count never exceeds MAX. */}
           <textarea
             className={styles.textarea}
             value={bio}
