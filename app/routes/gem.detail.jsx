@@ -1,5 +1,6 @@
 import { useParams, Link, useLocation } from "react-router";
 import { useState, useEffect } from "react";
+import { useMapFocus } from '../lib/MapContext';
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage'
@@ -20,6 +21,7 @@ export function meta() {
 export default function GemDetail() {
   const { gemId } = useParams();
   const [gem, setGem] = useState(null);
+  const { setMapFocus } = useMapFocus();
 
   const location = useLocation();
   const isRevealed = location.state?.revealed || false;
@@ -37,14 +39,18 @@ export default function GemDetail() {
       
       if (error) return console.error(error.message);
       setGem(data);
+      // DESKTOP — pan the background map to this gem and draw its search radius circle
+      if (data.lat && data.lng) setMapFocus({ lat: data.lat, lng: data.lng, radius: data.radius ?? 250 })
     }
-    
+
     fetchGem();
-  }, [gemId]);
+  }, [gemId, setMapFocus]);
   
   if (!gem) return <div>Loading...</div>;
   
-  const detailImage = storageUrl(`/gems/locations/gem${gem.id}-hint3.avif`);
+  const detailImage = gem.id > 300
+  ? gem.hint_url_3
+  : storageUrl(`/gems/locations/gem${gem.id}-hint3.avif`);
 
 
 
@@ -58,7 +64,7 @@ export default function GemDetail() {
 
       </div>
       <div className={styles.orange}>
-      <img src={storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker} style={{ opacity: isRevealed ? 0.35 : 1 }}/>
+      <img src={gem.id > 300 ? gem.sticker_url : storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)} alt="sticker" className={styles.sticker} style={{ opacity: isRevealed ? 0.35 : 1 }}/>
         <img src={detailImage} alt={gem.gem_name} className={styles.detailPageImage}/>
       </div>
       <img src={detailTop} alt="transition" className={styles.detaiTransition}/>

@@ -15,6 +15,7 @@ import notificationsIcon from '../assets/notifications_icon.svg'
 import logOutIcon from '../assets/log_out_icon.svg'
 import binIcon from '../assets/bin_icon.svg'
 import languageIcon from '../assets/language_icon.svg'
+import refreshIcon from '../assets/refresh_icon_orange.svg'
 
 export function meta() {
   return [{ title: "Settings" }]
@@ -25,8 +26,9 @@ export default function ProfileSettings() {
   const navigate = useNavigate()
   const profile = profiles[id] || profiles.ona
 
-  // Owner profiles start as 'local'; all others (visitor profiles) start as 'visitor'.
-  const [profileMode, setProfileMode] = useState(profile.type === 'owner' ? 'local' : 'visitor')
+  const [profileMode, setProfileMode] = useState(
+    localStorage.getItem('userType') || (profile.type === 'owner' ? 'local' : 'visitor')
+  )
   const [notificationsOn, setNotificationsOn] = useState(false)
   const [showVerifyPopup, setShowVerifyPopup] = useState(false)
 
@@ -36,7 +38,10 @@ export default function ProfileSettings() {
       <div className={styles.header_area}>
         <img src={topPattern} alt="" className={styles.top_pattern} />
         <div className="top">
-          <button className={styles.back_btn} onClick={() => navigate(`/profile/${id}`)}>
+          <button className={styles.back_btn} onClick={() => {
+            const userType = localStorage.getItem('userType')
+            navigate(userType === 'visitor' ? '/profile/tom' : '/profile/ona')
+          }}>
             <img src={simpleOrangeArrow} alt="back" className={styles.back_arrow} />
           </button>
           <h1>Settings</h1>
@@ -72,11 +77,21 @@ export default function ProfileSettings() {
             <div className={styles.mode_toggle}>
               <button
                 className={profileMode === 'visitor' ? styles.mode_active : styles.mode_inactive}
-                onClick={() => setProfileMode('visitor')}
+                onClick={() => {
+                  setProfileMode('visitor')
+                  localStorage.setItem('userType', 'visitor')
+                  window.dispatchEvent(new Event('userTypeChanged'))
+                }}
               >Visitor</button>
+
               <button
                 className={profileMode === 'local' ? styles.mode_active : styles.mode_inactive}
-                onClick={() => { setProfileMode('local'); setShowVerifyPopup(true) /* show email verification prompt */ }}
+                onClick={() => {
+                  setProfileMode('local')
+                  localStorage.setItem('userType', 'local')
+                  window.dispatchEvent(new Event('userTypeChanged'))
+                  setShowVerifyPopup(true)
+                }}
               >Local</button>
             </div>
           </div>
@@ -129,7 +144,19 @@ export default function ProfileSettings() {
         </div>
 
         <h2 className={styles.section_label}>Account</h2>
+
         <div className={styles.card}>
+                  
+        <div className={styles.row} onClick={() => navigate('/onboarding')}>
+          <div className={styles.icon_wrap}>
+            <img src={refreshIcon} alt="refresh icon" className={styles.icon} />
+          </div>
+          <p className={styles.row_title}>Restart onboarding</p>
+          <img src={greyHalfArrow} alt="" className={styles.row_arrow} />
+        </div>
+
+        <div className={styles.divider} />
+
           <div className={styles.row}>
             <div className={styles.icon_wrap}>
               <img src={logOutIcon} alt="" className={styles.icon} />

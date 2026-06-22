@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router";
 import { useState, useEffect, useRef } from "react";
+import { useMapFocus } from '../lib/MapContext';
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
 import { storageUrl } from '../lib/storage';
@@ -31,6 +32,7 @@ export function meta() {
 export default function GemDetail() {
   const { gemId } = useParams();
   const [gem, setGem] = useState(null);
+  const { setMapFocus } = useMapFocus();
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const userMarkerRef = useRef(null);
@@ -62,9 +64,11 @@ export default function GemDetail() {
 
       if (error) return console.error(error.message);
       setGem(data);
+      // DESKTOP — pan the background map to this gem and draw its search radius circle
+      if (data.lat && data.lng) setMapFocus({ lat: data.lat, lng: data.lng, radius: data.radius ?? 250 })
     }
     fetchGem();
-  }, [gemId]);
+  }, [gemId, setMapFocus]);
 
   useEffect(() => {
     if (!gem || !mapRef.current) return;
@@ -135,13 +139,12 @@ export default function GemDetail() {
 
   if (!gem) return <div>Loading...</div>;
 
-  const hintImages = [1, 2, 3].map(
-    (n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`)
-  );
+  const hintImages = gem.id > 300
+  ? [gem.hint_url_1, gem.hint_url_2, gem.hint_url_3]
+  : [1, 2, 3].map((n) => storageUrl(`/gems/locations/gem${gem.id}-hint${n}.avif`));
 
   return (
     <div className={styles.gemHunt}>
-      {/* ... keeping top layout structural code intact ... */}
       <div className={styles.top}>
         <Link to="/map">
           <img src={orangeArrow} alt="return" /> 
@@ -183,7 +186,6 @@ export default function GemDetail() {
       
       <Dropdown title="Visual hint" content={gem.hint_1} icon={visualHint} images={hintImages} infoNodeText="3 hints available"/>
       
-      {/* UPDATE HOT & COLD DROPDOWN WITH GEOLOCATION PROPERTIES */}
       <Dropdown 
         title="Hot & Cold" 
         content={gem.hint_2} 
@@ -204,7 +206,6 @@ export default function GemDetail() {
         </button>
       </div>
 
-      {/* ... keeping popup blocks completely identical ... */}
       {showRevealPopup && (
           <div className={styles.popupOverlay} onClick={() => setShowRevealPopup(false)}>
             <div className={styles.popup} onClick={e => e.stopPropagation()}>
@@ -250,7 +251,11 @@ export default function GemDetail() {
                   <Link to={`/gem/detail/${gem.id}`}>
                     <button className={styles.revealHunt}>Skip to Gem Details</button>
                   </Link>
-                  <Link to={`/camera`}>
+                  <Link 
+                    to={`/camera`} 
+                    state={{ fromGemHunt: true }}
+                    onClick={() => sessionStorage.setItem('currentGemId', gem.id)}
+                  >
                     <button className={styles.foundHunt}>Capture the Moment</button>
                   </Link>
                 </div>
