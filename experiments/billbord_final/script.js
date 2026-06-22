@@ -1,10 +1,10 @@
 const DESIGNERS = [
-    { name: 'Ann Demeulemeester', first: 'Ann', angle: 0, keywords: ['Dark Romantic', 'Poetic', 'Rebellious'] },
-    { name: 'Walter Van Beirendonck', first: 'Walter', angle: -59.3, keywords: ['Fantastical', 'Political', 'Vivid'] },
-    { name: 'Dirk Bikkembergs', first: 'Dirk', angle: -119.1, keywords: ['Athletic', 'Raw', 'Masculine'] },
-    { name: 'Marina Yee', first: 'Marina', angle: -180.2, keywords: ['Deconstructed', 'Minimal', 'Quiet'] },
-    { name: 'Dirk Van Saene', first: 'Dirk', angle: 120, keywords: ['Poetic', 'Experimental', 'Rule-breaker'] },
-    { name: 'Dries Van Noten', first: 'Dries', angle: 60.94, keywords: ['Eclectic', 'Colorful', 'Refined'] },
+    { name: 'Ann Demeulemeester', first: 'Ann', angle: 0, keywords: ['Dark', 'Poetic', 'Raw'] },
+    { name: 'Walter Van Beirendonck', first: 'Walter', angle: -59.3, keywords: ['Loud', 'Free', 'Playful'] },
+    { name: 'Dirk Bikkembergs', first: 'Dirk', angle: -119.1, keywords: ['Athletic', 'Urban', 'Utilitarian'] },
+    { name: 'Marina Yee', first: 'Marina', angle: -180.2, keywords: ['Elusive', 'Rare', 'Quiet'] },
+    { name: 'Dirk Van Saene', first: 'Dirk', angle: 120, keywords: ['Artistic', 'Painted', 'Local'] },
+    { name: 'Dries Van Noten', first: 'Dries', angle: 60.94, keywords: ['Global', 'Maximalist', 'Textured'] },
 ];
 
 let screen = 1, currentDesigner = 1, wheelDeg = 0, isAnimating = false;
@@ -15,7 +15,7 @@ let s2IdleTween = null;
 let s3SecTimer = null;
 let wheelInnerDeg = DESIGNERS[1].angle;
 
-// ── Element refs ────────────────────────────────────────────────
+// Element refs
 const layers = {
     1: document.querySelector('#s1'),
     2: document.querySelector('#s2'),
@@ -49,7 +49,7 @@ const s3Secondary = document.querySelector('#s3-secondary');
 const s3WheelCta = document.querySelector('#s3-wheel-cta');
 const billboard = document.querySelector('#billboard');
 
-// ── GSAP boot states ────────────────────────────────────────────
+// GSAP boot states 
 gsap.set(layers[2], { autoAlpha: 0 });
 gsap.set(layers[3], { autoAlpha: 0 });
 gsap.set(wheelImgInner, { rotation: wheelInnerDeg, x: -1, y: -29 });
@@ -64,7 +64,7 @@ gsap.set(shutterB, { yPercent: 100 });
 // Pull-to-discover idle pulse
 gsap.to(s1PullText, { y: -12, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
 
-// ── Effect helpers ──────────────────────────────────────────────
+//  Effect helpers
 
 function impactFlash(intensity = 0.45) {
     gsap.fromTo(flashEl,
@@ -117,7 +117,7 @@ function rouletteWheelTo(targetDeg, delta) {
         .to(wheelImgInner, { rotation: targetDeg, duration: 0.09, ease: 'power2.out' });
 }
 
-// ── Content helpers ─────────────────────────────────────────────
+// Content helpers 
 function applyDesigner(d) {
     const des = DESIGNERS[d];
     const nameEl = document.querySelector('#s3-name');
@@ -170,7 +170,7 @@ function showKeywordsGSAP(onDone) {
     }, lastLands * 1000);
 }
 
-// ── S3 secondary reveal (10s idle) ──────────────────────────────
+// S3 secondary reveal (10s idle)
 function showS3Secondary() {
     s3SecTimer = null;
     keywords.forEach((el, i) => {
@@ -190,7 +190,7 @@ function showS3Secondary() {
     );
 }
 
-// ── Main interaction ────────────────────────────────────────────
+// Main interaction
 function onPullFixed() {
     if (isAnimating) return;
     const now = Date.now();
@@ -201,7 +201,7 @@ function onPullFixed() {
     clearTimeout(s3SecTimer); s3SecTimer = null;
     if (s2IdleTween) { s2IdleTween.kill(); s2IdleTween = null; }
 
-    // ════════ S1 → S2  "ViewMaster Click" ════════
+    // S1 → S2  "ViewMaster Click" 
     if (screen === 1) {
         applyDesigner(currentDesigner);
         screen = 2;
@@ -236,7 +236,7 @@ function onPullFixed() {
         });
         setTimeout(() => { isAnimating = false; }, 1200); // unblock manual pull after initial fast phase
 
-    // ════════ S2 → S3  "ViewMaster Click" ════════
+    // S2 → S3  "ViewMaster Click" 
     } else if (screen === 2) {
         screen = 3;
 
@@ -253,7 +253,7 @@ function onPullFixed() {
             .to(s3Header, { y: 0, autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(2.2)' }, '-=0.18')
             .call(() => showKeywordsGSAP(() => { isAnimating = false; }));
 
-    // ════════ S3 → S3  "Wheel Rise" ════════
+    // S3 → S3  "Wheel Rise" 
     } else if (screen === 3) {
         gsap.killTweensOf(s3Secondary);
         gsap.set(s3Secondary, { autoAlpha: 0 });
@@ -304,7 +304,7 @@ function onPullFixed() {
     }
 }
 
-// ── Keyboard controls ────────────────────────────────────────────
+// Keyboard controls 
 document.addEventListener('keydown', e => {
     if (e.code === 'Space') { e.preventDefault(); onPullFixed(); }
     if (e.key === 'e' || e.key === 'E') {
@@ -312,7 +312,7 @@ document.addEventListener('keydown', e => {
     }
 });
 
-// ── ESP32 serial connection ──────────────────────────────────────
+// ESP32 serial connection 
 const connectBtn = document.querySelector('#connect-btn');
 const rawValEl = document.querySelector('#raw-val');
 const espStateEl = document.querySelector('#esp-state');
@@ -350,7 +350,7 @@ function processSerial(raw) {
     } else { aboveThreshold = false; }
 }
 
-// ── Boot ────────────────────────────────────────────────────────
+// Boot
 applyDesigner(currentDesigner);
 
 function scaleBillboard() {

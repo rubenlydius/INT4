@@ -51,7 +51,6 @@ body {
     padding: 0;
 }
 
-/* ── Billboard: fixed 1080×1920 canvas, JS scales + centers it ── */
 #billboard {
     position: fixed;
     top: 0;
@@ -61,17 +60,16 @@ body {
     overflow: hidden;
     transform-origin: top left;
     font-family: var(--font-body);
-    /* cqh = 19.2px, cqw = 10.8px — always matches the 1080×1920 design */
     container-type: size;
 }
 
-/* ═══ LAYER SYSTEM (visibility managed by GSAP autoAlpha) ═══ */
+/* LAYER SYSTEM (visibility managed by GSAP autoAlpha)  */
 .layer {
     position: absolute;
     inset: 0;
 }
 
-/* ═══ SHARED BACKGROUND ZONES ═══ */
+/*  SHARED BACKGROUND ZONES  */
 .bg-orange-top {
     position: absolute;
     top: 0;
@@ -95,20 +93,19 @@ body {
     background: var(--green);
 }
 
-/* ═══ CROSS-STITCH PATTERN STRIP (shared) ═══ */
+/* CROSS-STITCH PATTERN STRIP (shared) */
 .pattern-strip {
     position: absolute;
     left: 0;
     right: 0;
     height: 3.125cqh;
-    /* 60 / 1920 */
     background-image: url('assets/pattern_background.png');
     background-size: auto 3.125cqh;
     background-repeat: repeat-x;
     background-position: bottom;
 }
 
-/* ═══ ANTWERP PIXELS ═══ */
+/* ANTWERP PIXELS */
 .antwerp-skyline {
     position: absolute;
     left: 0;
@@ -118,7 +115,7 @@ body {
     background-position: center bottom;
 }
 
-/* ═══ VIEWMASTER ═══ */
+/* VIEWMASTER */
 .viewmaster-img {
     position: absolute;
     background-image: url('assets/viewmaster_white_background.png');
@@ -127,7 +124,7 @@ body {
     background-position: center;
 }
 
-/* ═══ WHEEL ═══ */
+/* WHEEL */
 .wheel-wrap {
     position: absolute;
 }
@@ -136,11 +133,10 @@ body {
     display: block;
 }
 
-/* ═══ TYPOGRAPHY ═══ */
+/* TYPOGRAPHY  */
 .text-eyebrow {
     font-family: var(--font-display);
     font-size: 1.667cqh;
-    /* 32 / 1920 */
     font-weight: 700;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -154,7 +150,6 @@ body {
     text-transform: uppercase;
     line-height: 1.46;
     font-size: 6.406cqh;
-    /* 123px / 1920 */
     color: var(--white);
 }
 
@@ -171,7 +166,6 @@ body {
 .text-sub {
     font-family: var(--font-body);
     font-size: 1.458cqh;
-    /* 28 / 1920 */
     font-weight: 400;
     color: var(--black);
     line-height: 1.5;
@@ -181,22 +175,18 @@ body {
     font-weight: 700;
 }
 
-/* ═══ KEYWORD TAGS (shared base size) ═══ */
+/*  KEYWORD TAGS (shared base size) */
 .keyword-tag {
     display: inline-block;
     background: var(--orange);
     color: var(--white);
     font-family: var(--font-body);
     font-size: 1.875cqh;
-    /* 36 / 1920 */
     font-weight: 800;
     padding: 0.521cqh 2.593cqw;
-    /* 10px / 1920  28px / 1080 */
 }
 
-/* ════════════════════════════════════
-   SCREEN 1 — WHAT IS HIDDEN?
-════════════════════════════════════ */
+/* SCREEN 1 — WHAT IS HIDDEN?*/
 
 #s1 {
     display: flex;
@@ -208,27 +198,22 @@ body {
 
 #s1 .bg-orange-top {
     height: 46.875cqh;
-    /* 900 / 1920 */
     z-index: 1;
 }
 
 #s1 .pattern-strip {
     top: 43.75cqh;
-    /* 840 / 1920 */
     z-index: 2;
 }
 
 #s1 .bg-green-bot {
     top: 88.542cqh;
-    /* 1700 / 1920 */
     z-index: 1;
 }
 
 #s1 .antwerp-skyline {
     top: 45.313cqh;
-    /* 870 / 1920 */
     height: 54.74cqh;
-    /* 1051 / 1920 */
     z-index: 2;
 }
 
@@ -236,7 +221,6 @@ body {
     position: relative;
     z-index: 3;
     padding-top: 6.25cqh;
-    /* 120 / 1920 */
     width: 100%;
 }
 
@@ -244,10 +228,8 @@ body {
     position: relative;
     z-index: 4;
     width: 88.889cqw;
-    /* 960 / 1080 */
     height: auto;
     margin-top: -13.021cqh;
-    /* -250 / 1920 */
     align-self: center;
     margin-right: 0;
     display: flex;
@@ -272,9 +254,7 @@ body {
     width: 100%;
 }
 
-/* ════════════════════════════════════
-   SCREEN 2 — VIEW ANTWERP
-════════════════════════════════════ */
+/* SCREEN 2 — VIEW ANTWERP */
 
 #s2 {
     display: flex;
@@ -289,7 +269,6 @@ body {
     left: 0;
     right: 0;
     height: 47.031cqh;
-    /* 903 / 1920 */
     background: var(--orange);
     z-index: 1;
 }
@@ -300,10 +279,8 @@ body {
     left: 0;
     right: 0;
     height: 5.978cqh;
-    /* 114.78 / 1920 */
     background-image: url('assets/patter_cross_stich.png');
     background-size: 101.1cqw 5.978cqh;
-    /* 1091.83/1080  114.78/1920 */
     background-repeat: repeat-x;
     background-position: left top;
     z-index: 3;
@@ -315,7 +292,6 @@ body {
     left: 0;
     right: 0;
     height: 54.948cqh;
-    /* 1055 / 1920 */
     background-image: url('assets/antwerp_full_pattern.png');
     background-size: cover;
     background-position: center;
@@ -329,9 +305,7 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 1.979cqh;
-    /* 38 / 1920 */
     padding: 7.813cqh 7.407cqw 0;
-    /* 150/1920  80/1080 */
     width: 100%;
 }
 
@@ -340,7 +314,6 @@ body {
     font-weight: 900;
     text-transform: uppercase;
     font-size: 3.365cqh;
-    /* 64.61 / 1920 */
     line-height: 1.52;
     color: var(--white);
     text-align: center;
@@ -352,14 +325,12 @@ body {
     background: var(--white);
     color: var(--black);
     padding: 0 1.296cqw;
-    /* 14 / 1080 */
     letter-spacing: 0;
 }
 
 #s2 .s2-antwerp-label {
     font-family: var(--font-body);
     font-size: 2.344cqh;
-    /* 45 / 1920 */
     font-weight: 500;
     color: var(--white);
     text-align: center;
@@ -369,12 +340,9 @@ body {
     position: relative;
     z-index: 4;
     width: 79.38cqw;
-    /* 857.31 / 1080 */
     height: 45cqh;
-    /* 864 / 1920 */
     flex-shrink: 0;
     margin-top: 4.688cqh;
-    /* 90 / 1920 */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -394,23 +362,19 @@ body {
     align-items: flex-end;
     justify-content: center;
     padding: 0 7.407cqw 6.125cqh;
-    /* 80/1080  60/1920 */
     width: 100%;
 }
 
 #s2 .s2-desc {
     font-family: var(--font-body);
     font-size: 2.865cqh;
-    /* 55px / 1920 */
     font-weight: 800;
     color: var(--black);
     line-height: 1.2;
     text-align: center;
 }
 
-/* ════════════════════════════════════
-   SCREEN 3 — DESIGNER + KEYWORDS
-════════════════════════════════════ */
+/*  SCREEN 3 — DESIGNER + KEYWORDS */
 
 #s3 .s3-bg-top {
     position: absolute;
@@ -418,7 +382,6 @@ body {
     left: 0;
     right: 0;
     height: 17.292cqh;
-    /* 332 / 1920 */
     background: var(--orange);
     z-index: 1;
 }
@@ -426,11 +389,9 @@ body {
 #s3 .s3-strip {
     position: absolute;
     top: 17.188cqh;
-    /* 330 / 1920 */
     left: 0;
     right: 0;
     height: 5.978cqh;
-    /* 114.78 / 1920 */
     background-image: url('assets/patter_cross_stich.png');
     background-size: 101.1cqw 5.978cqh;
     background-repeat: repeat-x;
@@ -441,7 +402,6 @@ body {
 #s3 .s3-bg-white {
     position: absolute;
     top: 22.969cqh;
-    /* 441 / 1920 */
     left: 0;
     right: 0;
     bottom: 0;
@@ -455,13 +415,11 @@ body {
     left: 0;
     right: 0;
     height: 22.969cqh;
-    /* 441 / 1920 */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 1.563cqh;
-    /* 30 / 1920 */
     z-index: 2;
 }
 
@@ -524,26 +482,30 @@ body {
     padding: 1.094cqh 5cqw;
 }
 
-#s3 .keyword-floating {
+#kw-row {
     position: absolute;
+    top: 67cqh;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0 4cqw;
+    z-index: 4;
+}
+
+#s3 .keyword-floating {
+    position: static;
     z-index: 4;
 }
 
 #kw0 {
-    left: -2.778cqw;
-    top: 75.271cqh;
-    transform: rotate(-29deg);
+    margin-top: 7cqh;
 }
 
-#kw1 {
-    left: 35.259cqw;
-    top: 67.76cqh;
-}
 
 #kw2 {
-    right: -1.556cqw;
-    top: 74.271cqh;
-    transform: rotate(35deg);
+    margin-top: 7cqh;
 }
 
 .keyword-floating {
@@ -553,10 +515,9 @@ body {
 #s3 .wheel-wrap {
     position: absolute;
     bottom: -3%;
-    left: 50%;
+    left: calc(50% + 3px);
     transform: translateX(-50%) translateY(50%);
     width: 108.981cqw;
-    /* 1177 / 1080 */
     height: 108.981cqw;
     z-index: 3;
 }
@@ -572,10 +533,10 @@ body {
 }
 
 
-/* ═══ S3 SECONDARY STATE (10s idle) ═══ */
+/* S3 SECONDARY STATE (10s idle) */
 #s3-secondary {
     position: absolute;
-    top: 23.958cqh;
+    top: calc(23.958cqh - 1rem);
     left: 0;
     right: 0;
     bottom: 30cqh;
@@ -600,19 +561,27 @@ body {
     margin-bottom: 0.5cqh;
 }
 
-.s3-sec-qr svg {
-    width: 32.315cqw;
+.s3-sec-qr svg,
+.s3-sec-qr img {
+    width: 45%;
     height: auto;
     display: block;
+    margin: 0 auto;
+}
+
+.s3-sec-pixel-arrow {
+    width: 3cqh;
+    height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
 .s3-sec-scan {
     font-family: var(--font-body);
     font-size: 1.979cqh;
-    font-weight: 800;
+    font-weight: 700;
     text-transform: uppercase;
     color: var(--orange);
-    letter-spacing: 0.06em;
 }
 
 .s3-sec-start {
@@ -624,10 +593,10 @@ body {
     margin-top: -0.4cqh;
 }
 
-/* ═══ S3 WHEEL CTA OVERLAY ═══ */
+/* S3 WHEEL CTA OVERLAY */
 #s3-wheel-cta {
     position: absolute;
-    top: 31%;
+    top: 32%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -644,6 +613,8 @@ body {
     font-family: var(--font-body);
     font-size: 1.823cqh;
     text-transform: uppercase;
+    font-weight: 300;
+    letter-spacing: 0em;
     color: var(--white);
 }
 
@@ -655,22 +626,19 @@ body {
     color: var(--orange);
 }
 
-/* ═══ DESIGNER HEADER SHARED ═══ */
+/* DESIGNER HEADER SHARED */
 .designer-eyebrow {
     font-family: var(--font-body);
     text-transform: uppercase;
-    font-size: 1.563cqh;
-    /* 30 / 1920 */
+    font-size: 1.975cqh;
     font-weight: 500;
     color: var(--white);
     padding-bottom: 0.417cqh;
-    /* 8 / 1920 */
 }
 
 .designer-name {
     font-family: var(--font-display);
     font-size: 4.271cqh;
-    /* 82 / 1920 */
     font-weight: 900;
     text-transform: uppercase;
     color: var(--white);
@@ -678,7 +646,7 @@ body {
     text-align: center;
 }
 
-/* ═══ START EXPLORING BUTTON ═══ */
+/* START EXPLORING BUTTON */
 .start-btn {
     display: inline-block;
     background: var(--black);
@@ -698,7 +666,7 @@ body {
     background: #333;
 }
 
-/* ═══ ESP DEBUG PANEL ═══ */
+/* ESP DEBUG PANEL*/
 #esp-panel {
     position: fixed;
     bottom: 20px;
@@ -735,7 +703,7 @@ body {
     accent-color: #0f0;
 }
 
-/* ═══ KEYBOARD HINT ═══ */
+/*  KEYBOARD HINT */
 #key-hint {
     position: fixed;
     bottom: 20px;
@@ -750,7 +718,7 @@ body {
     z-index: 9999;
 }
 
-/* ── Mechanical shutters ── */
+/* Mechanical shutters */
 #shutter-t,
 #shutter-b {
     position: fixed;
@@ -770,7 +738,7 @@ body {
     bottom: 0;
 }
 
-/* ── Chromatic aberration overlays ── */
+/* Chromatic aberration overlays */
 #ca-r,
 #ca-b {
     position: fixed;

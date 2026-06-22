@@ -12,9 +12,7 @@
 
     <div id="billboard">
 
-        <!-- ══════════════════════════════════
-             SCREEN 1 — WHAT IS HIDDEN?
-        ══════════════════════════════════ -->
+        <!-- SCREEN 1 — WHAT IS HIDDEN? -->
         <div class="layer active" id="s1">
             <div class="bg-orange-top"></div>
             <div class="pattern-strip"></div>
@@ -35,9 +33,7 @@
             <div class="pull-to-discover">Pull to discover.</div>
         </div>
 
-        <!-- ══════════════════════════════════
-             SCREEN 2 — VIEW ANTWERP
-        ══════════════════════════════════ -->
+        <!-- SCREEN 2 — VIEW ANTWERP -->
         <div class="layer" id="s2">
 
             <div class="s2-bg-top"></div>
@@ -67,9 +63,7 @@
 
         </div>
 
-        <!-- ══════════════════════════════════
-             SCREEN 3 — DESIGNER + KEYWORDS
-        ══════════════════════════════════ -->
+        <!-- SCREEN 3 — DESIGNER + KEYWORDS -->
         <div class="layer" id="s3">
 
             <div class="s3-bg-top"></div>
@@ -100,14 +94,16 @@
                 </div>
             </div>
 
-            <div class="keyword-floating hidden" id="kw0" style="--rot:-22deg;">
-                <div class="keyword-tag">Poetic</div>
-            </div>
-            <div class="keyword-floating hidden" id="kw1" style="--rot:5deg;">
-                <div class="keyword-tag">Experimental</div>
-            </div>
-            <div class="keyword-floating hidden" id="kw2" style="--rot:22deg;">
-                <div class="keyword-tag">Rule-breaker</div>
+            <div id="kw-row">
+                <div class="keyword-floating hidden" id="kw0" style="--rot:-22deg;">
+                    <div class="keyword-tag">Poetic</div>
+                </div>
+                <div class="keyword-floating hidden" id="kw1" style="--rot:5deg;">
+                    <div class="keyword-tag">Experimental</div>
+                </div>
+                <div class="keyword-floating hidden" id="kw2" style="--rot:22deg;">
+                    <div class="keyword-tag">Rule-breaker</div>
+                </div>
             </div>
 
             <!-- S3 secondary state — appears after 10s idle -->
@@ -115,10 +111,10 @@
                 <div class="s3-sec-title">Explore Antwerp<br>Through <span class="s3-first-name">Dirk</span>'s Eyes
                 </div>
                 <div class="s3-sec-qr">
-                    <img src="assets/qr_code.png" alt="QR code" style="width:100%;height:auto;display:block;">
+                    <img src="assets/qr_code.png" alt="QR code">
                 </div>
-                <div class="s3-sec-scan">↓&nbsp; Scan to discover</div>
-                <div class="s3-sec-start">Start exploring</div>
+                <img src="assets/pixel_arrow.svg" alt="" class="s3-sec-pixel-arrow">
+                <div class="s3-sec-scan">Scan to discover</div>
             </div>
 
             <div class="wheel-wrap" id="s3-wheel">
