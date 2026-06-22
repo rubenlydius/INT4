@@ -1,0 +1,1437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Antwerp Six — Billboard</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @font-face {
+            font-family: 'Antwerpen Tall';
+            src: url('fonts/Antwerpen_Tall.otf') format('opentype');
+            font-weight: 900;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Sun Antwerpen';
+            src: url('fonts/SunAntwerpen OTF/SunAntwerpen-5_Regular.otf') format('opentype');
+            font-weight: 500;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Sun Antwerpen';
+            src: url('fonts/SunAntwerpen OTF/SunAntwerpen-8_ExtraBold.otf') format('opentype');
+            font-weight: 800;
+            font-style: normal;
+        }
+
+        :root {
+            --orange: #FF691E;
+            --green: #2FDE95;
+            --black: #0A0A0A;
+            --white: #FFFFFF;
+            --font-display: 'Antwerpen Tall', 'Arial Narrow', sans-serif;
+            --font-body: 'Sun Antwerpen', 'Arial Narrow', sans-serif;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--white);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ── Billboard: fixed 1080×1920 canvas, JS scales + centers it ── */
+        #billboard {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 1080px;
+            height: 1920px;
+            overflow: hidden;
+            transform-origin: top left;
+            font-family: var(--font-body);
+            /* cqh = 19.2px, cqw = 10.8px — always matches the 1080×1920 design */
+            container-type: size;
+        }
+
+        /* ═══ LAYER SYSTEM (visibility managed by GSAP autoAlpha) ═══ */
+        .layer {
+            position: absolute;
+            inset: 0;
+        }
+
+        /* ═══ SHARED BACKGROUND ZONES ═══ */
+        .bg-orange-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--orange);
+        }
+
+        .bg-white-mid {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background: var(--white);
+        }
+
+        .bg-green-bot {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--green);
+        }
+
+        /* ═══ CROSS-STITCH PATTERN STRIP (shared) ═══ */
+        .pattern-strip {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 3.125cqh;
+            /* 60 / 1920 */
+            background-image: url('pattern_background.png');
+            background-size: auto 3.125cqh;
+            background-repeat: repeat-x;
+            background-position: bottom;
+        }
+
+        /* ═══ ANTWERP PIXELS ═══ */
+        .antwerp-skyline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            background-image: url('antwerp_pixels.png');
+            background-size: cover;
+            background-position: center bottom;
+        }
+
+        /* ═══ VIEWMASTER ═══ */
+        .viewmaster-img {
+            position: absolute;
+            background-image: url('viewmaster_white_background.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        /* ═══ WHEEL ═══ */
+        .wheel-wrap {
+            position: absolute;
+        }
+
+        .wheel-wrap img {
+            display: block;
+        }
+
+        /* ═══ TYPOGRAPHY ═══ */
+        .text-eyebrow {
+            font-family: var(--font-display);
+            font-size: 1.667cqh;
+            /* 32 / 1920 */
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--white);
+            opacity: 0.85;
+        }
+
+        .text-hero {
+            font-family: var(--font-display);
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1.46;
+            font-size: 6.406cqh;
+            /* 123px / 1920 */
+            color: var(--white);
+        }
+
+        .text-hero .highlight {
+            color: var(--black);
+            display: inline-block;
+        }
+
+        .text-hero .highlight-black {
+            display: inline-block;
+            color: var(--black);
+        }
+
+        .text-sub {
+            font-family: var(--font-body);
+            font-size: 1.458cqh;
+            /* 28 / 1920 */
+            font-weight: 400;
+            color: var(--black);
+            line-height: 1.5;
+        }
+
+        .text-sub b {
+            font-weight: 700;
+        }
+
+        /* ═══ KEYWORD TAGS (shared base size) ═══ */
+        .keyword-tag {
+            display: inline-block;
+            background: var(--orange);
+            color: var(--white);
+            font-family: var(--font-body);
+            font-size: 1.875cqh;
+            /* 36 / 1920 */
+            font-weight: 800;
+            padding: 0.521cqh 2.593cqw;
+            /* 10px / 1920  28px / 1080 */
+        }
+
+        /* ════════════════════════════════════
+           SCREEN 1 — WHAT IS HIDDEN?
+        ════════════════════════════════════ */
+
+        #s1 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        #s1 .bg-orange-top {
+            height: 46.875cqh;
+            /* 900 / 1920 */
+            z-index: 1;
+        }
+
+        #s1 .pattern-strip {
+            top: 43.75cqh;
+            /* 840 / 1920 */
+            z-index: 2;
+        }
+
+        #s1 .bg-green-bot {
+            top: 88.542cqh;
+            /* 1700 / 1920 */
+            z-index: 1;
+        }
+
+        #s1 .antwerp-skyline {
+            top: 45.313cqh;
+            /* 870 / 1920 */
+            height: 54.74cqh;
+            /* 1051 / 1920 */
+            z-index: 2;
+        }
+
+        #s1 .hero-text {
+            position: relative;
+            z-index: 3;
+            padding-top: 6.25cqh;
+            /* 120 / 1920 */
+            width: 100%;
+        }
+
+        #s1 .viewmaster-center {
+            position: relative;
+            z-index: 4;
+            width: 88.889cqw;
+            /* 960 / 1080 */
+            height: auto;
+            margin-top: -13.021cqh;
+            /* -250 / 1920 */
+            align-self: flex-end;
+            margin-right: 0.741cqw;
+            /* 8 / 1080 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #s1 .viewmaster-center img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        #s1 .pull-to-discover {
+            position: relative;
+            z-index: 3;
+            font-family: var(--font-body);
+            font-size: 3.542cqh;
+            /* 68px / 1920 */
+            letter-spacing: -0.019em;
+            font-weight: 800;
+            color: var(--black);
+            padding-bottom: 6.25cqh;
+            /* 120 / 1920 */
+            width: 100%;
+        }
+
+        /* ════════════════════════════════════
+           SCREEN 2 — VIEW ANTWERP
+        ════════════════════════════════════ */
+
+        #s2 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #s2 .s2-bg-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 47.031cqh;
+            /* 903 / 1920 */
+            background: var(--orange);
+            z-index: 1;
+        }
+
+        #s2 .s2-cross-strip {
+            position: absolute;
+            top: 47cqh;
+            left: 0;
+            right: 0;
+            height: 5.978cqh;
+            /* 114.78 / 1920 */
+            background-image: url('patter_cross_stich.png');
+            background-size: 101.1cqw 5.978cqh;
+            /* 1091.83/1080  114.78/1920 */
+            background-repeat: repeat-x;
+            background-position: left top;
+            z-index: 3;
+        }
+
+        #s2 .s2-bg-bot {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 54.948cqh;
+            /* 1055 / 1920 */
+            background-image: url('antwerp_full_pattern.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 2;
+        }
+
+        #s2 .s2-top-content {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.979cqh;
+            /* 38 / 1920 */
+            padding: 7.813cqh 7.407cqw 0;
+            /* 150/1920  80/1080 */
+            width: 100%;
+        }
+
+        #s2 .s2-hero {
+            font-family: var(--font-display);
+            font-weight: 900;
+            text-transform: uppercase;
+            font-size: 3.365cqh;
+            /* 64.61 / 1920 */
+            line-height: 1.52;
+            color: var(--white);
+            text-align: center;
+            letter-spacing: -0.01em;
+        }
+
+        #s2 .s2-hero .word-box {
+            display: inline-block;
+            background: var(--white);
+            color: var(--black);
+            padding: 0 1.296cqw;
+            /* 14 / 1080 */
+            letter-spacing: 0;
+        }
+
+        #s2 .s2-antwerp-label {
+            font-family: var(--font-body);
+            font-size: 2.344cqh;
+            /* 45 / 1920 */
+            font-weight: 500;
+            color: var(--white);
+            text-align: center;
+        }
+
+        #s2 .s2-wheel {
+            position: relative;
+            z-index: 4;
+            width: 79.38cqw;
+            /* 857.31 / 1080 */
+            height: 45cqh;
+            /* 864 / 1920 */
+            flex-shrink: 0;
+            margin-top: 4.688cqh;
+            /* 90 / 1920 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #s2 .s2-wheel img {
+            width: 79.38cqw;
+            height: 45cqh;
+            display: block;
+        }
+
+        #s2 .s2-bottom-content {
+            position: relative;
+            z-index: 3;
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding: 0 7.407cqw 3.125cqh;
+            /* 80/1080  60/1920 */
+            width: 100%;
+        }
+
+        #s2 .s2-desc {
+            font-family: var(--font-body);
+            font-size: 2.865cqh;
+            /* 55px / 1920 */
+            font-weight: 800;
+            color: var(--black);
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        /* ════════════════════════════════════
+           SCREEN 3 — DESIGNER + KEYWORDS
+        ════════════════════════════════════ */
+
+        #s3 .s3-bg-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 17.292cqh;
+            /* 332 / 1920 */
+            background: var(--orange);
+            z-index: 1;
+        }
+
+        #s3 .s3-strip {
+            position: absolute;
+            top: 17.188cqh;
+            /* 330 / 1920 */
+            left: 0;
+            right: 0;
+            height: 5.978cqh;
+            /* 114.78 / 1920 */
+            background-image: url('patter_cross_stich.png');
+            background-size: 101.1cqw 5.978cqh;
+            background-repeat: repeat-x;
+            background-position: left top;
+            z-index: 2;
+        }
+
+        #s3 .s3-bg-white {
+            position: absolute;
+            top: 22.969cqh;
+            /* 441 / 1920 */
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--white);
+            z-index: 1;
+        }
+
+        #s3 .s3-header {
+            position: absolute;
+            top: -2cqh;
+            left: 0;
+            right: 0;
+            height: 22.969cqh;
+            /* 441 / 1920 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.563cqh;
+            /* 30 / 1920 */
+            z-index: 2;
+        }
+
+        #s3 .s3-content {
+            position: absolute;
+            top: 23.958cqh;
+            left: 0;
+            right: 0;
+            height: 42.708cqh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            z-index: 2;
+        }
+
+        #s3 .s3-phone {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.926cqw 0 0;
+        }
+
+        #s3 .s3-phone img {
+            width: 36.693cqw;
+            height: 42.664cqh;
+            object-fit: contain;
+        }
+
+        #s3 .s3-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.25cqh;
+            padding: 0 3.704cqw 0 1.852cqw;
+        }
+
+        #s3 .s3-explore-title {
+            font-family: var(--font-display);
+            font-size: 2.24cqh;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--orange);
+            line-height: 152%;
+        }
+
+        #s3 .s3-explore-desc {
+            font-family: var(--font-body);
+            font-size: 1.563cqh;
+            line-height: 1.5;
+            color: var(--black);
+        }
+
+        #s3 .s3-qr {
+            width: 16.667cqw;
+            aspect-ratio: 1;
+            flex-shrink: 0;
+        }
+
+        #s3 .keyword-tag {
+            font-size: 4.531cqh;
+            padding: 1.094cqh 5cqw;
+        }
+
+        #s3 .keyword-floating {
+            position: absolute;
+            z-index: 4;
+        }
+
+        #kw0 {
+            left: -2.778cqw;
+            top: 75.271cqh;
+            transform: rotate(-29deg);
+        }
+
+        #kw1 {
+            left: 35.259cqw;
+            top: 67.76cqh;
+        }
+
+        #kw2 {
+            right: -1.556cqw;
+            top: 74.271cqh;
+            transform: rotate(35deg);
+        }
+
+        .keyword-floating {
+            opacity: 0;
+        }
+
+        #s3 .wheel-wrap {
+            position: absolute;
+            bottom: -3%;
+            left: 50%;
+            transform: translateX(-50%) translateY(50%);
+            width: 108.981cqw;
+            /* 1177 / 1080 */
+            height: 108.981cqw;
+            z-index: 3;
+        }
+
+        /* both images fill the same square — outer stays still, images rotate */
+        #s3 .wheel-outer,
+        #s3 .wheel-images {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+
+        /* ═══ S3 SECONDARY STATE (10s idle) ═══ */
+        #s3-secondary {
+            position: absolute;
+            top: 23.958cqh;
+            left: 0;
+            right: 0;
+            bottom: 30cqh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 1.25cqh;
+            padding: 0 9.259cqw;
+            z-index: 4;
+            pointer-events: none;
+        }
+
+        .s3-sec-title {
+            font-family: var(--font-display);
+            font-size: 3.021cqh;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--orange);
+            line-height: 1.2;
+            margin-bottom: 0.5cqh;
+        }
+
+        .s3-sec-qr svg {
+            width: 32.315cqw;
+            height: auto;
+            display: block;
+        }
+
+        .s3-sec-scan {
+            font-family: var(--font-body);
+            font-size: 1.979cqh;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--orange);
+            letter-spacing: 0.06em;
+        }
+
+        .s3-sec-start {
+            font-family: var(--font-body);
+            font-size: 1.302cqh;
+            font-weight: 500;
+            color: #555;
+            letter-spacing: 0.02em;
+            margin-top: -0.4cqh;
+        }
+
+        /* ═══ S3 WHEEL CTA OVERLAY ═══ */
+        #s3-wheel-cta {
+            position: absolute;
+            top: 31%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 5;
+            pointer-events: none;
+            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5cqh;
+        }
+
+        .wc-question {
+            font-family: var(--font-body);
+            font-size: 1.823cqh;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: var(--white);
+            letter-spacing: 0.01em;
+        }
+
+        .wc-action {
+            font-family: var(--font-display);
+            font-size: 2.813cqh;
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--orange);
+        }
+
+        /* ═══ DESIGNER HEADER SHARED ═══ */
+        .designer-eyebrow {
+            font-family: var(--font-body);
+            text-transform: uppercase;
+            font-size: 1.563cqh;
+            /* 30 / 1920 */
+            font-weight: 500;
+            color: var(--white);
+            padding-bottom: 0.417cqh;
+            /* 8 / 1920 */
+        }
+
+        .designer-name {
+            font-family: var(--font-display);
+            font-size: 4.271cqh;
+            /* 82 / 1920 */
+            font-weight: 900;
+            text-transform: uppercase;
+            color: var(--white);
+            line-height: 0.9;
+            text-align: center;
+        }
+
+        /* ═══ START EXPLORING BUTTON ═══ */
+        .start-btn {
+            display: inline-block;
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 1.875cqh;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.938cqh 5.556cqw;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .start-btn:hover {
+            background: #333;
+        }
+
+        /* ═══ ESP DEBUG PANEL ═══ */
+        #esp-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.85);
+            color: #0f0;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 12px 18px;
+            border: 1px solid #0f0;
+            z-index: 9999;
+            min-width: 220px;
+            display: none;
+        }
+
+        #esp-panel.visible {
+            display: block;
+        }
+
+        #esp-panel button {
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 6px 14px;
+            font-family: monospace;
+            font-size: 13px;
+            cursor: pointer;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        #esp-panel input[type="range"] {
+            width: 100%;
+            accent-color: #0f0;
+        }
+
+        /* ═══ KEYBOARD HINT ═══ */
+        #key-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            font-family: monospace;
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 6px;
+            opacity: 0.5;
+            z-index: 9999;
+        }
+
+        /* ── Mechanical shutters ── */
+        #shutter-t,
+        #shutter-b {
+            position: fixed;
+            left: 0;
+            right: 0;
+            height: 55%;
+            background: #0A0A0A;
+            z-index: 9990;
+            pointer-events: none;
+        }
+
+        #shutter-t {
+            top: 0;
+        }
+
+        #shutter-b {
+            bottom: 0;
+        }
+
+        /* ── Chromatic aberration overlays ── */
+        #ca-r,
+        #ca-b {
+            position: fixed;
+            inset: 0;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 9989;
+            mix-blend-mode: screen;
+        }
+
+        #ca-r {
+            background: rgba(255, 40, 0, 0.65);
+        }
+
+        #ca-b {
+            background: rgba(0, 60, 255, 0.55);
+        }
+
+        #flash {
+            position: fixed;
+            inset: 0;
+            background: #fff;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 99999;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="billboard">
+
+        <!-- ══════════════════════════════════
+             SCREEN 1 — WHAT IS HIDDEN?
+        ══════════════════════════════════ -->
+        <div class="layer active" id="s1">
+            <div class="bg-orange-top"></div>
+            <div class="pattern-strip"></div>
+            <div class="bg-green-bot"></div>
+            <div class="antwerp-skyline"></div>
+
+            <div class="hero-text">
+                <div class="text-hero">
+                    WHAT IS<br>HIDDEN IN<br>
+                    <span class="highlight-black">ANTWERP?</span>
+                </div>
+            </div>
+
+            <div class="viewmaster-center">
+                <img src="viewmaster_white_background.png" alt="View-Master">
+            </div>
+
+            <div class="pull-to-discover">Pull to discover.</div>
+        </div>
+
+        <!-- ══════════════════════════════════
+             SCREEN 2 — VIEW ANTWERP
+        ══════════════════════════════════ -->
+        <div class="layer" id="s2">
+
+            <div class="s2-bg-top"></div>
+            <div class="s2-cross-strip"></div>
+            <div class="s2-bg-bot"></div>
+
+            <div class="s2-top-content">
+                <div class="s2-hero">
+                    <span class="word-box">VIEW</span> ANTWERP<br>
+                    THROUGH THE EYES OF ITS<br>
+                    CREATIVE <span class="word-box">MASTERS</span>
+                </div>
+                <div class="s2-antwerp-label">→&nbsp;&nbsp;the Antwerp Six</div>
+            </div>
+
+            <div class="s2-wheel">
+                <img id="wheel-img-s2" src="billboard_whell.png" alt="The Antwerp Six wheel">
+            </div>
+
+            <div class="s2-bottom-content">
+                <div class="s2-desc">
+                    Six designers. Six ways to<br>
+                    see the city. Whose Antwerp<br>
+                    will you explore?
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════
+             SCREEN 3 — DESIGNER + KEYWORDS
+        ══════════════════════════════════ -->
+        <div class="layer" id="s3">
+
+            <div class="s3-bg-top"></div>
+            <div class="s3-strip"></div>
+            <div class="s3-bg-white"></div>
+
+            <div class="s3-header">
+                <div class="designer-eyebrow">Your Designer</div>
+                <div class="designer-name" id="s3-name">Dirk Van Saene</div>
+            </div>
+
+            <div class="s3-content">
+                <div class="s3-phone">
+                    <img src="phone_mockup.png" alt="App mockup">
+                </div>
+                <div class="s3-info">
+                    <div class="s3-explore-title" id="s3-explore-title">
+                        Explore Antwerp<br>Through Dirk's Eyes
+                    </div>
+                    <div class="s3-explore-desc">
+                        Discover local hangouts and hidden street spots curated to match <span
+                            class="s3-first-name">Dirk</span>'s signature style. Combination of <span
+                            class="s3-first-name">Dirk</span>'s spot and creative spots added by locals.
+                    </div>
+                    <div class="s3-qr">
+                        <svg width="180" height="180" viewBox="0 0 180 180" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect width="180" height="180" fill="white" />
+                            <rect x="10" y="10" width="60" height="60" fill="black" />
+                            <rect x="20" y="20" width="40" height="40" fill="white" />
+                            <rect x="28" y="28" width="24" height="24" fill="black" />
+                            <rect x="110" y="10" width="60" height="60" fill="black" />
+                            <rect x="120" y="20" width="40" height="40" fill="white" />
+                            <rect x="128" y="28" width="24" height="24" fill="black" />
+                            <rect x="10" y="110" width="60" height="60" fill="black" />
+                            <rect x="20" y="120" width="40" height="40" fill="white" />
+                            <rect x="28" y="128" width="24" height="24" fill="black" />
+                            <rect x="80" y="10" width="10" height="10" fill="black" />
+                            <rect x="95" y="10" width="10" height="10" fill="black" />
+                            <rect x="80" y="25" width="10" height="10" fill="black" />
+                            <rect x="80" y="80" width="10" height="10" fill="black" />
+                            <rect x="95" y="80" width="10" height="10" fill="black" />
+                            <rect x="110" y="80" width="10" height="10" fill="black" />
+                            <rect x="95" y="95" width="10" height="10" fill="black" />
+                            <rect x="110" y="95" width="10" height="10" fill="black" />
+                            <rect x="80" y="110" width="10" height="10" fill="black" />
+                            <rect x="110" y="110" width="10" height="10" fill="black" />
+                            <rect x="95" y="125" width="10" height="10" fill="black" />
+                            <rect x="80" y="140" width="10" height="10" fill="black" />
+                            <rect x="110" y="140" width="10" height="10" fill="black" />
+                            <rect x="125" y="80" width="10" height="10" fill="black" />
+                            <rect x="140" y="80" width="10" height="10" fill="black" />
+                            <rect x="155" y="80" width="10" height="10" fill="black" />
+                            <rect x="125" y="95" width="10" height="10" fill="black" />
+                            <rect x="155" y="95" width="10" height="10" fill="black" />
+                            <rect x="125" y="110" width="10" height="10" fill="black" />
+                            <rect x="140" y="110" width="10" height="10" fill="black" />
+                            <rect x="155" y="125" width="10" height="10" fill="black" />
+                            <rect x="125" y="140" width="10" height="10" fill="black" />
+                            <rect x="140" y="155" width="10" height="10" fill="black" />
+                            <rect x="155" y="155" width="10" height="10" fill="black" />
+                            <rect x="10" y="80" width="10" height="10" fill="black" />
+                            <rect x="25" y="80" width="10" height="10" fill="black" />
+                            <rect x="40" y="80" width="10" height="10" fill="black" />
+                            <rect x="55" y="80" width="10" height="10" fill="black" />
+                            <rect x="10" y="95" width="10" height="10" fill="black" />
+                            <rect x="40" y="95" width="10" height="10" fill="black" />
+                            <rect x="55" y="95" width="10" height="10" fill="black" />
+                            <rect x="25" y="110" width="10" height="10" fill="black" />
+                            <rect x="55" y="110" width="10" height="10" fill="black" />
+                            <rect x="10" y="125" width="10" height="10" fill="black" />
+                            <rect x="40" y="125" width="10" height="10" fill="black" />
+                            <rect x="10" y="155" width="10" height="10" fill="black" />
+                            <rect x="55" y="155" width="10" height="10" fill="black" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="keyword-floating hidden" id="kw0" style="--rot:-22deg;">
+                <div class="keyword-tag">Poetic</div>
+            </div>
+            <div class="keyword-floating hidden" id="kw1" style="--rot:5deg;">
+                <div class="keyword-tag">Experimental</div>
+            </div>
+            <div class="keyword-floating hidden" id="kw2" style="--rot:22deg;">
+                <div class="keyword-tag">Rule-breaker</div>
+            </div>
+
+            <!-- S3 secondary state — appears after 10s idle -->
+            <div id="s3-secondary">
+                <div class="s3-sec-title">Explore Antwerp<br>Through <span class="s3-first-name">Dirk</span>'s Eyes
+                </div>
+                <div class="s3-sec-qr">
+                    <svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="180" height="180" fill="white" />
+                        <rect x="10" y="10" width="60" height="60" fill="black" />
+                        <rect x="20" y="20" width="40" height="40" fill="white" />
+                        <rect x="28" y="28" width="24" height="24" fill="black" />
+                        <rect x="110" y="10" width="60" height="60" fill="black" />
+                        <rect x="120" y="20" width="40" height="40" fill="white" />
+                        <rect x="128" y="28" width="24" height="24" fill="black" />
+                        <rect x="10" y="110" width="60" height="60" fill="black" />
+                        <rect x="20" y="120" width="40" height="40" fill="white" />
+                        <rect x="28" y="128" width="24" height="24" fill="black" />
+                        <rect x="80" y="10" width="10" height="10" fill="black" />
+                        <rect x="95" y="10" width="10" height="10" fill="black" />
+                        <rect x="80" y="25" width="10" height="10" fill="black" />
+                        <rect x="80" y="80" width="10" height="10" fill="black" />
+                        <rect x="95" y="80" width="10" height="10" fill="black" />
+                        <rect x="110" y="80" width="10" height="10" fill="black" />
+                        <rect x="95" y="95" width="10" height="10" fill="black" />
+                        <rect x="110" y="95" width="10" height="10" fill="black" />
+                        <rect x="80" y="110" width="10" height="10" fill="black" />
+                        <rect x="110" y="110" width="10" height="10" fill="black" />
+                        <rect x="95" y="125" width="10" height="10" fill="black" />
+                        <rect x="80" y="140" width="10" height="10" fill="black" />
+                        <rect x="110" y="140" width="10" height="10" fill="black" />
+                        <rect x="125" y="80" width="10" height="10" fill="black" />
+                        <rect x="140" y="80" width="10" height="10" fill="black" />
+                        <rect x="155" y="80" width="10" height="10" fill="black" />
+                        <rect x="125" y="95" width="10" height="10" fill="black" />
+                        <rect x="155" y="95" width="10" height="10" fill="black" />
+                        <rect x="125" y="110" width="10" height="10" fill="black" />
+                        <rect x="140" y="110" width="10" height="10" fill="black" />
+                        <rect x="155" y="125" width="10" height="10" fill="black" />
+                        <rect x="125" y="140" width="10" height="10" fill="black" />
+                        <rect x="140" y="155" width="10" height="10" fill="black" />
+                        <rect x="155" y="155" width="10" height="10" fill="black" />
+                        <rect x="10" y="80" width="10" height="10" fill="black" />
+                        <rect x="25" y="80" width="10" height="10" fill="black" />
+                        <rect x="40" y="80" width="10" height="10" fill="black" />
+                        <rect x="55" y="80" width="10" height="10" fill="black" />
+                        <rect x="10" y="95" width="10" height="10" fill="black" />
+                        <rect x="40" y="95" width="10" height="10" fill="black" />
+                        <rect x="55" y="95" width="10" height="10" fill="black" />
+                        <rect x="25" y="110" width="10" height="10" fill="black" />
+                        <rect x="55" y="110" width="10" height="10" fill="black" />
+                        <rect x="10" y="125" width="10" height="10" fill="black" />
+                        <rect x="40" y="125" width="10" height="10" fill="black" />
+                        <rect x="10" y="155" width="10" height="10" fill="black" />
+                        <rect x="55" y="155" width="10" height="10" fill="black" />
+                    </svg>
+                </div>
+                <div class="s3-sec-scan">↓&nbsp; Scan to discover</div>
+                <div class="s3-sec-start">Start exploring</div>
+            </div>
+
+            <div class="wheel-wrap" id="s3-wheel">
+                <img class="wheel-outer" src="wheel_outer.png" alt="">
+                <img class="wheel-images" id="wheel-img-s3" src="wheel_images.png" alt="">
+                <div id="s3-wheel-cta">
+                    <span class="wc-question">Want to see other <br> designers?</span>
+                    <span class="wc-action">Pull again!</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div><!-- /billboard -->
+
+
+    <div id="flash"></div>
+    <div id="shutter-t"></div>
+    <div id="shutter-b"></div>
+    <div id="ca-r"></div>
+    <div id="ca-b"></div>
+
+    <!-- ══════ ESP DEBUG PANEL ══════ -->
+    <div id="esp-panel">
+        <strong>ESP32 Debug</strong><br>
+        Raw: <span id="raw-val">—</span><br>
+        State: <span id="esp-state">IDLE</span><br>
+        Screen: <span id="screen-num">1</span><br>
+        Trigger: <span id="trig-val">2000</span>
+        <input type="range" id="trig-range" min="0" max="4095" value="2000"
+            oninput="TRIGGER=+this.value;document.querySelector('#trig-val').textContent=TRIGGER">
+        <button id="connect-btn">Connect ESP32</button>
+    </div>
+
+    <div id="key-hint">SPACE = next &nbsp;|&nbsp; E = debug</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script>
+        const DESIGNERS = [
+            { name: 'Ann Demeulemeester', first: 'Ann', angle: 0, keywords: ['Dark Romantic', 'Poetic', 'Rebellious'] },
+            { name: 'Walter Van Beirendonck', first: 'Walter', angle: -59.3, keywords: ['Fantastical', 'Political', 'Vivid'] },
+            { name: 'Dirk Bikkembergs', first: 'Dirk', angle: -119.1, keywords: ['Athletic', 'Raw', 'Masculine'] },
+            { name: 'Marina Yee', first: 'Marina', angle: -180.2, keywords: ['Deconstructed', 'Minimal', 'Quiet'] },
+            { name: 'Dirk Van Saene', first: 'Dirk', angle: 120, keywords: ['Poetic', 'Experimental', 'Rule-breaker'] },
+            { name: 'Dries Van Noten', first: 'Dries', angle: 60.94, keywords: ['Eclectic', 'Colorful', 'Refined'] },
+        ];
+
+        let screen = 1, currentDesigner = 0, wheelDeg = 0, isAnimating = false;
+        let TRIGGER = 2000, aboveThreshold = false, lastPull = 0;
+        const COOLDOWN = 2200;
+        let autoTimer = null;
+        let s2IdleTween = null;
+        let s3SecTimer = null;
+        let wheelInnerDeg = DESIGNERS[0].angle;
+
+        // ── Element refs ────────────────────────────────────────────────
+        const layers = {
+            1: document.querySelector('#s1'),
+            2: document.querySelector('#s2'),
+            3: document.querySelector('#s3'),
+        };
+        const wheelImgS2 = document.querySelector('#wheel-img-s2');
+        const wheelImgInner = document.querySelector('#wheel-img-s3');
+
+        const shutterT = document.querySelector('#shutter-t');
+        const shutterB = document.querySelector('#shutter-b');
+        const caR = document.querySelector('#ca-r');
+        const caB = document.querySelector('#ca-b');
+        const flashEl = document.querySelector('#flash');
+
+        const s1Viewmaster = document.querySelector('#s1 .viewmaster-center');
+        const s1HeroText = document.querySelector('#s1 .hero-text');
+        const s1PullText = document.querySelector('#s1 .pull-to-discover');
+
+        const s2Hero = document.querySelector('#s2 .s2-hero');
+        const s2Label = document.querySelector('#s2 .s2-antwerp-label');
+        const s2WheelEl = document.querySelector('#s2 .s2-wheel');
+        const s2Desc = document.querySelector('#s2 .s2-desc');
+
+        const s3Header = document.querySelector('#s3 .s3-header');
+        const s3NameEl = document.querySelector('#s3-name');
+        const s3Phone = document.querySelector('#s3 .s3-phone');
+        const s3Info = document.querySelector('#s3 .s3-info');
+        const keywords = document.querySelectorAll('#s3 .keyword-floating');
+        const s3WheelWrap = document.querySelector('#s3-wheel');
+        const s3Secondary = document.querySelector('#s3-secondary');
+        const s3WheelCta = document.querySelector('#s3-wheel-cta');
+        const billboard = document.querySelector('#billboard');
+
+        // ── GSAP boot states ────────────────────────────────────────────
+        gsap.set(layers[2], { autoAlpha: 0 });
+        gsap.set(layers[3], { autoAlpha: 0 });
+        gsap.set(wheelImgInner, { rotation: wheelInnerDeg, x: -1, y: -29 });
+        gsap.set(s3Phone, { x: '-110%', autoAlpha: 0 });
+        gsap.set(s3Info, { x: '110%', autoAlpha: 0 });
+        gsap.set(keywords, { autoAlpha: 0 });
+        gsap.set(s3Secondary, { autoAlpha: 0 });
+        gsap.set(s3WheelCta, { autoAlpha: 0 });
+        gsap.set(shutterT, { yPercent: -100 });
+        gsap.set(shutterB, { yPercent: 100 });
+
+        // Pull-to-discover idle pulse
+        gsap.to(s1PullText, { y: -12, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+
+        // ── Effect helpers ──────────────────────────────────────────────
+
+        function impactFlash(intensity = 0.45) {
+            gsap.fromTo(flashEl,
+                { opacity: intensity },
+                { opacity: 0, duration: 0.5, ease: 'power2.out' }
+            );
+        }
+
+        function chromaticAberration() {
+            gsap.timeline()
+                .set(caR, { xPercent: 0 })
+                .set(caB, { xPercent: 0 })
+                .to([caR, caB], { opacity: 1, duration: 0.04 })
+                .to(caR, { xPercent: -5, duration: 0.06 }, '<')
+                .to(caB, { xPercent: 5, duration: 0.06 }, '<')
+                .to(caR, { xPercent: 3, opacity: 0.7, duration: 0.06 })
+                .to(caB, { xPercent: -3, opacity: 0.7, duration: 0.06 }, '<')
+                .to([caR, caB], { xPercent: 0, opacity: 0, duration: 0.28, ease: 'power3.out' });
+        }
+
+        function shutterSlam(onBlackout) {
+            const tl = gsap.timeline();
+            tl.to(shutterT, { yPercent: 0, duration: 0.13, ease: 'power4.in' }, 0);
+            tl.to(shutterB, { yPercent: 0, duration: 0.13, ease: 'power4.in' }, 0);
+            tl.add(() => { if (onBlackout) onBlackout(); }, 0.15);
+            tl.to(shutterT, { yPercent: -100, duration: 0.22, ease: 'power4.out' }, 0.17);
+            tl.to(shutterB, { yPercent: 100, duration: 0.22, ease: 'power4.out' }, 0.17);
+            return tl;
+        }
+
+        function screenShake(el) {
+            gsap.fromTo(el, { x: 0, y: 0 }, {
+                keyframes: [
+                    { x: -9, y: 5, duration: 0.04 },
+                    { x: 8, y: -6, duration: 0.04 },
+                    { x: -5, y: 4, duration: 0.04 },
+                    { x: 4, y: -3, duration: 0.04 },
+                    { x: 0, y: 0, duration: 0.05 },
+                ]
+            });
+        }
+
+        function rouletteWheelTo(targetDeg, delta) {
+            const overshoot = targetDeg + delta * 0.3;
+            gsap.timeline()
+                .to(wheelImgInner, { rotation: overshoot, x: -1, y: -29, duration: 0.9, ease: 'power3.out' })
+                .to(wheelImgInner, { rotation: targetDeg + 14, duration: 0.11, ease: 'power2.in' })
+                .to(wheelImgInner, { rotation: targetDeg - 7, duration: 0.09, ease: 'power2.inOut' })
+                .to(wheelImgInner, { rotation: targetDeg + 3, duration: 0.08, ease: 'power1.inOut' })
+                .to(wheelImgInner, { rotation: targetDeg, duration: 0.09, ease: 'power2.out' });
+        }
+
+        // ── Content helpers ─────────────────────────────────────────────
+        function applyDesigner(d) {
+            const des = DESIGNERS[d];
+            const nameEl = document.querySelector('#s3-name');
+            nameEl.textContent = des.name;
+            nameEl.style.fontSize = des.name.length > 20 ? '3.9cqh' : '';
+            document.querySelector('#s3-explore-title').innerHTML =
+                'Explore Antwerp<br>Through ' + des.first + "'s Eyes";
+            document.querySelectorAll('.s3-first-name').forEach(el => el.textContent = des.first);
+            document.querySelectorAll('#s3 .keyword-floating .keyword-tag').forEach((el, i) => {
+                el.textContent = des.keywords[i];
+            });
+        }
+
+        function showKeywordsGSAP(onDone) {
+            keywords.forEach((el, i) => {
+                const tag = el.querySelector('.keyword-tag');
+                const rot = parseFloat(el.style.getPropertyValue('--rot')) || 0;
+                const tumble = (i % 2 === 0 ? 1 : -1) * (52 + i * 20);
+                const delay = i * 0.3;
+                gsap.set(tag, { fontSize: '87px' });
+                gsap.timeline({ delay })
+                    .fromTo(el,
+                        { autoAlpha: 0, x: 0, y: -800, rotation: rot + tumble, scale: 1.4, skewX: tumble * 0.2 },
+                        {
+                            autoAlpha: 1, y: 22, rotation: rot + tumble * 0.1, scale: 1, skewX: rot * 0.08,
+                            duration: 0.65, ease: 'power4.in'
+                        }
+                    )
+                    .to(el, { y: -28, rotation: rot * 1.5, skewX: 0, scale: 0.9, duration: 0.14, ease: 'power2.out' })
+                    .to(el, { y: 9, rotation: rot * 0.9, scale: 1.04, duration: 0.10, ease: 'power2.in' })
+                    .to(el, { y: -4, scale: 0.98, duration: 0.07, ease: 'power1' })
+                    .to(el, { y: 0, rotation: rot, scale: 1, duration: 0.10, ease: 'power2.out' })
+                    .to(tag, { fontSize: '70px', duration: 0.15, ease: 'power2.out' }, '<')
+                    .add(() => impactFlash(0.1), '-=0.3');
+            });
+            const lastLands = (keywords.length - 1) * 0.3 + 0.65 + 0.41 + 0.1;
+            setTimeout(() => {
+                gsap.fromTo(s3Phone, { x: '-110%', autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 1.0, ease: 'expo.out' });
+                gsap.fromTo(s3Info, { x: '110%', autoAlpha: 0 }, { x: 0, autoAlpha: 1, duration: 1.0, ease: 'expo.out', delay: 0.12 });
+                const floatAmps = [14, 10, 18];
+                const floatTimes = [2.1, 2.7, 1.85];
+                keywords.forEach((el, i) => {
+                    gsap.to(el, {
+                        y: `+=${floatAmps[i]}`, duration: floatTimes[i],
+                        ease: 'sine.inOut', yoyo: true, repeat: -1, delay: i * 0.45
+                    });
+                });
+                if (onDone) setTimeout(onDone, 1000);
+                s3SecTimer = setTimeout(showS3Secondary, 10000);
+            }, lastLands * 1000);
+        }
+
+        // ── S3 secondary reveal (10s idle) ──────────────────────────────
+        function showS3Secondary() {
+            s3SecTimer = null;
+            // Stop keyword float and fade them out
+            keywords.forEach((el, i) => {
+                gsap.killTweensOf(el);
+                gsap.to(el, { autoAlpha: 0, y: '+=10', duration: 0.35, ease: 'power2.in', delay: i * 0.06 });
+            });
+            // Hide phone/info panels
+            gsap.to(s3Phone, { x: '-110%', autoAlpha: 0, duration: 0.55, ease: 'power3.in' });
+            gsap.to(s3Info, { x: '110%', autoAlpha: 0, duration: 0.55, ease: 'power3.in', delay: 0.07 });
+            // Lift wheel 160px
+            gsap.to(s3WheelWrap, { y: 428.5, duration: 0.7, ease: 'power3.out', delay: 0.35 });
+            // Fade in secondary layout
+            gsap.fromTo(s3Secondary,
+                { y: 24, autoAlpha: 0 },
+                { y: 0, autoAlpha: 1, duration: 0.75, ease: 'power3.out', delay: 0.5 }
+            );
+            // Fade in wheel CTA text
+            gsap.fromTo(s3WheelCta,
+                { autoAlpha: 0, y: 10 },
+                { autoAlpha: 1, y: 0, duration: 0.55, ease: 'power3.out', delay: 0.85 }
+            );
+        }
+
+        // ── Main interaction ────────────────────────────────────────────
+        function onPullFixed() {
+            if (isAnimating) return;
+            const now = Date.now();
+            if (now - lastPull < COOLDOWN) return;
+            lastPull = now;
+            isAnimating = true;
+            clearTimeout(autoTimer); autoTimer = null;
+            clearTimeout(s3SecTimer); s3SecTimer = null;
+            if (s2IdleTween) { s2IdleTween.kill(); s2IdleTween = null; }
+
+            // ════════ S1 → S2  "ViewMaster Click" ════════
+            if (screen === 1) {
+                applyDesigner(currentDesigner);
+                screen = 2;
+
+                // Pre-position S2 content before the flash
+                gsap.set(s2Hero, { y: -50, autoAlpha: 0 });
+                gsap.set(s2Label, { y: -35, autoAlpha: 0 });
+                gsap.set(s2Desc, { y: 40, autoAlpha: 0 });
+                gsap.set(s2WheelEl, { scale: 0.88, autoAlpha: 0 });
+
+                // White flash — swap scenes behind the overexposure
+                gsap.timeline()
+                    .to(flashEl, { autoAlpha: 1, duration: 0.17, ease: 'power3.in' })
+                    .call(() => {
+                        gsap.set(layers[1], { autoAlpha: 0 });
+                        gsap.set(layers[2], { autoAlpha: 1, scale: 1.06 });
+                    })
+                    .to(flashEl, { autoAlpha: 0, duration: 0.3, ease: 'power2.out' })
+                    .to(layers[2], { scale: 1, duration: 0.4, ease: 'power2.out' }, '<');
+
+                // Content bounces in as flash clears
+                gsap.to(s2Hero, { y: 0, autoAlpha: 1, duration: 0.6, ease: 'back.out(2)', delay: 0.3 });
+                gsap.to(s2Label, { y: 0, autoAlpha: 1, duration: 0.55, ease: 'back.out(1.8)', delay: 0.4 });
+                gsap.to(s2Desc, { y: 0, autoAlpha: 1, duration: 0.55, ease: 'expo.out', delay: 0.5 });
+                gsap.to(s2WheelEl, { scale: 1, autoAlpha: 1, duration: 0.7, ease: 'back.out(2.2)', delay: 0.22 });
+
+                // Wheel spins in — 5 full rotations, slow build and settle
+                wheelDeg += 360 * 5;
+                gsap.to(wheelImgS2, { rotation: wheelDeg, duration: 5, ease: 'power3.out', delay: 0.5 });
+
+                setTimeout(() => {
+                    isAnimating = false;
+                    autoTimer = setTimeout(() => { if (screen === 2) onPullFixed(); }, 10000);
+                    s2IdleTween = gsap.to(wheelImgS2, {
+                        rotation: '+=360', duration: 22, ease: 'none', repeat: -1
+                    });
+                }, 5600);
+
+                // ════════ S2 → S3  "ViewMaster Click" ════════
+            } else if (screen === 2) {
+                screen = 3;
+
+                gsap.set(s3Header, { y: -70, autoAlpha: 0, scale: 0.9 });
+
+                gsap.timeline()
+                    // White overexposure — the slide click
+                    .to(flashEl, { autoAlpha: 1, duration: 0.17, ease: 'power3.in' })
+                    // Behind the white: swap scenes, S3 slightly zoomed in
+                    .call(() => {
+                        gsap.set(layers[2], { autoAlpha: 0 });
+                        gsap.set(layers[3], { autoAlpha: 1, scale: 1.06 });
+                    })
+                    // White fades while S3 snaps into focus
+                    .to(flashEl, { autoAlpha: 0, duration: 0.3, ease: 'power2.out' })
+                    .to(layers[3], { scale: 1, duration: 0.4, ease: 'power2.out' }, '<')
+                    // Header drops in
+                    .to(s3Header, { y: 0, autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(2.2)' }, '-=0.18')
+                    // Keywords avalanche
+                    .call(() => showKeywordsGSAP(() => { isAnimating = false; }));
+
+                // ════════ S3 → S3  "Wheel Rise" ════════
+            } else if (screen === 3) {
+                gsap.killTweensOf(s3Secondary);
+                gsap.set(s3Secondary, { autoAlpha: 0 });
+                gsap.killTweensOf(s3WheelCta);
+                gsap.set(s3WheelCta, { autoAlpha: 0 });
+                keywords.forEach(el => gsap.killTweensOf(el));
+                const kickDirs = [
+                    { x: -1000, y: -280, rotation: '-=210' },
+                    { x: 80, y: -950, rotation: '+=55' },
+                    { x: 950, y: -200, rotation: '+=230' },
+                ];
+                Array.from(keywords).forEach((el, i) => {
+                    const d = kickDirs[i];
+                    gsap.to(el, {
+                        x: d.x, y: d.y, rotation: d.rotation,
+                        autoAlpha: 0, scale: 1.15,
+                        duration: 0.48, ease: 'power3.out', delay: 0.18 + i * 0.07
+                    });
+                });
+                gsap.to(s3Phone, { x: '-110%', autoAlpha: 0, duration: 0.3, ease: 'power3.in' });
+                gsap.to(s3Info, { x: '110%', autoAlpha: 0, duration: 0.3, ease: 'power3.in', delay: 0.04 });
+                gsap.to(s3NameEl, { y: -80, autoAlpha: 0, duration: 0.28, ease: 'power3.in' });
+
+                gsap.to(s3WheelWrap, { y: -300, duration: 0.7, ease: 'power3.out', delay: 0.15 });
+
+                setTimeout(() => {
+                    const fromAngle = DESIGNERS[currentDesigner].angle;
+                    currentDesigner = (currentDesigner + 1) % DESIGNERS.length;
+                    applyDesigner(currentDesigner);
+                    let delta = DESIGNERS[currentDesigner].angle - fromAngle;
+                    if (delta > 180) delta -= 360;
+                    if (delta < -180) delta += 360;
+                    wheelInnerDeg += delta;
+                    gsap.to(wheelImgInner, { rotation: wheelInnerDeg, x: -1, y: -29, duration: 0.9, ease: 'power2.inOut' });
+                    gsap.fromTo(s3NameEl,
+                        { y: 50, autoAlpha: 0 },
+                        { y: 0, autoAlpha: 1, duration: 0.65, ease: 'back.out(2.2)' }
+                    );
+                }, 850);
+
+                setTimeout(() => {
+                    gsap.to(s3WheelWrap, { y: 588.5, duration: 0.75, ease: 'power3.in' });
+                }, 1850);
+
+                setTimeout(() => {
+                    showKeywordsGSAP(() => { isAnimating = false; });
+                }, 2200);
+            }
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space') { e.preventDefault(); onPullFixed(); }
+            if (e.key === 'e' || e.key === 'E') {
+                document.querySelector('#esp-panel').classList.toggle('visible');
+            }
+        });
+
+        const connectBtn = document.querySelector('#connect-btn');
+        const rawValEl = document.querySelector('#raw-val');
+        const espStateEl = document.querySelector('#esp-state');
+
+        connectBtn.addEventListener('click', async () => {
+            try {
+                const port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 115200 });
+                connectBtn.disabled = true;
+                connectBtn.textContent = 'Connected';
+                const decoder = new TextDecoderStream();
+                port.readable.pipeTo(decoder.writable);
+                const reader = decoder.readable.getReader();
+                let buffer = '';
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    buffer += value;
+                    const msgs = buffer.split('\n');
+                    buffer = msgs.pop();
+                    for (const msg of msgs) {
+                        const val = parseInt(msg.trim(), 10);
+                        if (!isNaN(val)) processSerial(val);
+                    }
+                }
+            } catch (err) { console.error('Serial error:', err); }
+        });
+
+        function processSerial(raw) {
+            rawValEl.textContent = raw;
+            espStateEl.textContent = raw <= TRIGGER ? 'TRIGGER' : 'IDLE';
+            if (isAnimating) return;
+            if (raw <= TRIGGER) {
+                if (!aboveThreshold) { aboveThreshold = true; onPullFixed(); }
+            } else { aboveThreshold = false; }
+        }
+
+        // ── Boot ────────────────────────────────────────────────────────
+        applyDesigner(currentDesigner);
+
+        function scaleBillboard() {
+            const vw = document.documentElement.clientWidth;
+            const vh = document.documentElement.clientHeight;
+            const scale = Math.min(vw / 1080, vh / 1920);
+            const x = (vw - 1080 * scale) / 2;
+            const y = (vh - 1920 * scale) / 2;
+            document.querySelector('#billboard').style.transform =
+                `translate(${x}px, ${y}px) scale(${scale})`;
+        }
+        window.addEventListener('resize', scaleBillboard);
+        scaleBillboard();
+    </script>
+</body>
+
+</html>
