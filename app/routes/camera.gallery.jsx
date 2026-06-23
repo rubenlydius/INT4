@@ -91,7 +91,7 @@ export default function Gallery() {
                 <Link to={`/camera`}>
                     <img src={orangeArrow} alt="return" />
                 </Link>
-                <h1>Gem hunt</h1>
+                <h1>Gallery</h1>
             </div>
             <img src={titleTransition} alt="transition" className='titleTransititon'/>
 
