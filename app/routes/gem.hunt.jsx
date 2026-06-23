@@ -248,7 +248,7 @@ export default function GemDetail() {
                 </div>
                 <p className={styles.popupText}>Spot on! You've successfully tracked down the hidden gem.</p>
                 <div className={styles.popupButtons}>
-                  <Link to={`/gem/detail/${gem.id}`}>
+                  <Link to={`/gem/detail/${gem.id}`} state={{ unlocked: true }}>
                     <button className={styles.revealHunt}>Skip to Gem Details</button>
                   </Link>
                   <Link 

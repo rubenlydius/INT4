@@ -1,5 +1,5 @@
 import { useParams, Link, useLocation } from "react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMapFocus } from '../lib/MapContext';
 import { supabase } from "../lib/supabase";
 import { designers } from '../lib/designers';
@@ -25,6 +25,9 @@ export default function GemDetail() {
 
   const location = useLocation();
   const isRevealed = location.state?.revealed || false;
+  const isUnlocked = location.state?.unlocked || false;
+  const [showReveal, setShowReveal] = useState(false);
+  const revealTimer = useRef(null);
 
   const currentLens = typeof window !== "undefined" ? localStorage.getItem("selectedLens") || "ann" : "ann";
   const designer = designers[currentLens] || designers.ann;
@@ -46,6 +49,14 @@ export default function GemDetail() {
     fetchGem();
   }, [gemId, setMapFocus]);
   
+  // Trigger sticker reveal animation after gem loads (needs sticker URL).
+  useEffect(() => {
+    if (!gem || !isUnlocked) return;
+    setShowReveal(true);
+    revealTimer.current = setTimeout(() => setShowReveal(false), 2800);
+    return () => clearTimeout(revealTimer.current);
+  }, [gem, isUnlocked]);
+
   if (!gem) return <div>Loading...</div>;
   
   const detailImage = gem.id > 300
@@ -151,7 +162,17 @@ export default function GemDetail() {
           </button>
         </div>
       </div>
-      
+
+      {showReveal && (
+        <div className={styles.revealOverlay}>
+          <img
+            src={gem.id > 300 ? gem.sticker_url : storageUrl(`gems/stickers/gem${gem.id}-sticker.avif`)}
+            alt="sticker"
+            className={styles.revealSticker}
+          />
+          <p className={styles.revealText}>You unlocked a new sticker!</p>
+        </div>
+      )}
     </div>
   );
 }
