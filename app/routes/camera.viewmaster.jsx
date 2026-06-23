@@ -16,6 +16,7 @@ import shareIcon from '../assets/share_icon.svg'
 import saveIcon from '../assets/share_icon_onbording.svg'
 import discBackground from '../assets/viewmaster_disc_background.svg'
 import antwerpPixels from '../assets/antwerp_pixels.svg'
+import newSaveIcon from '../assets/new_save_icon_viewmaster.svg'
 
 const VIDEO_URL = 'https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/video/viewmaster-reel1.mp4'
 
@@ -593,7 +594,7 @@ export default function CameraViewmaster() {
                                 className={styles.modal_action_btn}
                                 onClick={handleSave}
                             >
-                                <img src={saveIcon} alt="" className={styles.modal_action_icon} />
+                                <img src={newSaveIcon} alt="" className={styles.modal_action_icon} />
                                 Save
                             </button>
                         </div>
