@@ -25,6 +25,20 @@ export default function Camera() {
     const [isCapturing, setIsCapturing] = useState(false);
     const [isFlashing, setIsFlashing] = useState(false);
     const [isFrontCamera, setIsFrontCamera] = useState(false);
+    const [galleryThumbnail, setGalleryThumbnail] = useState(null);
+
+    const loadGalleryThumbnail = () => {
+        const numericIds = Object.keys(localStorage)
+            .filter(k => k.startsWith('gem_photo_'))
+            .map(k => parseInt(k.replace('gem_photo_', ''), 10))
+            .filter(num => !isNaN(num));
+
+        if (numericIds.length > 0) {
+            const maxId = Math.max(...numericIds);
+            const src = localStorage.getItem(`gem_photo_${maxId}`);
+            setGalleryThumbnail(src);
+        }
+    };
 
     const startCamera = async (facingMode) => {
         if (streamRef.current) {
@@ -71,6 +85,7 @@ export default function Camera() {
 
     useEffect(() => {
         startCamera(facingModeRef.current);
+        loadGalleryThumbnail();
 
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -109,6 +124,7 @@ export default function Camera() {
     
         try {
             localStorage.setItem(`gem_photo_${nextIndex}`, base64Image);
+            setGalleryThumbnail(base64Image);
             if (fromGemHunt) {
                 setTimeout(() => navigate('/camera/preview'), 350); 
             }
@@ -147,11 +163,19 @@ export default function Camera() {
 
                 <div className={styles.bottomControls}>
                     <Link to={`/camera/gallery`}>
-                        <img
-                            src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp"
-                            alt="gallery"
-                            className={styles.gallery}
-                        />
+                        {galleryThumbnail ? (
+                            <img
+                                src={galleryThumbnail}
+                                alt="gallery"
+                                className={styles.galleryThumbnail}
+                            />
+                        ) : (
+                            <img
+                                src="https://jxbgneaciwzozwvbrjcp.supabase.co/storage/v1/object/public/gems/gallery/gallery_button.webp"
+                                alt="gallery"
+                                className={styles.gallery}
+                            />
+                        )}
                     </Link>
 
                     <button

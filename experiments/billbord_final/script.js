@@ -194,7 +194,7 @@ function onPullFixed() {
 
         // Accumulate absolute rotation so GSAP never snaps back to 0 on repeated calls.
         // power2.out over 8s: blazing fast start that gradually decelerates to a stop.
-        wheelDeg += 360 * 5;
+        wheelDeg = gsap.getProperty(wheelImgS2, 'rotation') + 360 * 5;
         gsap.to(wheelImgS2, {
             rotation: wheelDeg, duration: 8, ease: 'power2.out', delay: 0.5,
             onComplete: () => {
@@ -281,7 +281,73 @@ function onPullFixed() {
 
 // Reset to screen 1 
 function resetToScreen1() {
-    location.reload();
+    // ── 1. Kill all running animations ──────────────────────────────────────
+    gsap.killTweensOf([
+        layers[1], layers[2], layers[3],
+        wheelImgS2, wheelImgInner,
+        s2Hero, s2Label, s2WheelEl, s2Desc,
+        s3Header, s3NameEl, s3Phone, s3Info,
+        flashEl, shutterT, shutterB, caR, caB,
+        s3WheelWrap, s3Secondary, s3WheelCta,
+        s1PullText,
+    ]);
+    keywords.forEach(el => {
+        gsap.killTweensOf(el);
+        gsap.killTweensOf(el.querySelector('.keyword-tag'));
+    });
+
+    // ── 2. Reset JS state ────────────────────────────────────────────────────
+    screen = 1;
+    currentDesigner = 1;
+    wheelDeg = 0;
+    isAnimating = false;
+    lastPull = 0;
+    aboveThreshold = false;
+    wheelInnerDeg = DESIGNERS[1].angle;
+    clearTimeout(autoTimer);   autoTimer = null;
+    clearTimeout(s3SecTimer);  s3SecTimer = null;
+
+    // ── 3. Snap layers ───────────────────────────────────────────────────────
+    gsap.set(layers[1], { autoAlpha: 1 });
+    gsap.set(layers[2], { autoAlpha: 0, scale: 1 });
+    gsap.set(layers[3], { autoAlpha: 0, scale: 1 });
+
+    // ── 4. Snap all animated elements back to boot state ────────────────────
+    gsap.set(flashEl,     { opacity: 0 });
+    gsap.set(shutterT,    { yPercent: -100 });
+    gsap.set(shutterB,    { yPercent:  100 });
+    gsap.set(caR,         { opacity: 0 });
+    gsap.set(caB,         { opacity: 0 });
+
+    gsap.set(wheelImgS2,  { rotation: 0 });
+    gsap.set(wheelImgInner, { rotation: DESIGNERS[1].angle, x: -1, y: -29 });
+
+    // with these:
+    gsap.set(s2Hero,      { clearProps: 'all' });
+    gsap.set(s2Label,     { clearProps: 'all' });
+    gsap.set(s2Desc,      { clearProps: 'all' });
+    gsap.set(s2WheelEl,   { clearProps: 'all' });
+    gsap.set(wheelImgS2, { clearProps: 'all' });
+    gsap.set(wheelImgS2, { rotation: 0 });
+
+    gsap.set(s3Header,    { y: 0, autoAlpha: 1, scale: 1 });
+    gsap.set(s3Phone,     { x: '-110%', autoAlpha: 0 });
+    gsap.set(s3Info,      { x:  '110%', autoAlpha: 0 });
+    gsap.set(s3WheelWrap, { clearProps: 'all' });
+    gsap.set(s3Secondary, { autoAlpha: 0, y: 0 });
+    gsap.set(s3WheelCta,  { autoAlpha: 0, y: 0 });
+    gsap.set(s3NameEl,    { clearProps: 'all' });
+
+    keywords.forEach(el => {
+        gsap.set(el, { autoAlpha: 0, x: 0, y: 0, rotation: 0, scale: 1, skewX: 0 });
+        gsap.set(el.querySelector('.keyword-tag'), { fontSize: '' });
+    });
+
+    // ── 5. Re-apply boot content & restart idle pulse ────────────────────────
+    applyDesigner(currentDesigner);
+    gsap.to(s1PullText, { y: -12, duration: 1.4, ease: 'sine.inOut', yoyo: true, repeat: -1 });
+
+    resetIdleTimer();
 }
 
 //  Idle reset (1 minute of no interaction → back to screen 1) 

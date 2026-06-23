@@ -101,6 +101,15 @@
   height: 3.5rem;
 }
 
+.galleryThumbnail {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 2px solid var(--color-white);
+}
+ 
+
 
 .title {
   text-align: center;
