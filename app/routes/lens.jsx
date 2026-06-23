@@ -26,8 +26,8 @@ export default function Lens() {
   const [introPhase, setIntroPhase] = useState(introMode ? 'visible' : 'done')
   useEffect(() => {
     if (!introMode) return
-    const t1 = setTimeout(() => setIntroPhase('out'), 700)   // start fade, wheel already rising at 600ms
-    const t2 = setTimeout(() => setIntroPhase('done'), 1600)
+    const t1 = setTimeout(() => setIntroPhase('out'), 1700)  // start fade, wheel already rising at 600ms
+    const t2 = setTimeout(() => setIntroPhase('done'), 2600)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [introMode])
 
