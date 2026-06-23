@@ -60,7 +60,7 @@ export default function CameraPreview() {
                 )}
 
                 <div className={styles.previewButtons}>
-                    <Link to={gemId ? `/gem/detail/${gemId}` : '/map'}>
+                    <Link to={gemId ? `/gem/detail/${gemId}` : '/map'} state={gemId ? { unlocked: true } : undefined}>
                         <button className={styles.previewSeeDetails}>
                             See gem details
                             <img src={whiteArrow} alt="white arrow" />

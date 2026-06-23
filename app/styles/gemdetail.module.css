@@ -281,6 +281,52 @@ h3 {
 
 .publishButton img {
     width: 1.125rem;
-    height: auto; 
-    border-radius: 0; 
+    height: auto;
+    border-radius: 0;
+}
+
+/* Sticker unlock reveal — plays once when navigating from gem hunt */
+@keyframes revealFade {
+    0%   { opacity: 0; }
+    15%  { opacity: 1; }
+    78%  { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Bounces in with a slight rotation then fades out with the overlay */
+@keyframes stickerPop {
+    0%   { opacity: 0; transform: scale(0.3) rotate(-10deg); }
+    20%  { opacity: 1; transform: scale(1.15) rotate(3deg); }
+    35%  { transform: scale(1) rotate(0deg); }
+    78%  { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.9); }
+}
+
+.revealOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    animation: revealFade 2.8s ease forwards;
+    pointer-events: none; /* lets user scroll through while animation plays */
+}
+
+.revealSticker {
+    width: 10rem;
+    height: auto;
+    animation: stickerPop 2.8s ease forwards;
+}
+
+.revealText {
+    font-family: var(--font-body);
+    font-size: var(--font-size-body);
+    font-weight: 700;
+    color: white;
+    text-align: center;
+    animation: revealFade 2.8s ease forwards;
 }
