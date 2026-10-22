@@ -106,7 +106,7 @@ export default function DesktopMap() {
       mapInstanceRef.current = map
 
       L.control.zoom({ position: 'topright' }).addTo(map)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_4rvd_1_11ea31a1b801d46bb1084d3e').addTo(map)
 
       const { data: gems, error } = await supabase
         .from('Gems')

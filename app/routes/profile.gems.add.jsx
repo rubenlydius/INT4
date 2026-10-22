@@ -262,7 +262,7 @@ export default function AddGem() {
       const map = L.map(mapRef.current, { attributionControl: false, zoomControl: false })
         .setView([ANTWERP.lat, ANTWERP.lng], 15)
       mapInstanceRef.current = map
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map)
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_4rvd_1_11ea31a1b801d46bb1084d3e').addTo(map)
       circleRef.current = L.circle([ANTWERP.lat, ANTWERP.lng], {
         radius: 300, color: '#00B569', fillColor: '#00B569', fillOpacity: 0.35, weight: 2,
       }).addTo(map)

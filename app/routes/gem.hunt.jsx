@@ -87,7 +87,7 @@ export default function GemDetail() {
       }).setView(center, 15);
 
       mapInstanceRef.current = map;
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=cb1_4rvd_1_11ea31a1b801d46bb1084d3e').addTo(map);
 
       if (gem.a6_fav) {
         const sizeMultiplier = 2; 
