@@ -119,7 +119,7 @@ export default function Map() {
       const map = L.map(mapRef.current, { attributionControl: false }).setView([51.2194, 4.4025], 14);
       mapInstanceRef.current = map;
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(map);
+      L.tileLayer('https://basemaps.cartocdn.com/rastertiles/voyager/15/16046/12355.png?key=cb1_4rvd_1_11ea31a1b801d46bb1084d3e').addTo(map);
 
       if (navigator.geolocation) {
         watchId = navigator.geolocation.watchPosition(
